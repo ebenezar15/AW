@@ -83,7 +83,7 @@ ul.clean{margin:0;padding-left:18px;display:grid;gap:4px}
 .step[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .step[aria-pressed="true"] .n{color:var(--accent-ink);opacity:.8}
 .arrow{align-self:center;color:var(--muted);font-family:var(--mono)}
-.detail{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:16px 18px;display:grid;gap:10px}
+.detail{align-content:start;align-self:start;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:16px 18px;display:grid;gap:10px}
 .detail .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 
 /* tabs / chips */
@@ -172,6 +172,43 @@ td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-num
 .do{border-left:3px solid var(--good);padding-left:10px}
 .dont{border-left:3px solid var(--bad);padding-left:10px}
 
+/* architecture lanes */
+.arch{display:flex;gap:6px;align-items:stretch;overflow-x:auto;padding-bottom:4px}
+.lane{flex:1 0 128px;display:grid;gap:6px;align-content:start;background:var(--sunk);border-radius:var(--r);padding:10px}
+.lane .ln{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.svc{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 9px;text-align:left;font-size:13px;font-weight:600;line-height:1.25}
+.svc small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
+.svc[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.lanearrow{align-self:center;color:var(--accent);font-family:var(--mono);flex:0 0 auto}
+/* stack diagram */
+.tier3{display:grid;gap:6px}
+.tierrow{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:stretch}
+.tierrow .tl{background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:10px;font-family:var(--display);font-weight:700;display:grid;align-content:center}
+.tierrow .tl small{font-family:var(--body);font-weight:400;font-size:12px;opacity:.85}
+.tierrow .ti{display:flex;flex-wrap:wrap;gap:6px;background:var(--sunk);border-radius:8px;padding:8px}
+/* kpi tracker */
+.kpirow{display:grid;grid-template-columns:minmax(0,1.6fr) 90px 90px 110px 32px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.kpirow:last-child{border-bottom:0}
+.kpirow input{padding:6px 8px}
+.kbar{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden;margin-top:4px}
+.kbar i{display:block;height:100%}
+.xbtn{border:1px solid var(--line);background:transparent;border-radius:6px;width:30px;height:30px;color:var(--muted)}
+.pill{justify-self:start;display:inline-block;font-size:11.5px;font-family:var(--mono);padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.flywheel{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;counter-reset:fw}
+.fw{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;font-size:13.5px;position:relative}
+.fw b{display:block;font-family:var(--display);font-size:15px}
+.fw::after{content:"\2192";position:absolute;right:-9px;top:50%;transform:translateY(-50%);color:var(--accent);font-family:var(--mono);background:var(--bg);padding:0 1px}
+.fw:last-child::after{content:"\21BA"}
+.dr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.dr .card{border-top:4px solid var(--accent)}
+
+@media (max-width:860px){
+  .kpirow{grid-template-columns:1fr 1fr;}
+  .kpirow > :first-child{grid-column:1/-1}
+  .tierrow{grid-template-columns:1fr}
+  .dr{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fw::after{display:none}
+}
 @media (max-width:860px){
   .shell{grid-template-columns:1fr}
   .rail{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:5;border-right:0;border-bottom:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-left,0px))}
@@ -214,22 +251,32 @@ const money = (n) => (isFinite(n) ? n : 0).toLocaleString(undefined,{style:'curr
 
 /* ---------- chapter list ---------- */
 const CHAPTERS = [
-  {id:'start', n:'00', t:'Start here', g:'Orientation'},
-  {id:'cloud', n:'01', t:'Cloud & AWS basics', g:'Learn AWS'},
-  {id:'services', n:'02', t:'Service explorer', g:'Learn AWS'},
-  {id:'partner', n:'03', t:'Partner Network', g:'Partner business'},
-  {id:'portals', n:'04', t:'Portals & programs', g:'Partner business'},
-  {id:'people', n:'05', t:'Who’s who & RACI', g:'Partner business'},
-  {id:'gtm', n:'06', t:'GTM & co-sell', g:'Partner business'},
-  {id:'funding', n:'07', t:'Funding programs', g:'Partner business'},
-  {id:'revops', n:'08', t:'RevOps', g:'Your job'},
-  {id:'adminops', n:'09', t:'AdminOps & QuickBooks', g:'Your job'},
-  {id:'content', n:'10', t:'Video & content', g:'Your job'},
-  {id:'calendar', n:'11', t:'Calendar & history', g:'Reference'},
-  {id:'glossary', n:'12', t:'Glossary', g:'Reference'},
-  {id:'quiz', n:'13', t:'Quiz', g:'Reference'},
-  {id:'grow', n:'14', t:'Grow & contribute', g:'Career'}
+  {id:'start', t:'Start here', g:'Orientation'},
+  {id:'cloud', t:'Cloud & AWS basics', g:'Learn AWS'},
+  {id:'services', t:'Service explorer', g:'Learn AWS'},
+  {id:'tech', t:'Technical essentials', g:'Learn AWS'},
+  {id:'economics', t:'Cloud economics', g:'Learn AWS'},
+  {id:'ai', t:'AI on AWS', g:'Learn AWS'},
+  {id:'industries', t:'How businesses use AWS', g:'Learn AWS'},
+  {id:'ccp', t:'Cloud Practitioner prep', g:'Learn AWS'},
+  {id:'business', t:'How the business runs', g:'Partner business'},
+  {id:'partner', t:'Partner Network', g:'Partner business'},
+  {id:'portals', t:'Portals & programs', g:'Partner business'},
+  {id:'people', t:'Who\u2019s who & RACI', g:'Partner business'},
+  {id:'roles', t:'Partner vs AWS roles', g:'Partner business'},
+  {id:'gtm', t:'GTM & co-sell', g:'Partner business'},
+  {id:'sales', t:'Sales essentials', g:'Partner business'},
+  {id:'funding', t:'Funding programs', g:'Partner business'},
+  {id:'revops', t:'RevOps', g:'Your job'},
+  {id:'kpis', t:'KPIs & tracking', g:'Your job'},
+  {id:'adminops', t:'AdminOps & QuickBooks', g:'Your job'},
+  {id:'content', t:'Video & content', g:'Your job'},
+  {id:'calendar', t:'Calendar & history', g:'Reference'},
+  {id:'glossary', t:'Glossary', g:'Reference'},
+  {id:'quiz', t:'Quiz', g:'Reference'},
+  {id:'grow', t:'Grow & contribute', g:'Career'}
 ];
+CHAPTERS.forEach((c,i)=>{ c.n = String(i).padStart(2,'0'); });
 
 function renderNav(active){
   let html = '', last = '';
@@ -678,6 +725,31 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['TCO','Total cost of ownership: all costs of running a system over several years.'],
+  ['CapEx / OpEx','Capital expenditure (buy up front) vs operating expenditure (pay as you go).'],
+  ['Cloud Value Framework','AWS’s way to frame value: cost savings, staff productivity, operational resilience, business agility (and sustainability).'],
+  ['RPO / RTO','Recovery point objective (data you can lose) / recovery time objective (time you can be down).'],
+  ['Multi-AZ','Running across several Availability Zones so one failure doesn’t cause an outage.'],
+  ['Auto Scaling','Automatically adding or removing capacity based on demand.'],
+  ['Serverless','Running code without managing servers; pay per use (e.g. Lambda).'],
+  ['Right-sizing','Matching resource size to actual usage to cut cost.'],
+  ['Graviton','AWS-designed processors with better price-performance.'],
+  ['7 Rs','Migration strategies: retire, retain, rehost, relocate, repurchase, replatform, refactor.'],
+  ['Foundation model (FM)','Large pretrained model adaptable to many tasks.'],
+  ['LLM','Large language model: a foundation model for text.'],
+  ['Token','A unit of text used for GenAI pricing and limits.'],
+  ['RAG','Retrieval-augmented generation: answering from your own documents.'],
+  ['Guardrails','Controls that filter harmful or sensitive GenAI inputs and outputs.'],
+  ['Agent (AI)','An AI system that plans and uses tools to complete tasks.'],
+  ['KPI','Key performance indicator: a number that shows progress to a goal.'],
+  ['OKR','Objectives and key results: a goal plus measurable results.'],
+  ['SMART','Specific, measurable, achievable, relevant, time-bound.'],
+  ['Leading / lagging indicator','Predictive driver you can act on / result measured after the fact.'],
+  ['MEDDICC','Deal qualification: metrics, economic buyer, decision criteria, decision process, identify pain, champion, competition.'],
+  ['BANT','Budget, authority, need, timeline.'],
+  ['Utilization','Billable hours ÷ available hours.'],
+  ['CSM (AWS)','Customer Solutions Manager: drives AWS adoption in an account.'],
+  ['ProServe','AWS Professional Services, AWS’s own consulting team.'],
   ['APC','AWS Partner Central: the main partner portal.'],
   ['APNP / APN Portal','Older name for AWS Partner Central that people still use.'],
   ['APFP','AWS Partner Funding Portal: where funding is requested and claimed; being merged into Partner Central.'],
@@ -762,6 +834,10 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['Which Cloud Practitioner domain has the largest weight?',['Billing, Pricing & Support','Cloud Concepts','Cloud Technology & Services','Security & Compliance'],2,'Cloud Technology & Services is 34%, Security & Compliance 30%.'],
+  ['A system must lose almost no data and recover in minutes. Which DR strategy fits best?',['Backup & restore','Pilot light','Warm standby or multi-site','None'],2,'Lower RPO/RTO needs warm standby or multi-site, at higher cost.'],
+  ['What does RAG do?',['Trains a new model','Looks up your documents and answers from them','Encrypts data','Scales servers'],1,'Retrieval-augmented generation grounds answers in your own content.'],
+  ['DSO is an example of a…',['Leading indicator','Lagging indicator','Vanity metric','Funding program'],1,'DSO shows the result after invoices are paid; drivers like on-time invoicing are leading.'],
   ['Where do you download AWS Marketplace disbursement reports?',['Skill Builder','AWS Marketplace Management Portal (AMMP)','Partner Solutions Finder','Credly'],1,'AMMP is the seller console for listings, offers and financial reports.'],
   ['What must you do so your certification counts toward the company tier?',['Nothing','Link it to the partner account in Partner Central','Email AWS support','Post it on LinkedIn'],1,'Certifications count only once linked to your company in Partner Central.'],
   ['Which ACE stage comes right after Technical Validation?',['Qualified','Business Validation','Committed','Launched'],1,'Order: Prospect, Qualified, Technical Validation, Business Validation, Committed, Launched.'],
@@ -1246,12 +1322,687 @@ V.grow = () => `
 let ucFilter = 'All';
 function renderUC(){ $('#ucGrid').innerHTML = USECASES.filter(u=>ucFilter==='All'||u.who.includes(ucFilter)).map(u=>`<div class="card"><div class="tags"><span class="tag a">${u.who}</span></div><h4>${u.t}</h4><p class="small">${u.s}</p><p class="small muted"><b>Why it wins:</b> ${u.win}</p></div>`).join(''); }
 
+/* ================= NEW CHAPTERS: shared helpers ================= */
+
+/* Architecture lane diagram: lanes = [{n, items:[[name, short, detail]]}] */
+const ARCHS = {};
+function arch(id, lanes, note){
+  ARCHS[id] = lanes;
+  const html = lanes.map((l,li)=>`${li?'<span class="lanearrow" aria-hidden="true">→</span>':''}<div class="lane"><span class="ln">${l.n}</span>${l.items.map((it,ii)=>`<button type="button" class="svc" data-arch="${id}|${li}|${ii}" aria-pressed="${li===0&&ii===0}">${it[0]}<small>${it[1]}</small></button>`).join('')}</div>`).join('');
+  const first = lanes[0].items[0];
+  return `<div class="arch">${html}</div><div class="detail" id="ad-${id}"><h4>${first[0]}</h4><p class="small">${first[2]}</p></div>${note?`<p class="small muted">${note}</p>`:''}`;
+}
+function showArch(key){
+  const [id,li,ii] = key.split('|'); const it = ARCHS[id][+li].items[+ii];
+  $('#ad-'+id).innerHTML = `<h4>${it[0]}</h4><p class="small">${it[2]}</p>`;
+  document.querySelectorAll(`[data-arch^="${id}|"]`).forEach(b=>b.setAttribute('aria-pressed', b.dataset.arch===key));
+}
+
+/* Horizontal bar chart: rows = [[label, value]] */
+function hbars(rows, opts={}){
+  const max = opts.max || Math.max(...rows.map(r=>r[1]));
+  const W=560, lh=30, pl=opts.pl||190, pr=56, H=rows.length*lh+10;
+  let g='';
+  rows.forEach((r,i)=>{ const y=i*lh+6, w=(W-pl-pr)*r[1]/max;
+    g+=`<text x="${pl-8}" y="${y+15}" text-anchor="end" style="fill:var(--ink)">${r[0]}</text><rect x="${pl}" y="${y+3}" width="${W-pl-pr}" height="16" rx="3" fill="var(--sunk)"/><rect x="${pl}" y="${y+3}" width="${Math.max(w,2)}" height="16" rx="3" fill="${r[2]||'var(--accent)'}"/><text x="${pl+w+6}" y="${y+15}">${opts.fmt?opts.fmt(r[1]):r[1]}</text>`; });
+  return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.label||'Bar chart'}">${g}</svg></div>`;
+}
+
+/* ================= TECHNICAL ESSENTIALS ================= */
+const COMPUTE_CHOICE = [
+  ['Amazon EC2','Virtual servers','You manage the OS and software','Per second while running','Manual or Auto Scaling','Legacy apps, full control, lift-and-shift'],
+  ['Containers (ECS, EKS, Fargate)','Packaged apps','You manage containers; AWS can run the servers (Fargate)','Per resource used','Fast, per service','Microservices, modern apps'],
+  ['AWS Lambda','Functions on events','Almost nothing to manage','Per request and duration','Automatic, instant','Event-driven tasks, APIs, automation'],
+  ['Amazon Lightsail','Simple bundles','Minimal','Fixed monthly price','Limited','Small websites, simple projects']
+];
+const DB_CHOICE = [
+  ['Relational (RDS, Aurora)','Tables with relationships, transactions','Orders, finance, CRM, ERP'],
+  ['Key-value / document (DynamoDB)','Massive scale, millisecond speed, flexible schema','Shopping carts, gaming, user profiles'],
+  ['In-memory (ElastiCache)','Microsecond reads','Caching, leaderboards, sessions'],
+  ['Data warehouse (Redshift)','Analytics across huge datasets','Reporting, BI'],
+  ['Search (OpenSearch)','Full-text search and log analytics','Site search, observability'],
+  ['Vector (OpenSearch, Aurora pgvector, others)','Similarity search over embeddings','GenAI retrieval (RAG)']
+];
+const S3_CLASSES = [
+  ['S3 Standard','Frequently used data','Milliseconds',100],
+  ['S3 Intelligent-Tiering','Unknown or changing access','Milliseconds','auto'],
+  ['S3 Standard-IA','Infrequent access','Milliseconds',54],
+  ['S3 Glacier Instant Retrieval','Archive, needed instantly','Milliseconds',17],
+  ['S3 Glacier Flexible Retrieval','Archive','Minutes to hours',16],
+  ['S3 Glacier Deep Archive','Long-term retention','Within 12 hours',4]
+];
+const DR = [
+  ['Backup & restore','Hours','Hours','$','Copy backups to another Region; rebuild when needed.'],
+  ['Pilot light','Minutes','Tens of minutes','$$','Core data replicated; servers off until disaster.'],
+  ['Warm standby','Seconds','Minutes','$$$','A smaller copy always running; scale up on failover.'],
+  ['Multi-site active/active','Near zero','Near zero','$$$$','Full copies in multiple Regions serving traffic.']
+];
+const SEC_ESSENTIALS = [
+  ['Lock the root user','Use MFA on the root account and never use it day to day.'],
+  ['Least privilege','Give people and apps only the permissions they need (IAM roles and policies).'],
+  ['MFA everywhere','Multi-factor authentication for all human users, ideally via IAM Identity Center.'],
+  ['Encrypt data','At rest with KMS and in transit with TLS.'],
+  ['Log everything','CloudTrail on in all Regions; CloudWatch alarms for anomalies.'],
+  ['Detect threats','GuardDuty and Security Hub turned on across accounts.'],
+  ['Separate accounts','Production, development and security in separate accounts via Organizations.'],
+  ['Back up and test restores','AWS Backup policies, with regular restore tests.']
+];
+
+V.tech = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Beginner → Intermediate</span><h1>Technical essentials</h1>
+  <p class="lede">You don’t need to build systems to understand them. Learn the common designs, which service does what in each, and how each choice affects cost, speed and risk for the business. Click any box in a diagram.</p></header>
+
+  <section class="section"><header><h2>1. A classic web application</h2><p class="muted">Most company websites and business apps look like this.</p></header>
+  ${arch('web', [
+    {n:'Users', items:[['Browser & mobile','Customers','People reach the app over the internet. Speed and uptime here are what customers feel.']]},
+    {n:'Edge', items:[['Route 53','DNS','Turns the domain name into an address. Can route users to the healthiest or closest Region.'],['CloudFront','CDN','Caches pages, images and video near users. Business effect: faster pages, lower server cost, better conversion.'],['AWS WAF & Shield','Protection','Blocks common attacks and DDoS. Business effect: fewer outages and security incidents.']]},
+    {n:'Network', items:[['VPC','Private network','Your isolated network, split into public subnets (internet-facing) and private subnets (servers and databases).'],['Load balancer (ALB)','Traffic cop','Spreads traffic across servers in several Availability Zones so one failure doesn’t take the app down.']]},
+    {n:'Compute', items:[['EC2 Auto Scaling','Servers that grow','Adds servers when busy and removes them when quiet. Business effect: pay for what you use and survive traffic spikes.'],['or ECS / Lambda','Modern option','Containers or serverless functions reduce operations work.']]},
+    {n:'Data', items:[['RDS Multi-AZ','Database','Managed database with a standby copy in another AZ for automatic failover.'],['ElastiCache','Cache','Keeps hot data in memory so pages load faster.'],['S3','Files','Images, documents, backups. Very durable and cheap.']]},
+    {n:'Operate & secure', items:[['IAM','Access','Who can change what.'],['CloudWatch','Monitoring','Metrics, logs, alarms.'],['AWS Backup','Backups','Policy-based backups across services.']]}
+  ], 'Business criteria this design meets: high availability (multi-AZ), elastic cost, security layers, and global speed through the CDN.')}
+  </section>
+
+  <section class="section"><header><h2>2. Serverless application</h2><p class="muted">No servers to manage. Popular for new products, APIs and automation.</p></header>
+  ${arch('sls', [
+    {n:'Request', items:[['App or website','Caller','A user action or another system calls the API.']]},
+    {n:'Front door', items:[['API Gateway','APIs','Receives requests, checks authentication, throttles abuse.'],['Amazon Cognito','Sign-in','User sign-up and login.']]},
+    {n:'Logic', items:[['AWS Lambda','Functions','Runs code per request. Business effect: near-zero cost when idle, scales instantly.'],['Step Functions','Workflows','Chains steps with retries, such as order → payment → email.']]},
+    {n:'Data & events', items:[['DynamoDB','Database','Serverless database that scales automatically.'],['EventBridge / SQS','Events & queues','Lets parts of the system work independently and absorb spikes.'],['S3','Storage','Files and static website hosting.']]}
+  ], 'Trade-off: lowest operations effort and great for spiky traffic; can cost more than servers for constant heavy load.')}
+  </section>
+
+  <section class="section"><header><h2>3. Data & analytics pipeline</h2><p class="muted">How companies turn raw data into dashboards and AI.</p></header>
+  ${arch('data', [
+    {n:'Sources', items:[['Apps, CRM, ERP, IoT','Raw data','Data is spread across many systems. The goal is one trusted view.']]},
+    {n:'Ingest', items:[['DMS / Glue','Batch','Copy and clean data from databases and files.'],['Kinesis','Streaming','Real-time events such as clicks or sensor data.']]},
+    {n:'Store', items:[['S3 data lake','All data','Cheap, unlimited storage in open formats. Governed with Lake Formation.']]},
+    {n:'Process', items:[['Glue / EMR','Transform','Clean, join and prepare data at scale.']]},
+    {n:'Analyze', items:[['Athena','SQL on S3','Pay per query, no servers.'],['Redshift','Warehouse','Fast analytics for large reporting needs.']]},
+    {n:'Use', items:[['QuickSight','Dashboards','Business users see the numbers.'],['SageMaker / Bedrock','AI','Predictions and GenAI on the company’s own data.']]}
+  ], 'Business effect: faster, trusted decisions. Data readiness is also the first step of almost every AI project.')}
+  </section>
+
+  <section class="section"><header><h2>4. Video on AWS (your world)</h2></header>
+  ${arch('video', [
+    {n:'Upload', items:[['S3 input bucket','Masters','Editors upload source files. An upload can trigger the pipeline automatically.']]},
+    {n:'Process', items:[['MediaConvert','Transcode','Creates streaming renditions (HLS/DASH) and thumbnails.'],['Transcribe','Captions','Speech to text for subtitles in many languages.'],['Rekognition','Tagging','Finds faces, objects, text and unsafe content to make libraries searchable.']]},
+    {n:'Store', items:[['S3 output','Renditions','Ready-to-stream files.'],['Glacier','Archive','Old masters at a fraction of the cost.']]},
+    {n:'Deliver', items:[['CloudFront','CDN','Streams to viewers worldwide with low buffering.'],['IVS / MediaLive','Live','For live events and webinars.']]}
+  ], 'Business effect: global delivery without owning infrastructure; costs follow viewing volume. Data transfer out is usually the biggest line item.')}
+  </section>
+
+  <section class="section"><header><h2>Choosing compute</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Option</th><th>What it is</th><th>Who manages what</th><th>You pay</th><th>Scaling</th><th>Best for</th></tr></thead><tbody>
+  ${COMPUTE_CHOICE.map(r=>`<tr>${r.map((c,i)=>`<td>${i?c:`<b>${c}</b>`}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  <p class="small muted">Rule of thumb for business impact: more control means more operations staff time. Managed and serverless options shift that work to AWS.</p></section>
+
+  <section class="section"><header><h2>Choosing a database</h2></header>
+  <div class="grid g3">${DB_CHOICE.map(d=>`<div class="card"><h4>${d[0]}</h4><p class="small">${d[1]}</p><p class="small muted"><b>Examples:</b> ${d[2]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>S3 storage classes: cost vs speed</h2><p class="muted">Relative storage cost per GB (S3 Standard = 100), approximate, US East published list prices. Retrieval fees apply to colder classes.</p></header>
+  <div class="grid g2">
+    ${hbars(S3_CLASSES.filter(c=>c[3]!=='auto').map(c=>[c[0].replace('S3 ',''), c[3]]), {max:100, pl:200, label:'Relative S3 storage cost by class'})}
+    <div class="tablewrap"><table><thead><tr><th>Class</th><th>For</th><th>Access</th></tr></thead><tbody>${S3_CLASSES.map(c=>`<tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td></tr>`).join('')}</tbody></table></div>
+  </div></section>
+
+  <section class="section"><header><h2>Availability & disaster recovery</h2><p class="muted"><b>RPO</b> (recovery point objective) = how much data you can afford to lose. <b>RTO</b> (recovery time objective) = how long you can be down. Lower numbers cost more.</p></header>
+  <div class="dr">${DR.map(d=>`<div class="card"><h4>${d[0]}</h4><div class="kv small"><dt>RPO</dt><dd>${d[1]}</dd><dt>RTO</dt><dd>${d[2]}</dd><dt>Cost</dt><dd class="mono">${d[3]}</dd></div><p class="small muted">${d[4]}</p></div>`).join('')}</div>
+  <div class="card tint small"><b>Business criteria:</b> pick the strategy by asking what one hour of downtime costs (lost sales, penalties, reputation). A payments system needs multi-site; an internal wiki can live with backup & restore.</div></section>
+
+  <section class="section"><header><h2>Security essentials checklist</h2></header>
+  <div class="grid g4">${SEC_ESSENTIALS.map(s=>`<div class="card"><h4>${s[0]}</h4><p class="small muted">${s[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Infrastructure as code & DevOps</h2></header>
+  ${flow('devops', FLOWS.devops = [
+    {t:'Code', d:'Developers write application code and infrastructure templates (CloudFormation, CDK or Terraform).', do:['Everything stored in Git'], check:['Code reviewed by a peer'], tools:['Git, CDK']},
+    {t:'Build & test', d:'A pipeline builds and tests every change automatically.', do:['Unit and security tests'], check:['Tests pass'], tools:['CodeBuild, GitHub Actions']},
+    {t:'Deploy', d:'Changes roll out automatically, often to a small slice of users first.', do:['Blue/green or canary releases'], check:['Alarms watched'], tools:['CodePipeline, CodeDeploy']},
+    {t:'Observe', d:'Monitoring shows if the change helped or hurt.', do:['Dashboards and alerts'], check:['Rollback ready'], tools:['CloudWatch, X-Ray']}
+  ], {label:'Step'})}
+  <p class="small muted">Business effect: faster releases with fewer outages, and environments that can be rebuilt identically, which helps audits and disaster recovery.</p></section>
+`;
+
+/* ================= CLOUD ECONOMICS ================= */
+const ADVANTAGES = [
+  ['Trade fixed expense for variable expense','Pay for what you use instead of buying data centers and servers up front.'],
+  ['Benefit from massive economies of scale','AWS’s scale lowers per-unit prices, and AWS has cut prices many times.'],
+  ['Stop guessing capacity','Scale up or down with demand instead of over-buying for peaks.'],
+  ['Increase speed and agility','New resources in minutes, so teams experiment faster.'],
+  ['Stop spending money running data centers','Focus staff on customers, not racking servers.'],
+  ['Go global in minutes','Deploy in Regions worldwide for lower latency.']
+];
+const VALUE = [
+  ['Cost savings (TCO)','Lower infrastructure and facilities cost.','Infra cost per user, % savings vs on-premises'],
+  ['Staff productivity','Teams spend less time on undifferentiated work.','Hours saved, VMs managed per admin'],
+  ['Operational resilience','Fewer and shorter outages, better security.','Uptime %, incidents, mean time to recover'],
+  ['Business agility','Faster launches and experiments.','Releases per month, time to market'],
+  ['Sustainability','Lower carbon footprint through efficient infrastructure.','Estimated carbon emissions (Customer Carbon Footprint Tool)']
+];
+const LEVERS = [
+  ['Spot Instances',90,'Spare capacity for interruptible work like rendering'],
+  ['EC2 Instance Savings Plans',72,'Commit to a specific instance family in a Region'],
+  ['Compute Savings Plans',66,'Flexible commitment across EC2, Fargate, Lambda'],
+  ['Graviton processors',40,'AWS’s own chips; better price-performance'],
+  ['Glacier Deep Archive vs S3 Standard',95,'Storage price for long-term archives'],
+];
+
+V.economics = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate</span><h1>Cloud economics</h1>
+  <p class="lede">Cloud economics explains why moving to AWS makes financial sense and how to keep it that way. It’s the language CFOs speak, and it’s covered in the free AWS Partner: Cloud Economics accreditation.</p></header>
+
+  <section class="section"><header><h2>CapEx vs OpEx</h2></header>
+  <div class="grid g2">
+    <div class="card"><span class="eyebrow">On-premises · CapEx</span><h4>Buy up front, depreciate over years</h4><ul class="clean small"><li>Large purchases every 3–5 years</li><li>Pay for peak capacity even when idle</li><li>Long lead times to buy hardware</li><li>Staff for facilities, power, hardware</li></ul></div>
+    <div class="card tint"><span class="eyebrow">Cloud · OpEx</span><h4>Pay monthly for what you use</h4><ul class="clean small"><li>No large upfront cost</li><li>Scale with demand</li><li>Commit (Savings Plans) only where usage is steady</li><li>Costs must be managed actively, or they creep</li></ul></div>
+  </div></section>
+
+  <section class="section"><header><h2>The six advantages of cloud</h2><p class="muted">Straight from AWS’s own definition, and on the Cloud Practitioner exam.</p></header>
+  <div class="grid g3">${ADVANTAGES.map((a,i)=>`<div class="card"><span class="eyebrow">Advantage ${i+1}</span><h4>${a[0]}</h4><p class="small muted">${a[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>The Cloud Value Framework</h2><p class="muted">Cost is only one part of the business case. AWS frames value in these areas.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Value area</th><th>What improves</th><th>How it’s measured</th></tr></thead><tbody>${VALUE.map(v=>`<tr><td><b>${v[0]}</b></td><td>${v[1]}</td><td>${v[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>3-year TCO calculator</h2><p class="muted">Sample numbers for a mid-size company. Change them to see how the business case moves.</p></header>
+  <div class="grid g2">
+    <div class="card"><div class="grid g2" style="gap:8px">
+      ${[['tcS','Servers',50,1],['tcH','Hardware cost per server $',9000,500],['tcD','Data center cost per server per year $',1800,100],['tcM','Maintenance % of hardware per year',15,1],['tcF','IT admin staff (FTE) on-prem',3,1],['tcSal','Cost per FTE per year $',110000,5000],['tcC','AWS monthly bill $',14000,500],['tcSP','Savings Plan discount %',25,1],['tcF2','IT admin FTE after migration',1.5,0.5],['tcMig','One-time migration cost $',150000,5000],['tcFund','AWS funding / credits $',50000,5000]].map(f=>`<label class="field">${f[1]}<input type="number" id="${f[0]}" value="${f[2]}" min="0" step="${f[3]}"></label>`).join('')}
+    </div></div>
+    <div class="card tint" id="tcOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>Cost levers</h2><p class="muted">AWS’s published “up to” savings for each lever. Actual results depend on the workload.</p></header>
+  ${hbars(LEVERS.map(l=>[l[0],l[1]]), {max:100, pl:250, fmt:v=>'up to '+v+'%', label:'Maximum published savings by lever'})}
+  <div class="grid g3">${[['Right-size','Match instance size to real usage; many servers are over-sized.'],['Turn it off','Schedule dev/test to stop nights and weekends.'],['Auto Scaling','Run the minimum and grow only when needed.'],['Storage lifecycle','Move old data to cheaper classes automatically.'],['Modernize','Containers and serverless cut idle cost and licenses.'],['Watch data transfer','Use CloudFront and keep traffic inside a Region when possible.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>FinOps: managing cost as a team habit</h2></header>
+  ${flow('finops', FLOWS.finops = [
+    {t:'Inform', d:'Make costs visible and owned.', do:['Tag resources by team, project, customer','Cost Explorer and Cost and Usage Reports','Showback or chargeback per team'], check:['Every dollar has an owner'], tools:['Cost Explorer, CUR, Budgets']},
+    {t:'Optimize', d:'Reduce waste and buy smarter.', do:['Right-size, schedule, clean up','Buy Savings Plans for steady usage'], check:['Commitment coverage and utilization tracked'], tools:['Compute Optimizer, Trusted Advisor']},
+    {t:'Operate', d:'Keep it that way with processes and alerts.', do:['Budgets and anomaly alerts','Monthly cost review with engineering and finance'], check:['Unit cost (e.g. cost per customer) trending down'], tools:['AWS Budgets, Cost Anomaly Detection']}
+  ], {label:'Phase'})}</section>
+
+  <section class="section"><header><h2>How AWS bills, in plain terms</h2></header>
+  <div class="grid g4">${[['Compute','Per second/hour or per request'],['Storage','Per GB per month, plus requests'],['Data transfer','Into AWS is free; out to the internet is charged per GB'],['Support','Paid plans charged as % of spend or a minimum'],['Marketplace','Third-party software appears on the same bill'],['Credits','Funding and promotional credits reduce the bill'],['Commitments','Savings Plans and Reserved Instances lower rates'],['Taxes','Added per country rules']].map(x=>`<div class="card"><b>${x[0]}</b><span class="small muted">${x[1]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Why this matters for a partner</h2></header>
+  <div class="grid g3">
+    <div class="card"><h4>Sales</h4><p class="small">A TCO and business case wins the CFO. MAP Assess funding often pays for building it.</p></div>
+    <div class="card"><h4>Services revenue</h4><p class="small">Cost optimization reviews and FinOps managed services are recurring, high-trust offerings.</p></div>
+    <div class="card"><h4>Your role</h4><p class="small">As AdminOps you see real AWS bills. Spotting spend spikes or idle resources for customers you resell to is valuable.</p></div>
+  </div></section>
+`;
+function calcTCO(){
+  const v = id => +($('#'+id)?.value||0), Y=3;
+  const onHw = v('tcS')*v('tcH'), onDc = v('tcS')*v('tcD')*Y, onMaint = onHw*v('tcM')/100*Y, onStaff = v('tcF')*v('tcSal')*Y;
+  const on = onHw+onDc+onMaint+onStaff;
+  const clRun = v('tcC')*12*Y*(1-v('tcSP')/100), clStaff = v('tcF2')*v('tcSal')*Y, clMig = Math.max(v('tcMig')-v('tcFund'),0);
+  const cl = clRun+clStaff+clMig, save = on-cl, inv = clMig;
+  const W=520,H=210,pl=110,pr=20, max=Math.max(on,cl,1);
+  const seg = (y, parts) => { let x=pl, s=''; parts.forEach(p=>{ const w=(W-pl-pr)*p[0]/max; s+=`<rect x="${x}" y="${y}" width="${Math.max(w,0)}" height="34" fill="${p[1]}"><title>${p[2]}: ${money(p[0])}</title></rect>`; x+=w; }); return s; };
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Three-year cost: on-premises ${money(on)}, AWS ${money(cl)}">
+    <text x="${pl-8}" y="42" text-anchor="end" style="fill:var(--ink)">On-premises</text>${seg(20,[[onHw,'var(--signal)','Hardware'],[onDc,'color-mix(in srgb,var(--signal) 65%,var(--surface))','Data center'],[onMaint,'color-mix(in srgb,var(--signal) 40%,var(--surface))','Maintenance'],[onStaff,'var(--muted)','Staff']])}
+    <text x="${pl-8}" y="102" text-anchor="end" style="fill:var(--ink)">AWS</text>${seg(80,[[clRun,'var(--accent)','AWS usage'],[clMig,'color-mix(in srgb,var(--accent) 50%,var(--surface))','Migration net of funding'],[clStaff,'var(--muted)','Staff']])}
+    <g transform="translate(${pl},150)">${[['var(--signal)','Hardware'],['var(--accent)','AWS usage'],['var(--muted)','Staff'],['color-mix(in srgb,var(--accent) 50%,var(--surface))','Migration']].map((l,i)=>`<rect x="${i*100}" y="0" width="10" height="10" fill="${l[0]}"/><text x="${i*100+14}" y="9">${l[1]}</text>`).join('')}</g></svg>`;
+  $('#tcOut').innerHTML = `<div class="chart">${svg}</div><div class="kv"><dt>On-premises, 3 years</dt><dd class="mono">${money(on)}</dd><dt>AWS, 3 years</dt><dd class="mono">${money(cl)}</dd></div><div class="eyebrow">${save>=0?'Savings':'Extra cost'}</div><div class="out mono" style="color:${save>=0?'var(--good)':'var(--bad)'}">${money(Math.abs(save))} <span class="small muted">(${on?Math.round(save/on*100):0}%)</span></div><p class="small muted">${inv>0&&save>0?`Return on the net migration investment: ${Math.round(save/inv*100)}%. `:''}Simplified model; real TCO studies also count licensing, downtime and staff productivity.</p>`;
+}
+
+/* ================= AI ON AWS ================= */
+const AI_USES = [
+  ['Customer support assistant',8,7,'Answers customer questions from help docs using RAG on Bedrock; hands off to humans.','Ticket deflection %, CSAT'],
+  ['Internal knowledge search',7,8,'Employees ask questions across policies, wikis and SOWs (Amazon Q Business).','Time saved per search'],
+  ['Document processing',7,8,'Extract data from invoices, contracts, forms (Textract + Bedrock).','Processing time, error rate'],
+  ['Video captions & translation',6,9,'Transcribe, translate and dub content for new markets.','Cost per minute, reach'],
+  ['Marketing content drafts',5,9,'First drafts of posts, emails and scripts with human review.','Content output per week'],
+  ['Code assistant',7,8,'Developers write and modernize code faster (Amazon Q Developer).','Cycle time, developer hours'],
+  ['Demand forecasting',8,5,'ML predicts sales or inventory needs (SageMaker).','Forecast accuracy, stockouts'],
+  ['Fraud detection',9,5,'ML flags suspicious transactions in real time.','Fraud losses, false positives'],
+  ['Autonomous agents for back-office',8,4,'Agents that take multi-step actions across systems (Bedrock Agents / AgentCore).','Tasks completed without humans'],
+  ['Personalized recommendations',8,6,'Product or content suggestions per user.','Conversion, watch time']
+];
+const RAI = [
+  ['Fairness','Results don’t unfairly disadvantage groups.'],
+  ['Explainability','People can understand why the system produced an output.'],
+  ['Privacy & security','Data is protected and used appropriately.'],
+  ['Safety','Harmful outputs are prevented (e.g. Bedrock Guardrails).'],
+  ['Controllability','Humans can monitor and steer behavior.'],
+  ['Veracity & robustness','Correct outputs, even with unexpected inputs.'],
+  ['Governance','Processes to define, implement and enforce responsible AI.'],
+  ['Transparency','Stakeholders know when and how AI is used.']
+];
+V.ai = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Beginner → Advanced</span><h1>AI on AWS</h1>
+  <p class="lede">Generative AI is the fastest-growing area of AWS and of partner work. Customers need help choosing use cases, preparing data, building safely and controlling cost. That help is the partner opportunity.</p></header>
+
+  <section class="section"><header><h2>The vocabulary, nested</h2></header>
+  <div class="box" style="cursor:default;border-style:solid"><span class="lbl">ARTIFICIAL INTELLIGENCE · machines doing tasks that need human-like intelligence</span>
+    <div class="box" style="cursor:default;border-style:solid"><span class="lbl">MACHINE LEARNING · learns patterns from data (forecasts, fraud scores)</span>
+      <div class="box" style="cursor:default;border-style:solid"><span class="lbl">DEEP LEARNING · neural networks for images, speech, language</span>
+        <div class="box" style="cursor:default;border-style:solid;background:var(--accent-soft)"><span class="lbl" style="color:var(--accent)">GENERATIVE AI · creates new text, images, code, audio, video using foundation models (FMs) and large language models (LLMs)</span></div>
+      </div></div></div>
+  <div class="grid g4">${[['Foundation model','A large model trained on broad data, adaptable to many tasks (e.g. Claude, Amazon Nova, Llama).'],['Prompt','The instructions and context you give a model.'],['Token','A chunk of text (~¾ of a word). GenAI is priced per input and output token.'],['RAG','Retrieval-augmented generation: look up your own documents first, then answer from them.'],['Embedding','Numbers that capture meaning, used to find similar text.'],['Fine-tuning','Further training a model on your examples.'],['Agent','An AI that plans and takes actions using tools and APIs.'],['Hallucination','A confident but wrong answer; RAG and guardrails reduce it.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>The AWS generative AI stack</h2></header>
+  <div class="tier3">
+    <div class="tierrow"><div class="tl">Applications<small>Ready to use</small></div><div class="ti">${['Amazon Q Business','Amazon Q Developer','Q in QuickSight','Amazon Connect contact center AI'].map(x=>`<span class="tag a">${x}</span>`).join('')}<span class="small muted" style="flex-basis:100%">Buy and configure. Fastest value, least customization.</span></div></div>
+    <div class="tierrow"><div class="tl">Tools to build<small>Amazon Bedrock</small></div><div class="ti">${['Choice of foundation models','Knowledge Bases (RAG)','Agents / AgentCore','Guardrails','Model evaluation','Fine-tuning'].map(x=>`<span class="tag a">${x}</span>`).join('')}<span class="small muted" style="flex-basis:100%">Build your own GenAI apps through one API, with data kept private. Where most partner projects happen.</span></div></div>
+    <div class="tierrow"><div class="tl">Infrastructure<small>Train & run models</small></div><div class="ti">${['SageMaker AI','EC2 GPU instances','AWS Trainium','AWS Inferentia'].map(x=>`<span class="tag a">${x}</span>`).join('')}<span class="small muted" style="flex-basis:100%">For companies training or hosting their own models. Most control, most effort.</span></div></div>
+  </div></section>
+
+  <section class="section"><header><h2>How a RAG assistant answers a question</h2></header>
+  ${flow('rag', FLOWS.rag = [
+    {t:'User asks', d:'“What’s our refund policy for annual plans?”', do:['Question arrives through a chat app or website'], check:['User is authenticated'], tools:['App, API Gateway']},
+    {t:'Retrieve', d:'The system searches the company’s documents for the most relevant passages using embeddings.', do:['Vector search over indexed documents'], check:['Only documents the user may see'], tools:['Bedrock Knowledge Bases, OpenSearch / vector store, S3']},
+    {t:'Augment', d:'The retrieved passages are added to the prompt as context.', do:['Prompt template with instructions'], check:['Context fits the model’s limit'], tools:['Bedrock']},
+    {t:'Generate', d:'The foundation model writes the answer from that context.', do:['Model chosen for cost vs quality'], check:['Latency and cost per answer'], tools:['Claude, Amazon Nova or another model on Bedrock']},
+    {t:'Guard', d:'Guardrails filter harmful content and sensitive data.', do:['Block topics, mask personal data'], check:['Policy compliance'], tools:['Bedrock Guardrails']},
+    {t:'Answer + cite', d:'The user gets an answer with links to sources. Feedback improves the system.', do:['Thumbs up/down logged'], check:['Accuracy measured over time'], tools:['CloudWatch, evaluation']}
+  ], {label:'Step'})}</section>
+
+  <section class="section"><header><h2>Picking AI use cases: value vs feasibility</h2><p class="muted">Click a dot. Top-right is where to start. Positions are typical, not fixed.</p></header>
+  <div class="grid g2">
+    <div class="card chart">${aiMatrix()}</div>
+    <div class="detail" id="aiD"><p class="muted small">Select a use case on the chart.</p></div>
+  </div>
+  <div class="grid g3">${[['Clear business value','A measurable number improves: time, cost, revenue, risk.'],['Data is ready','The documents or data exist, are accessible and clean enough.'],['Acceptable risk','Errors are tolerable or a human reviews outputs.'],['Unit cost works','Cost per request × volume fits the budget.'],['Security & compliance','Data stays in approved Regions and accounts.'],['Owner & adoption','A business owner will champion and use it.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>GenAI cost estimator</h2><p class="muted">Enter your model’s per-1,000-token prices from the Bedrock pricing page. Defaults are placeholders.</p></header>
+  <div class="grid g2">
+    <div class="card"><div class="grid g2" style="gap:8px">${[['aiR','Requests per day',2000,100],['aiI','Input tokens per request',1500,100],['aiO','Output tokens per request',400,50],['aiPi','Price per 1K input tokens $',0.003,0.0005],['aiPo','Price per 1K output tokens $',0.015,0.0005]].map(f=>`<label class="field">${f[1]}<input type="number" id="${f[0]}" value="${f[2]}" min="0" step="${f[3]}"></label>`).join('')}</div></div>
+    <div class="card tint" id="aiOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>Responsible AI</h2><p class="muted">AWS describes responsible AI in these dimensions. They’re on the AI Practitioner exam and in every enterprise AI review.</p></header>
+  <div class="grid g4">${RAI.map(r=>`<div class="card"><h4>${r[0]}</h4><p class="small muted">${r[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Where AI shows up in the partner business</h2></header>
+  <div class="grid g2">
+    <div class="card"><h4>What the partner sells</h4><ul class="clean small"><li>AI strategy and use-case workshops</li><li>Data readiness (data lakes, governance)</li><li>Funded POCs, then production builds</li><li>AI managed services: monitoring, evaluation, cost control</li><li>Generative AI Specialization as proof of expertise</li></ul></div>
+    <div class="card"><h4>How you can use AI in your job (with approved tools)</h4><ul class="clean small"><li>Video: draft captions, translations, voiceover, B-roll ideas, script outlines</li><li>AdminOps: draft polite collection emails, summarize contracts for billing terms</li><li>RevOps: summarize call notes into CRM, spot stale deals</li><li>Never paste customer data, pricing or credentials into tools your company hasn’t approved</li></ul></div>
+  </div></section>
+`;
+function aiMatrix(){
+  const W=420,H=340,p=40, sx=v=>p+(W-p-14)*(v/10), sy=v=>H-p-(H-p-14)*(v/10);
+  let g=`<rect x="${sx(5)}" y="${sy(10)}" width="${sx(10)-sx(5)}" height="${sy(5)-sy(10)}" fill="var(--accent-soft)"/><text x="${sx(9.8)}" y="${sy(9.6)}" text-anchor="end" style="fill:var(--accent)">Start here</text>`;
+  g+=`<line x1="${p}" y1="${sy(0)}" x2="${W-14}" y2="${sy(0)}" stroke="var(--line)"/><line x1="${p}" y1="${sy(0)}" x2="${p}" y2="14" stroke="var(--line)"/>`;
+  g+=`<text x="${(W+p)/2}" y="${H-8}" text-anchor="middle">Feasibility (data, effort, risk) →</text><text transform="translate(14 ${(H-p)/2}) rotate(-90)" text-anchor="middle">Business value →</text>`;
+  AI_USES.forEach((u,i)=>{ g+=`<circle cx="${sx(u[2])}" cy="${sy(u[1])}" r="9" fill="var(--signal)" stroke="var(--surface)" stroke-width="2" data-ai="${i}" style="cursor:pointer" tabindex="0" role="button" aria-label="${u[0]}"/><text x="${sx(u[2])}" y="${sy(u[1])+4}" text-anchor="middle" style="fill:var(--surface);font-size:10px;pointer-events:none">${i+1}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="AI use cases plotted by value and feasibility">${g}</svg><ol class="small" style="margin:6px 0 0;padding-left:20px;columns:2">${AI_USES.map(u=>`<li>${u[0]}</li>`).join('')}</ol>`;
+}
+function showAI(i){ const u=AI_USES[i]; $('#aiD').innerHTML = `<h3>${i+1}. ${u[0]}</h3><p>${u[3]}</p><div class="kv small"><dt>Value</dt><dd>${u[1]}/10</dd><dt>Feasibility</dt><dd>${u[2]}/10</dd><dt>Measure with</dt><dd>${u[4]}</dd></div>`; }
+function calcAI(){
+  const v = id => +($('#'+id)?.value||0);
+  const perReq = v('aiI')/1000*v('aiPi') + v('aiO')/1000*v('aiPo'), month = perReq*v('aiR')*30;
+  $('#aiOut').innerHTML = `<div class="eyebrow">Cost per request</div><div class="out mono">$${perReq.toFixed(4)}</div><div class="eyebrow">Per month (30 days)</div><div class="out mono">${money(month)}</div><p class="small muted">Levers: shorter prompts, smaller models for simple tasks, caching repeated context, and batch processing where real-time isn’t needed.</p>`;
+}
+
+/* ================= INDUSTRIES ================= */
+const INDUSTRIES = [
+  {n:'Media & entertainment', why:'Huge files, global audiences, spiky demand around releases and live events.', work:['Video streaming and VOD','Rendering and VFX on Spot','Live broadcast','Content archive','Personalization','GenAI for subtitles, dubbing, highlights'], svc:['S3','MediaConvert','CloudFront','IVS','Bedrock','Transcribe'], out:['Global reach without data centers','Faster production','Cost follows viewership'], crit:['Delivery quality (buffering)','Content security','Egress cost'], opp:'Media pipelines, archive migration, AI captioning and localization.'},
+  {n:'Financial services', why:'Strict regulation, fraud risk, need for real-time analytics.', work:['Core banking modernization','Fraud and risk models','Data lakes for regulatory reporting','Customer service AI','Trading analytics'], svc:['Aurora','SageMaker AI','Redshift','KMS','Security Hub','Bedrock'], out:['Faster product launches','Lower fraud losses','Audit-ready controls'], crit:['Compliance (e.g. PCI DSS, SOC reports)','Resilience','Data residency'], opp:'Security and compliance landing zones, data platforms, mainframe modernization.'},
+  {n:'Healthcare & life sciences', why:'Sensitive patient data, research compute, interoperability.', work:['Electronic health records','Genomics pipelines','Medical imaging','Clinical document AI'], svc:['HealthLake','HealthOmics','S3','Comprehend Medical','Bedrock'], out:['Faster research','Better patient experience','Lower IT cost'], crit:['HIPAA-eligible services and BAA','Privacy','Validation'], opp:'Compliant data platforms, GenAI for clinical documentation.'},
+  {n:'Retail & e-commerce', why:'Traffic spikes on sale days, need for personalization and forecasting.', work:['E-commerce sites','Recommendations','Demand forecasting','Supply chain visibility','Contact center'], svc:['EC2 Auto Scaling','DynamoDB','Personalize','Amazon Connect','Bedrock'], out:['Higher conversion','No outages at peak','Less inventory waste'], crit:['Peak scalability','Payment security','Latency'], opp:'Peak-readiness reviews, personalization, contact center modernization.'},
+  {n:'Manufacturing & industrial', why:'Connected machines, quality control, global supply chains.', work:['IoT sensor data','Predictive maintenance','Computer vision quality checks','SAP on AWS'], svc:['IoT Core','IoT SiteWise','SageMaker AI','EC2 for SAP'], out:['Less downtime','Higher yield','Faster insights'], crit:['Edge connectivity','OT security','Integration with plant systems'], opp:'SAP migrations, IoT platforms, AI vision.'},
+  {n:'Public sector & education', why:'Citizen services, budgets, strict security and sovereignty rules.', work:['Digital citizen services','Student systems and e-learning','Research computing','Data sharing'], svc:['AWS GovCloud (US)','Lambda','Amazon Connect','WorkSpaces'], out:['Lower cost per citizen served','Resilient services','Faster delivery'], crit:['Certifications (e.g. FedRAMP in the US)','Procurement vehicles','Sovereignty'], opp:'Public sector procurement vehicles, migrations, contact centers.'},
+  {n:'Software / SaaS & startups', why:'Speed to market, scale from zero, investor-friendly economics.', work:['SaaS platforms','Multi-tenant architectures','AI features in products','Marketplace selling'], svc:['Lambda','EKS','Aurora Serverless','Bedrock','AWS Marketplace'], out:['Launch quickly','Margins improve with scale','New channel via Marketplace'], crit:['Unit economics','Developer speed','Credits (e.g. AWS Activate)'], opp:'SaaS architecture reviews, Marketplace listing, GenAI features.'},
+  {n:'Gaming', why:'Global players, unpredictable launches, real-time multiplayer.', work:['Game servers','Player analytics','Live ops','Anti-cheat ML'], svc:['GameLift','DynamoDB','Kinesis','CloudFront'], out:['Smooth launches','Low latency worldwide','Data-driven design'], crit:['Latency','Burst capacity','Cost per player'], opp:'Game backend builds, analytics, live-ops tooling.'},
+  {n:'Telecom', why:'Network modernization, 5G, huge data volumes.', work:['Cloud-native network functions','Customer analytics','Private 5G and edge'], svc:['Outposts','Wavelength','EKS','Redshift'], out:['Faster service launches','Lower network cost'], crit:['Carrier-grade reliability','Edge presence'], opp:'Network modernization and analytics.'}
+];
+const WORKLOADS = [
+  ['Websites & business apps','Every industry','EC2, ECS, RDS, CloudFront'],
+  ['Backup & disaster recovery','Every industry; common first step','AWS Backup, S3, Elastic Disaster Recovery'],
+  ['Data center migration','Companies with hardware refresh or lease ending','Application Migration Service, MAP'],
+  ['Data & analytics','Every industry','S3, Glue, Athena, Redshift, QuickSight'],
+  ['SAP and ERP','Large enterprises','EC2 high-memory, FSx, Backint'],
+  ['Virtual desktops','Remote workforces, contractors','WorkSpaces, AppStream 2.0'],
+  ['Contact center','Retail, finance, public sector','Amazon Connect + AI'],
+  ['High-performance computing','Research, engineering, media rendering','EC2 Spot, ParallelCluster'],
+  ['IoT','Manufacturing, energy, smart buildings','IoT Core, SiteWise'],
+  ['Generative AI','Every industry','Bedrock, Amazon Q, SageMaker AI']
+];
+let indSel = 0;
+V.industries = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate</span><h1>How businesses use AWS</h1>
+  <p class="lede">Every industry runs on AWS for different reasons. Knowing why a customer buys helps you write better proposals, produce more relevant videos and invoice the right things. Pick an industry.</p></header>
+  <div class="chips">${INDUSTRIES.map((x,i)=>`<button class="chip" type="button" data-ind="${i}" aria-pressed="${i===indSel}">${x.n}</button>`).join('')}</div>
+  <div class="detail" id="indD"></div>
+
+  <section class="section"><header><h2>Common workloads across industries</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Workload</th><th>Who runs it</th><th>Typical services</th></tr></thead><tbody>${WORKLOADS.map(w=>`<tr><td><b>${w[0]}</b></td><td>${w[1]}</td><td>${w[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Why companies start a cloud project</h2><p class="muted">Triggers to listen for in sales calls and to build content around.</p></header>
+  <div class="grid g4">${[['Data center lease or hardware refresh ending','Deadline-driven migration'],['New product launch','Need speed and scale'],['Merger or acquisition','Consolidate IT'],['Security incident or audit finding','Modernize controls'],['Cost pressure','Optimization and TCO'],['AI ambition from leadership','Data + GenAI projects'],['Expansion to new countries','Regions and compliance'],['Licensing changes from a vendor','Move off expensive licenses']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>How customers choose</h2></header>
+  <div class="grid g2">
+    <div class="card"><h4>Criteria for choosing a cloud platform</h4><ul class="clean small"><li>Security and compliance certifications</li><li>Service breadth and maturity</li><li>Price and commitments</li><li>Global Regions and data residency</li><li>Reliability track record</li><li>Partner ecosystem and available skills</li><li>Existing contracts (e.g. AWS commitment)</li></ul></div>
+    <div class="card"><h4>Criteria for choosing a partner (that’s you)</h4><ul class="clean small"><li>AWS tier and relevant Specializations</li><li>Case studies in their industry</li><li>Certified people on the team</li><li>Funding they can bring (MAP, POC)</li><li>Price and commercial flexibility (incl. Marketplace)</li><li>Recommendation from the AWS account team</li><li>Chemistry and responsiveness</li></ul></div>
+  </div></section>
+`;
+function showInd(i){ indSel=i; const x = INDUSTRIES[i];
+  const li = a => `<ul class="clean">${a.map(v=>`<li>${v}</li>`).join('')}</ul>`;
+  $('#indD').innerHTML = `<h3>${x.n}</h3><p>${x.why}</p><div class="cols"><div><div class="eyebrow">Top workloads</div>${li(x.work)}</div><div><div class="eyebrow">Business outcomes</div>${li(x.out)}</div><div><div class="eyebrow">Buying criteria</div>${li(x.crit)}</div></div><div class="tags">${x.svc.map(s=>`<span class="tag a">${s}</span>`).join('')}</div><p class="small"><b>Partner opportunity:</b> ${x.opp}</p>`;
+  document.querySelectorAll('[data-ind]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.ind===i)); }
+
+/* ================= CLOUD PRACTITIONER ================= */
+const CCP_DOMAINS = [['Cloud Technology & Services',34],['Security & Compliance',30],['Cloud Concepts',24],['Billing, Pricing & Support',12]];
+const AIP_DOMAINS = [['Applications of foundation models',28],['Fundamentals of GenAI',24],['Fundamentals of AI and ML',20],['Guidelines for responsible AI',14],['Security, compliance & governance',14]];
+const SEVEN_RS = [['Retire','Turn it off; nobody needs it.'],['Retain','Keep on-premises for now.'],['Rehost','“Lift and shift” as-is to EC2.'],['Relocate','Move VMware workloads with minimal change.'],['Repurchase','Switch to a SaaS product.'],['Replatform','Small optimizations, e.g. move to RDS.'],['Refactor','Re-architect to cloud-native.']];
+const SUPPORT = [['Basic','Free','Docs, forums, core Trusted Advisor checks, Health Dashboard'],['Developer','Low monthly','Business-hours email for one contact; for testing'],['Business','% of spend','24/7 phone/chat, full Trusted Advisor, fast response for production'],['Enterprise On-Ramp','% of spend, higher minimum','Adds a pool of Technical Account Managers'],['Enterprise','% of spend, highest','Designated TAM, fastest response for business-critical systems']];
+const CARDS = [
+  ['What is the shared responsibility model?','AWS secures the cloud (hardware, facilities, global network). The customer secures what they put in it (data, access, configuration).'],
+  ['Region vs Availability Zone?','A Region is a geographic area. Each contains multiple isolated AZs, each one or more data centers.'],
+  ['Which tool estimates cost before you build?','AWS Pricing Calculator.'],
+  ['Which tool shows past spend and trends?','AWS Cost Explorer.'],
+  ['Which service gives best-practice checks on cost, security, performance?','AWS Trusted Advisor.'],
+  ['What logs every API call in your account?','AWS CloudTrail.'],
+  ['What monitors metrics and sets alarms?','Amazon CloudWatch.'],
+  ['Which pricing option is best for interruptible batch jobs?','Spot Instances.'],
+  ['Which support plan first includes a designated TAM?','Enterprise (Enterprise On-Ramp gives access to a pool of TAMs).'],
+  ['Where do you download AWS compliance reports?','AWS Artifact.'],
+  ['What service protects against DDoS?','AWS Shield (Standard is automatic and free).'],
+  ['What groups accounts with consolidated billing?','AWS Organizations.']
+];
+let cardI = 0, cardFlip = false;
+V.ccp = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Certification</span><h1>Cloud Practitioner prep</h1>
+  <p class="lede">AWS Certified Cloud Practitioner is the right first certification for non-engineers in a partner company. It also counts toward your company’s tier. Then consider AWS Certified AI Practitioner.</p></header>
+  <section class="grid g2">
+    <div class="card"><span class="eyebrow">Cloud Practitioner (CLF-C02)</span><dl class="kv"><dt>Format</dt><dd>65 questions, multiple choice / multiple response</dd><dt>Time</dt><dd>90 minutes</dd><dt>Passing score</dt><dd>700 / 1000</dd><dt>Fee</dt><dd>USD 100 (ask about partner vouchers)</dd><dt>Valid</dt><dd>3 years</dd></dl>
+    <div class="eyebrow">Domain weights</div>${hbars(CCP_DOMAINS, {max:40, pl:200, fmt:v=>v+'%', label:'Cloud Practitioner domain weights'})}</div>
+    <div class="card"><span class="eyebrow">AI Practitioner (AIF-C01)</span><p class="small">For anyone working with AI projects or content. Covers AI/ML basics, GenAI, foundation model use, responsible AI and governance.</p>
+    <div class="eyebrow">Domain weights</div>${hbars(AIP_DOMAINS, {max:40, pl:230, fmt:v=>v+'%', label:'AI Practitioner domain weights'})}
+    <p class="small muted">Exam details change; confirm on the AWS Certification site before booking.</p></div>
+  </section>
+
+  <section class="section"><header><h2>Flashcards</h2></header>
+  <div class="card" style="max-width:680px" id="fcBox"></div></section>
+
+  <section class="section"><header><h2>Migration strategies: the 7 Rs</h2></header>
+  <div class="grid g4">${SEVEN_RS.map((r,i)=>`<div class="card"><span class="eyebrow">${i+1}</span><h4>${r[0]}</h4><p class="small muted">${r[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Support plans</h2><p class="muted">AWS updates these plans from time to time; check the current lineup.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Plan</th><th>Price model</th><th>What you get</th></tr></thead><tbody>${SUPPORT.map(s=>`<tr><td><b>${s[0]}</b></td><td>${s[1]}</td><td>${s[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Billing & cost tools to know</h2></header>
+  <div class="grid g4">${[['Pricing Calculator','Estimate before you build'],['Cost Explorer','Analyze past spend, forecast'],['AWS Budgets','Alerts on spend or usage'],['Cost and Usage Report','Most detailed billing data'],['Trusted Advisor','Best-practice and savings checks'],['Billing console','Invoices, payments, credits'],['Organizations','Consolidated billing, volume discounts'],['Cost Anomaly Detection','Alerts on unusual spend']].map(x=>`<div class="card"><b>${x[0]}</b><span class="small muted">${x[1]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>4-week study plan</h2></header>
+  ${flow('study', FLOWS.study = [
+    {t:'Week 1 · Cloud concepts', d:'Six advantages, Well-Architected pillars, migration (7 Rs), Cloud Adoption Framework.', do:['Skill Builder: Cloud Practitioner Essentials','Chapters 01 and Cloud economics here'], check:['Can explain cloud to a friend'], tools:['Skill Builder']},
+    {t:'Week 2 · Security', d:'Shared responsibility, IAM, MFA, encryption, compliance (Artifact), Shield, WAF, GuardDuty.', do:['Create a free-tier account and turn on MFA'], check:['Can name the right security service for a scenario'], tools:['AWS Free Tier']},
+    {t:'Week 3 · Services & technology', d:'Compute, storage, databases, networking, global infrastructure, deployment options.', do:['Service explorer and Technical essentials chapters'], check:['Know when to use EC2 vs Lambda, S3 vs EBS'], tools:['This app']},
+    {t:'Week 4 · Billing & practice', d:'Pricing models, support plans, cost tools. Take practice exams.', do:['Official practice question set','Review weak domains'], check:['Scoring 80%+ on practice tests'], tools:['Skill Builder practice exams']}
+  ], {label:'Week'})}</section>
+`;
+function renderFC(){ const b=$('#fcBox'); if(!b) return; const c=CARDS[cardI];
+  b.innerHTML = `<span class="eyebrow">Card ${cardI+1} of ${CARDS.length}</span><h3>${c[0]}</h3>${cardFlip?`<p class="card tint">${c[1]}</p>`:'<p class="muted small">Think of your answer, then reveal.</p>'}<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="fcPrev">Previous</button><button class="btn" type="button" id="fcFlip">${cardFlip?'Hide answer':'Show answer'}</button><button class="btn ghost" type="button" id="fcNext">Next</button></div>`; }
+
+/* ================= HOW THE BUSINESS RUNS ================= */
+const STREAMS = [
+  ['Professional services','Project fees (migrations, builds, assessments)','High (often 30–50% gross margin)','Lumpy; depends on new deals'],
+  ['Managed services','Monthly fee to operate environments','Good, improves with automation','Recurring and predictable'],
+  ['AWS resale','Margin on reselling AWS consumption','Low (single digits typical)','Recurring, grows with usage'],
+  ['Software / IP','Licenses or SaaS, often via Marketplace','Very high once built','Recurring if subscription'],
+  ['Funding & incentives','AWS program payouts','Offsets delivery cost','Tied to deals and deadlines'],
+  ['Training','Workshops and enablement','Medium','Occasional']
+];
+const PNL = [['Revenue',100,'t'],['AWS resale cost',-28,'c'],['Delivery staff',-32,'c'],['Gross profit',40,'t'],['Sales & marketing',-14,'c'],['General & admin',-12,'c'],['AWS funding',4,'p'],['Operating profit',18,'t']];
+const CADENCE = [
+  ['Daily','Respond to AWS Referrals, customer emails, invoice payments posted','Sales, AdminOps'],
+  ['Weekly','Pipeline review, AR aging, funding tracker, delivery status, content calendar','Leadership, RevOps, AdminOps, marketing'],
+  ['Monthly','Month-end close, P&L by practice, ACE hygiene, utilization, KPI dashboard','Finance, RevOps'],
+  ['Quarterly','Business review with AWS (PDM), board/leadership review, tier progress','Alliance lead, executives'],
+  ['Yearly','Annual plan and budget, joint business plan with AWS, Specialization renewals, re:Invent','Everyone']
+];
+V.business = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate</span><h1>How the business runs</h1>
+  <p class="lede">An AWS partner sells expertise and outcomes on top of AWS. Here’s where its money comes from, where it goes, and the rhythm that keeps it healthy.</p></header>
+
+  <section class="section"><header><h2>Revenue streams</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Stream</th><th>What it is</th><th>Margin profile</th><th>Predictability</th></tr></thead><tbody>${STREAMS.map(s=>`<tr><td><b>${s[0]}</b></td><td>${s[1]}</td><td>${s[2]}</td><td>${s[3]}</td></tr>`).join('')}</tbody></table></div>
+  <p class="small muted">Margins are general industry patterns, not your company’s numbers. Ask finance for the real mix.</p></section>
+
+  <section class="section"><header><h2>An illustrative P&L</h2><p class="muted">For every $100 of revenue in a services partner that also resells AWS. Illustrative only.</p></header>
+  <div class="card chart">${pnlChart()}</div></section>
+
+  <section class="section"><header><h2>The partner flywheel</h2><p class="muted">Each step feeds the next. Your work touches almost every one.</p></header>
+  <div class="flywheel">${[['Train & certify','People earn certifications'],['Win & deliver','Projects on AWS'],['Launch in ACE','Launches recorded'],['Prove it','Case studies & videos'],['Earn badges','Tier & Specializations'],['Get referrals','AWS sends more deals']].map(x=>`<div class="fw"><b>${x[0]}</b><span class="muted">${x[1]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Consultant economics calculator</h2><p class="muted">Services revenue is driven by people × rate × utilization.</p></header>
+  <div class="grid g2">
+    <div class="card"><div class="grid g2" style="gap:8px">${[['ceN','Billable consultants',12,1],['ceR','Average bill rate $/hr',165,5],['ceU','Utilization %',72,1],['ceH','Available hours per year',1800,10],['ceC','Loaded cost per consultant $/yr',130000,5000]].map(f=>`<label class="field">${f[1]}<input type="number" id="${f[0]}" value="${f[2]}" min="0" step="${f[3]}"></label>`).join('')}</div></div>
+    <div class="card tint" id="ceOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>Operating rhythm</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Cadence</th><th>What happens</th><th>Who</th></tr></thead><tbody>${CADENCE.map(c=>`<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Departments and how work flows between them</h2></header>
+  <div class="flow">${[['Marketing','Creates demand'],['Sales','Wins deals'],['Alliances','Works with AWS'],['Delivery','Builds & runs'],['Finance / AdminOps','Bills & collects'],['RevOps','Measures & improves']].map((x,i)=>`${i?'<span class="arrow">→</span>':''}<div class="step"><span class="t">${x[0]}</span><span class="n" style="font-family:var(--body);font-size:12px">${x[1]}</span></div>`).join('')}</div>
+  <div class="card tint small"><b>Where things break:</b> handoffs. Sales closes without a PO, delivery finishes without sign-off, marketing runs a campaign without tracking. RevOps and AdminOps exist to make those handoffs reliable.</div></section>
+`;
+function pnlChart(){
+  const W=800,H=300,pl=10,pb=50,pt=20, n=PNL.length, bw=(W-pl*2)/n, y=v=>pt+(H-pt-pb)*(1-v/100);
+  let run=0, g='';
+  PNL.forEach((p,i)=>{ let top,bot,col;
+    if(p[2]==='t'){ run=p[1]; top=y(p[1]); bot=y(0); col='var(--accent)'; }
+    else { const nr=run+p[1]; top=y(Math.max(run,nr)); bot=y(Math.min(run,nr)); col=p[1]<0?'var(--signal)':'var(--good)'; run=nr; }
+    const x=pl+i*bw+bw*.15, w=bw*.7;
+    g+=`<rect x="${x}" y="${top}" width="${w}" height="${Math.max(bot-top,1)}" rx="3" fill="${col}"/><text x="${x+w/2}" y="${top-5}" text-anchor="middle" style="fill:var(--ink)">${p[1]>0&&p[2]!=='t'?'+':''}${p[1]}</text>`;
+    const words=p[0].split(' '), half=Math.ceil(words.length/2);
+    g+=`<text x="${x+w/2}" y="${H-pb+16}" text-anchor="middle">${words.slice(0,half).join(' ')}</text><text x="${x+w/2}" y="${H-pb+30}" text-anchor="middle">${words.slice(half).join(' ')}</text>`;
+  });
+  g+=`<line x1="${pl}" x2="${W-pl}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)"/>`;
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="min-width:560px" role="img" aria-label="Illustrative P&L waterfall from revenue 100 to operating profit 18">${g}</svg></div>`;
+}
+function calcCE(){
+  const v=id=>+($('#'+id)?.value||0);
+  const rev=v('ceN')*v('ceR')*v('ceH')*v('ceU')/100, cost=v('ceN')*v('ceC'), gm=rev?(rev-cost)/rev*100:0;
+  const be = v('ceR')*v('ceH') ? v('ceC')/(v('ceR')*v('ceH'))*100 : 0;
+  $('#ceOut').innerHTML = `<div class="eyebrow">Annual services revenue</div><div class="out mono">${money(rev)}</div><div class="eyebrow">Gross margin</div><div class="out mono" style="color:${gm>=30?'var(--good)':gm>=15?'var(--warn)':'var(--bad)'}">${gm.toFixed(0)}%</div><p class="small muted">Break-even utilization: ${be.toFixed(0)}%. Every 5 points of utilization adds about ${money(v('ceN')*v('ceR')*v('ceH')*0.05)} a year.</p>`;
+}
+
+/* ================= PARTNER vs AWS ROLES ================= */
+const ROLEMAP = [
+  {f:'Sales', aws:'Account Manager (AM) / Account Executive', p:'Partner Account Executive', awsDo:['Owns the customer relationship for AWS','Drives AWS consumption and commitments','Brings in partners for delivery and specialist expertise'], pDo:['Sells services, resale or software','Registers deals in ACE','Owns the customer contract and SOW'], awsKpi:'AWS revenue/consumption growth, new workloads, customer adoption', pKpi:'Bookings, pipeline, win rate, launched opportunities'},
+  {f:'Solutions architecture', aws:'Solutions Architect (SA) and specialist SAs', p:'Partner Solutions Architect / Pre-sales engineer', awsDo:['Technical advisor to the customer','Validates architectures','Runs immersion days'], pDo:['Designs the actual solution and estimate','Writes technical sections of the SOW','Runs POCs'], awsKpi:'Technical wins, workloads launched, customer satisfaction', pKpi:'Technical win rate, POC conversion, estimate accuracy'},
+  {f:'Partner management', aws:'Partner Development Manager (PDM) / Partner Sales Manager', p:'Alliance lead / Alliance manager', awsDo:['Builds the joint plan with the partner','Unlocks programs and funding','Connects partner to AWS sellers'], pDo:['Owns the AWS relationship','Tracks tier, Specializations, certifications','Coordinates funding and co-sell'], awsKpi:'Partner-sourced and influenced revenue, partner capability growth', pKpi:'ACE launches, funding secured, tier progress, referrals received'},
+  {f:'Technical partnership', aws:'Partner Solutions Architect (PSA)', p:'Practice lead / Principal engineer', awsDo:['Enables partner technically','Guides Specialization audits'], pDo:['Builds repeatable offerings','Prepares audit evidence'], awsKpi:'Partner technical validations, Specializations achieved', pKpi:'Specializations held, reusable assets built'},
+  {f:'Marketing', aws:'Partner Marketing Manager (PMM)', p:'Marketing manager, content & video (you)', awsDo:['Approves and funds joint campaigns (MDF)','Amplifies partner stories'], pDo:['Produces campaigns, webinars, videos, case studies','Tracks leads to pipeline'], awsKpi:'Marketing-sourced partner pipeline, campaign ROI', pKpi:'Leads, MQLs, sourced pipeline, content engagement'},
+  {f:'Delivery', aws:'AWS Professional Services (ProServe)', p:'Delivery / Professional services team', awsDo:['Delivers select strategic engagements','Often works alongside or through partners'], pDo:['Delivers most migrations and builds','Manages project, scope and quality'], awsKpi:'Customer outcomes, engagement margin', pKpi:'Utilization, on-time/on-budget delivery, CSAT'},
+  {f:'Support & operations', aws:'Technical Account Manager (TAM), AWS Support', p:'Managed services / Cloud operations team', awsDo:['Proactive guidance for Enterprise Support customers','Handles AWS service issues'], pDo:['Runs day-to-day operations for customers (MSP)','First line of support'], awsKpi:'Customer health, support satisfaction', pKpi:'SLA attainment, incidents, MRR from managed services'},
+  {f:'Customer success', aws:'Customer Solutions Manager (CSM)', p:'Customer success / Account manager', awsDo:['Drives adoption of AWS across the account'], pDo:['Ensures value, renewals and expansion'], awsKpi:'Adoption and consumption growth', pKpi:'Net revenue retention, renewals, CSAT/NPS'},
+  {f:'Finance & operations', aws:'Partner funding & Marketplace operations', p:'AdminOps / RevOps / Finance (you)', awsDo:['Processes funding approvals and payments','Processes Marketplace billing and disbursement'], pDo:['Invoices, collects, reconciles','Claims funding with POE','Keeps CRM/ACE data clean'], awsKpi:'Program compliance and accuracy', pKpi:'DSO, funding recovered, close on time, data accuracy'}
+];
+let roleSel = 0;
+V.roles = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate</span><h1>Partner vs AWS roles</h1>
+  <p class="lede">For almost every job at a partner, there is a counterpart at AWS. They work on the same customer but are measured differently. Knowing what your counterpart is measured on is the key to working well together.</p></header>
+  <div class="chips">${ROLEMAP.map((r,i)=>`<button class="chip" type="button" data-role="${i}" aria-pressed="${i===roleSel}">${r.f}</button>`).join('')}</div>
+  <div class="grid g2" id="roleD"></div>
+
+  <section class="section"><header><h2>How a joint deal hands off</h2></header>
+  ${flow('handoff', FLOWS.handoff = [
+    {t:'AWS AM spots a need', d:'The AWS account manager hears that the customer wants to migrate or build AI.', do:['AM checks which partners fit (Specializations, references)'], check:[], tools:['AWS internal tools, Partner Solutions Finder']},
+    {t:'Referral to partner', d:'AWS sends an AWS Referral through ACE, or introduces the partner directly.', do:['Partner accepts quickly and contacts the customer'], check:['Response time matters'], tools:['ACE']},
+    {t:'Joint discovery', d:'Partner AE and SA run discovery; AWS SA joins for technical depth.', do:['Agree who does what'], check:['Opportunity updated'], tools:['Meetings, ACE']},
+    {t:'Partner proposes', d:'Partner sends the SOW. AWS PDM helps with funding.', do:['Funding request submitted'], check:['Approved before work'], tools:['Partner Central funding']},
+    {t:'Partner delivers', d:'Partner team delivers. AWS keeps an eye on consumption and customer health.', do:['Status updates shared with AWS AM'], check:['Launch recorded'], tools:['ACE']},
+    {t:'Run & grow', d:'Partner managed services or AWS TAM support operations. Both look for the next workload.', do:['Case study, renewal, expansion'], check:[], tools:['MSP tools, CRM']}
+  ], {label:'Step'})}</section>
+
+  <section class="section"><header><h2>All roles side by side</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Function</th><th>At AWS</th><th>At the partner</th><th>AWS measured on</th><th>Partner measured on</th></tr></thead><tbody>${ROLEMAP.map(r=>`<tr><td><b>${r.f}</b></td><td>${r.aws}</td><td>${r.p}</td><td class="small">${r.awsKpi}</td><td class="small">${r.pKpi}</td></tr>`).join('')}</tbody></table></div>
+  <p class="small muted">AWS titles and team structures change. Ask your PDM who covers what for your region and segment.</p></section>
+
+  <section class="section"><header><h2>Working well with AWS people</h2></header>
+  <div class="grid g3">${[['Lead with the customer','AWS staff care most about customer outcomes and consumption. Frame asks around the customer.'],['Make it easy','Send short, complete updates: customer, need, stage, ask, date.'],['Keep ACE current','It’s how AWS sees your work. Stale data costs trust.'],['Respect their time','Come to meetings with an agenda and a clear ask.'],['Share wins','Tell your PDM and AM about launches. They report wins internally too.'],['Follow the rules of engagement','Be transparent about pricing and funding; never misrepresent AWS.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+`;
+function showRole(i){ roleSel=i; const r=ROLEMAP[i]; const li=a=>`<ul class="clean small">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  $('#roleD').innerHTML = `<div class="card"><span class="eyebrow">At AWS</span><h3>${r.aws}</h3>${li(r.awsDo)}<p class="small"><b>Measured on:</b> ${r.awsKpi}</p></div><div class="card tint"><span class="eyebrow">At the partner</span><h3>${r.p}</h3>${li(r.pDo)}<p class="small"><b>Measured on:</b> ${r.pKpi}</p></div>`;
+  document.querySelectorAll('[data-role]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.role===i)); }
+
+/* ================= SALES ESSENTIALS ================= */
+const MEDDICC = [['M','Metrics','The measurable result the customer wants (save $400k/yr, cut release time 50%).'],['E','Economic buyer','The person who can approve the budget.'],['D','Decision criteria','What they will judge options on.'],['D','Decision process','Steps, approvals and timeline to sign.'],['I','Identify pain','The business problem and its cost.'],['C','Champion','An insider who wants you to win and sells for you.'],['C','Competition','Other partners, other clouds, or doing nothing.']];
+const DISCOVERY = [
+  ['Situation','What does your environment look like today? What’s driving this now?'],
+  ['Pain','What happens if nothing changes? What does that cost?'],
+  ['Impact','Who else is affected? How does this show up in your numbers?'],
+  ['Vision','What does success look like in 12 months?'],
+  ['Process','Who decides, and how? What’s the budget and timeline?'],
+  ['AWS context','Do you have an AWS commitment or account team? Any Marketplace preference?']
+];
+const OBJECTIONS = [
+  ['“Cloud will cost more.”','Show a TCO with Savings Plans and right-sizing; propose a cost review first.'],
+  ['“We’re worried about security.”','Explain shared responsibility, AWS compliance programs, and your Security Specialization or references.'],
+  ['“We don’t have the skills.”','That’s the partner’s role: delivery plus training and managed services.'],
+  ['“Not the right time.”','Find the trigger (contract end, audit, launch). Offer a funded assessment to keep momentum.'],
+  ['“Your price is too high.”','Return to the metrics. Bring in funding, phase the work, or offer a Marketplace private offer against their AWS commitment.'],
+  ['“We’ll do it ourselves.”','Offer a smaller advisory or Well-Architected review; show the risk and time cost.']
+];
+V.sales = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate → Advanced</span><h1>Sales essentials</h1>
+  <p class="lede">Even if you never carry a quota, understanding how deals are won makes your videos sharper, your invoices smoother and your RevOps reports more useful.</p></header>
+
+  <section class="section"><header><h2>The four questions every deal must answer</h2></header>
+  <div class="grid g4">${[['Why change?','The cost of the current situation.'],['Why now?','The trigger or deadline.'],['Why AWS?','Platform fit, commitments, services.'],['Why us?','Our expertise, references, funding, speed.']].map((x,i)=>`<div class="card ${i===3?'tint':''}"><h3>${x[0]}</h3><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Qualification with MEDDICC</h2><p class="muted">A common framework to judge if a deal is real. Many teams also use the simpler BANT: budget, authority, need, timeline.</p></header>
+  <div class="grid g4">${MEDDICC.map(m=>`<div class="card"><span class="out mono" style="font-size:22px;color:var(--accent)">${m[0]}</span><h4>${m[1]}</h4><p class="small muted">${m[2]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Discovery questions</h2></header>
+  <div class="tablewrap"><table><tbody>${DISCOVERY.map(d=>`<tr><td style="width:22%"><b>${d[0]}</b></td><td>${d[1]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Objection handling</h2></header>
+  <div class="grid g2">${OBJECTIONS.map(o=>`<div class="card"><h4>${o[0]}</h4><p class="small">${o[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Content for each stage of the deal</h2><p class="muted">How video and collateral support sales.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Stage</th><th>Buyer question</th><th>Asset that helps</th></tr></thead><tbody>
+    <tr><td>Awareness</td><td>Is this a problem worth solving?</td><td>Explainer video, short social clips, thought leadership</td></tr>
+    <tr><td>Consideration</td><td>Who can help us?</td><td>Industry case study video, webinar replay, Partner Solutions Finder profile</td></tr>
+    <tr><td>Technical validation</td><td>Will it work for us?</td><td>Demo video, reference architecture, POC</td></tr>
+    <tr><td>Business validation</td><td>Is it worth it?</td><td>TCO / ROI summary, customer testimonial</td></tr>
+    <tr><td>Commit</td><td>Can we buy easily?</td><td>Marketplace listing, clear SOW and pricing sheet</td></tr>
+    <tr><td>Expand</td><td>What’s next?</td><td>Results recap video, roadmap workshop</td></tr>
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Pricing models partners use</h2></header>
+  <div class="grid g3">${[['Fixed price','Set price per milestone. Partner carries scope risk.'],['Time & materials','Hourly or daily rates. Customer carries risk.'],['Monthly retainer','Managed services or advisory hours.'],['Outcome-based','Paid on results, such as % of savings.'],['Resale + margin','Monthly AWS usage plus a fee.'],['Marketplace private offer','Custom price billed via AWS.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+`;
+
+/* ================= KPIs & TRACKING ================= */
+const KPI_LIB = [
+  ['Alliance','ACE launched opportunities','Count of opportunities marked Launched','Per tier requirement','Monthly','Partner Central'],
+  ['Alliance','AWS Referrals accepted on time','Referrals accepted within SLA ÷ total','> 95%','Weekly','ACE'],
+  ['Alliance','Certified individuals','Active certifications linked to the partner account','Next-tier target','Monthly','Partner Central'],
+  ['Alliance','Funding secured','$ approved across programs','Annual plan','Quarterly','Funding tracker'],
+  ['Sales','Pipeline coverage','Open pipeline ÷ target','≥ 3×','Weekly','CRM'],
+  ['Sales','Win rate','Won ÷ (won + lost)','Rising','Monthly','CRM'],
+  ['Sales','Average deal size','Bookings ÷ deals won','Rising','Quarterly','CRM'],
+  ['Sales','Sales cycle length','Avg days created → won','Falling','Quarterly','CRM'],
+  ['RevOps','CRM–ACE match rate','Deals with ACE ID ÷ eligible deals','100%','Monthly','CRM + ACE'],
+  ['RevOps','Forecast accuracy','Actual ÷ forecast','90–110%','Quarterly','CRM'],
+  ['RevOps','Stale opportunities','Open deals past close date','0','Weekly','CRM'],
+  ['AdminOps','DSO','AR ÷ revenue × days','≤ terms + 10','Monthly','QuickBooks'],
+  ['AdminOps','Invoices sent on time','Invoices sent within 2 days of milestone ÷ total','> 95%','Monthly','QuickBooks'],
+  ['AdminOps','Funding recovered','$ paid ÷ $ approved','> 95%','Quarterly','Funding tracker'],
+  ['AdminOps','Days to close books','Business days after month-end','≤ 5','Monthly','QuickBooks'],
+  ['AdminOps','AR over 60 days','$ overdue more than 60 days','Falling','Weekly','A/R aging'],
+  ['Marketing','Content-sourced pipeline','$ pipeline from leads tagged to content','Annual plan','Monthly','CRM'],
+  ['Marketing','Videos published','Count by format','Per content calendar','Monthly','Content tracker'],
+  ['Marketing','Average watch completion','Avg % of video watched','> 50% for short form','Monthly','Video analytics'],
+  ['Marketing','Case studies approved','Customer-approved stories','Per Specialization needs','Quarterly','Content tracker'],
+  ['Marketing','MDF ROI','Pipeline from campaign ÷ MDF spent','> 10×','Per campaign','CRM + claims'],
+  ['Delivery','Utilization','Billable ÷ available hours','70–85%','Weekly','Time tracking'],
+  ['Delivery','On-time, on-budget projects','Projects meeting both ÷ total','> 85%','Monthly','PM tool'],
+  ['Delivery','Customer satisfaction','CSAT or NPS after milestones','CSAT > 4.5/5','Per project','Surveys'],
+  ['Finance','Gross margin by stream','(Revenue − direct cost) ÷ revenue','Per stream target','Monthly','QuickBooks'],
+  ['Finance','Recurring revenue (MRR)','Managed services + resale + SaaS monthly','Growing','Monthly','QuickBooks'],
+  ['Finance','Net revenue retention','(Start + expansion − churn) ÷ start','> 100%','Quarterly','QuickBooks / CRM']
+];
+const KPI_DEFAULT = [
+  {n:'DSO (days)', t:40, a:52, d:'down', ex:true},
+  {n:'Funding recovered (%)', t:95, a:81, d:'up', ex:true},
+  {n:'Videos published this month', t:8, a:6, d:'up', ex:true},
+  {n:'ACE opportunities current (%)', t:100, a:88, d:'up', ex:true},
+  {n:'Days to close books', t:5, a:7, d:'down', ex:true}
+];
+let kpiArea = 'All';
+V.kpis = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Your job</span><h1>KPIs & tracking</h1>
+  <p class="lede">A KPI (key performance indicator) is a number that tells you whether you’re getting closer to a goal. Good KPIs are few, owned, and reviewed on a fixed rhythm.</p></header>
+
+  <section class="section"><header><h2>How to set a KPI</h2></header>
+  ${flow('kpiset', FLOWS.kpiset = [
+    {t:'Start from a goal', d:'Begin with what the business needs, not with what’s easy to count. Example goal: “Get paid faster.”', do:['Link it to company priorities'], check:['Your manager agrees it matters'], tools:['Annual plan, OKRs']},
+    {t:'Pick the outcome metric', d:'The lagging number that proves the goal is met: DSO.', do:['One clear formula','One source of truth'], check:['Everyone calculates it the same way'], tools:['QuickBooks']},
+    {t:'Find leading drivers', d:'Things you control that move the outcome: invoices sent within 2 days, reminders sent, % invoices with PO.', do:['2–3 drivers per outcome'], check:['Drivers are actionable weekly'], tools:['Checklist, reports']},
+    {t:'Set a SMART target', d:'Specific, Measurable, Achievable, Relevant, Time-bound: “Reduce DSO from 52 to 40 days by end of Q2.”', do:['Use the baseline','Stretch, but believable'], check:['Has a date'], tools:[]},
+    {t:'Assign owner & cadence', d:'One owner per KPI, reviewed weekly or monthly.', do:['Put it on a dashboard','Add to weekly update'], check:['Owner named'], tools:['Dashboard, tracker below']},
+    {t:'Review & act', d:'Each review: what moved, why, what we’ll do next. Retire KPIs that don’t drive decisions.', do:['Note actions next to numbers'], check:['Trend, not one point'], tools:['Monthly review']}
+  ], {label:'Step'})}</section>
+
+  <section class="section"><header><h2>Leading vs lagging</h2></header>
+  <div class="grid g2">
+    <div class="card"><span class="eyebrow">Leading · predicts</span><h4>You can act on these this week</h4><p class="small muted">Meetings booked, invoices sent on time, videos published, ACE updates, certifications in progress.</p></div>
+    <div class="card"><span class="eyebrow">Lagging · confirms</span><h4>These show results after the fact</h4><p class="small muted">Revenue, DSO, win rate, tier achieved, net revenue retention.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>KPI tree: how your numbers roll up</h2><p class="muted">Click any box.</p></header>
+  ${arch('ktree', [
+    {n:'Company goal', items:[['Profitable growth','Top line & margin','The company wants revenue to grow while keeping healthy margins and cash.']]},
+    {n:'Outcomes', items:[['Revenue','New + expansion','Bookings that become invoiced revenue.'],['Gross margin','Quality of revenue','How much is left after direct costs.'],['Cash','Collections','Revenue only helps when it’s collected.']]},
+    {n:'Drivers', items:[['Pipeline & win rate','Sales','More qualified deals and better conversion.'],['AWS referrals','Alliance','More deals from AWS, driven by tier and Specializations.'],['Utilization','Delivery','Billable time drives services margin.'],['Funding recovered','AdminOps','Funding lowers delivery cost.'],['DSO','AdminOps','Faster collection improves cash.']]},
+    {n:'Your levers', items:[['Case study videos','You','Feed Specializations, PSF and sales.'],['Clean ACE & CRM','You','Accurate pipeline, more AWS trust.'],['Invoice same day','You','Lower DSO.'],['Claim before deadline','You','Recover every approved dollar.']]}
+  ])}</section>
+
+  <section class="section"><header><h2>KPI library</h2><p class="muted">Pick an area, then add KPIs to your tracker.</p></header>
+  <div class="chips">${['All','Alliance','Sales','RevOps','AdminOps','Marketing','Delivery','Finance'].map((c,i)=>`<button class="chip" type="button" data-karea="${c}" aria-pressed="${c===kpiArea}">${c}</button>`).join('')}</div>
+  <div class="tablewrap"><table><thead><tr><th>KPI</th><th>Formula</th><th>Typical target</th><th>Cadence</th><th>Source</th><th></th></tr></thead><tbody id="kpiLib"></tbody></table></div></section>
+
+  <section class="section"><header><h2>Your KPI tracker</h2><p class="muted">Edit targets and actuals. Saved in this browser only. Rows marked “example” are sample numbers; replace them with your own.</p></header>
+  <div class="card"><div id="kpiRows"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="kpiAdd">Add a KPI</button><button class="btn ghost" type="button" id="kpiCopy">Copy as status update</button><button class="btn ghost" type="button" id="kpiReset">Reset to examples</button></div>
+    <textarea id="kpiText" readonly hidden style="width:100%;min-height:120px;font-family:var(--mono);font-size:12px;background:var(--sunk);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px"></textarea>
+  </div></section>
+
+  <section class="section"><header><h2>Reporting outcomes</h2></header>
+  <div class="grid g3">
+    <div class="card"><h4>Weekly update (5 lines)</h4><p class="small muted mono">Done: …<br>Next: …<br>Blocked: …<br>KPIs: DSO 48 (↓4), funding 88%…<br>Ask: …</p></div>
+    <div class="card"><h4>Monthly dashboard</h4><p class="small muted">One page: 5–8 KPIs, target, actual, trend arrow, status color, one-line comment each.</p></div>
+    <div class="card"><h4>Quarterly review</h4><p class="small muted">Results vs goals, what you changed, impact in $ or days, next quarter’s targets. Bring this to performance reviews.</p></div>
+  </div>
+  <div class="card tint small"><b>OKR example:</b> Objective: “Make every AWS dollar count.” Key results: recover 95% of approved funding; zero claims missed; MAP tracker live by 15 March.</div></section>
+`;
+function kpiLoad(){ return store.get('kpis', null) || KPI_DEFAULT.map(k=>({...k})); }
+function kpiSave(list){ store.set('kpis', list); }
+function kpiStatus(k){
+  const t=+k.t, a=+k.a; if(!t && t!==0) return ['–','var(--muted)',0];
+  const ratio = k.d==='down' ? (a? t/a : 1) : (t? a/t : 0);
+  const pct = Math.max(0, Math.min(ratio,1.2));
+  return ratio>=1 ? ['On track','var(--good)',pct] : ratio>=0.85 ? ['Close','var(--warn)',pct] : ['Behind','var(--bad)',pct];
+}
+function renderKpis(){
+  const list = kpiLoad(), box=$('#kpiRows'); if(!box) return;
+  box.innerHTML = `<div class="kpirow small muted" style="padding-top:0"><span>KPI</span><span>Target</span><span>Actual</span><span>Status</span><span></span></div>` + list.map((k,i)=>{ const s=kpiStatus(k);
+    return `<div class="kpirow"><div><input type="text" id="kn${i}" data-kf="n" data-ki="${i}" value="${String(k.n).replace(/"/g,'&quot;')}" aria-label="KPI name" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;width:100%">
+      <div class="small muted" style="display:flex;gap:8px;align-items:center;margin-top:4px">${k.ex?'<span class="tag">example</span>':''}<label>Better when <select id="kd${i}" data-kf="d" data-ki="${i}" style="width:auto;padding:2px 6px"><option value="up" ${k.d==='up'?'selected':''}>higher</option><option value="down" ${k.d==='down'?'selected':''}>lower</option></select></label></div>
+      <div class="kbar"><i style="width:${s[2]/1.2*100}%;background:${s[1]}"></i></div></div>
+      <input type="number" id="kt${i}" data-kf="t" data-ki="${i}" value="${k.t}" aria-label="Target"><input type="number" id="ka${i}" data-kf="a" data-ki="${i}" value="${k.a}" aria-label="Actual">
+      <span class="pill" style="color:${s[1]}">${s[0]}</span><button class="xbtn" type="button" data-kdel="${i}" aria-label="Remove KPI">×</button></div>`; }).join('');
+}
+function renderKpiLib(){ const b=$('#kpiLib'); if(!b) return;
+  b.innerHTML = KPI_LIB.map((k,i)=>[k,i]).filter(([k])=>kpiArea==='All'||k[0]===kpiArea).map(([k,i])=>`<tr><td><span class="tag">${k[0]}</span><br><b>${k[1]}</b></td><td class="small">${k[2]}</td><td class="small">${k[3]}</td><td class="small">${k[4]}</td><td class="small">${k[5]}</td><td><button class="btn ghost" type="button" data-kadd="${i}" style="padding:4px 10px;font-size:13px">Track</button></td></tr>`).join(''); }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
   if(!V[id]) id = 'start';
   renderNav(id);
   $('#view').innerHTML = V[id]();
+  const eb = $('#view .eyebrow'), ch = CHAPTERS.find(c=>c.id===id);
+  if(eb && /^Chapter \d+/.test(eb.textContent)) eb.textContent = eb.textContent.replace(/^Chapter \d+/, 'Chapter '+ch.n);
   window.scrollTo(0,0);
   if(id==='cloud'){ showInfra('region'); showSR(Object.keys(SR.models)[0]); }
   if(id==='services') renderSvc();
@@ -1263,6 +2014,13 @@ function route(){
   if(id==='glossary') renderGl();
   if(id==='quiz'){ qi=0; qscore=0; renderQuiz(); }
   if(id==='grow') renderUC();
+  if(id==='economics') calcTCO();
+  if(id==='ai') calcAI();
+  if(id==='industries') showInd(indSel);
+  if(id==='ccp'){ cardI=0; cardFlip=false; renderFC(); }
+  if(id==='business') calcCE();
+  if(id==='roles') showRole(roleSel);
+  if(id==='kpis'){ renderKpiLib(); renderKpis(); }
   try{ store.set('last', id); }catch(e){}
 }
 window.addEventListener('hashchange', route);
@@ -1274,6 +2032,23 @@ document.addEventListener('click', e => {
   const tier = t.closest('[data-tier]'); if(tier) return showTier(+tier.dataset.tier);
   const org = t.closest('[data-org]'); if(org) return showOrg(org.dataset.org);
   const por = t.closest('[data-portal]'); if(por) return showPortal(+por.dataset.portal);
+  const ar = t.closest('[data-arch]'); if(ar) return showArch(ar.dataset.arch);
+  const aiu = t.closest('[data-ai]'); if(aiu) return showAI(+aiu.dataset.ai);
+  const ind = t.closest('[data-ind]'); if(ind) return showInd(+ind.dataset.ind);
+  const rl = t.closest('[data-role]'); if(rl) return showRole(+rl.dataset.role);
+  const ka = t.closest('[data-karea]'); if(ka){ kpiArea = ka.dataset.karea; document.querySelectorAll('[data-karea]').forEach(b=>b.setAttribute('aria-pressed', b===ka)); return renderKpiLib(); }
+  const kadd = t.closest('[data-kadd]'); if(kadd){ const k = KPI_LIB[+kadd.dataset.kadd], l = kpiLoad(); l.push({n:k[1], t:'', a:'', d:/DSO|Days|Stale|AR over|cycle/i.test(k[1])?'down':'up'}); kpiSave(l); renderKpis(); kadd.textContent='Added'; return; }
+  const kdel = t.closest('[data-kdel]'); if(kdel){ const l = kpiLoad(); l.splice(+kdel.dataset.kdel,1); kpiSave(l); return renderKpis(); }
+  if(t.id==='kpiAdd'){ const l = kpiLoad(); l.push({n:'New KPI', t:'', a:'', d:'up'}); kpiSave(l); return renderKpis(); }
+  if(t.id==='kpiReset'){ kpiSave(KPI_DEFAULT.map(k=>({...k}))); return renderKpis(); }
+  if(t.id==='kpiCopy'){ const txt = 'KPI update\n' + kpiLoad().map(k=>`- ${k.n}: ${k.a===''?'n/a':k.a} vs target ${k.t===''?'n/a':k.t} (${kpiStatus(k)[0]})`).join('\n');
+    const ta = $('#kpiText'); ta.value = txt;
+    const show = () => { ta.hidden = false; ta.select(); };
+    try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; }, show); }catch(err){ show(); }
+    return; }
+  if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
+  if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
+  if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
   const cat = t.closest('[data-cat]'); if(cat){ svcCat = cat.dataset.cat; document.querySelectorAll('[data-cat]').forEach(b=>b.setAttribute('aria-pressed', b===cat)); return renderSvc(); }
   const uc = t.closest('[data-uc]'); if(uc){ ucFilter = uc.dataset.uc; document.querySelectorAll('[data-uc]').forEach(b=>b.setAttribute('aria-pressed', b===uc)); return renderUC(); }
   const opt = t.closest('[data-q]');
@@ -1301,7 +2076,15 @@ document.addEventListener('input', e => {
   if(id.startsWith('wp')) calcWP();
   if(id.startsWith('mp')) calcMP();
   if(id.startsWith('ds')) calcDSO();
+  if(id.startsWith('tc')) calcTCO();
+  if(id.startsWith('ai')) calcAI();
+  if(id.startsWith('ce')) calcCE();
+  if(e.target.dataset.kf) kpiField(e.target, false);
 });
+document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); });
+document.addEventListener('keydown', e => { const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
+function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
+  if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
 
 route();
 </script>
