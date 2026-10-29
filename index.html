@@ -1,0 +1,1317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Cloud Partner Field Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field-manual app. Fixed chapter rail on the left (top tabs on phones), one chapter on screen at a time, routed by #hash. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --sunk:#e8ecf0; --line:#d3dae1;
+  --ink:#14202b; --muted:#56656f; --accent:#0b7a75; --accent-ink:#ffffff; --accent-soft:#d6efec;
+  --signal:#c2571a; --signal-soft:#fbe6d8; --good:#2e7d32; --warn:#a36b00; --bad:#b3261e;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e161d; --surface:#15212b; --sunk:#1b2a36; --line:#2a3b49;
+  --ink:#e4ecf1; --muted:#97a8b4; --accent:#3fc1b8; --accent-ink:#06201e; --accent-soft:#163a39;
+  --signal:#f0915a; --signal-soft:#3b2416; --good:#6cc070; --warn:#e2b34a; --bad:#ef7b72; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e161d; --surface:#15212b; --sunk:#1b2a36; --line:#2a3b49;
+  --ink:#e4ecf1; --muted:#97a8b4; --accent:#3fc1b8; --accent-ink:#06201e; --accent-soft:#163a39;
+  --signal:#f0915a; --signal-soft:#3b2416; --good:#6cc070; --warn:#e2b34a; --bad:#ef7b72; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4.4vw,44px);font-weight:800;letter-spacing:-.02em}
+h2{font-size:24px;font-weight:700;letter-spacing:-.01em}
+h3{font-size:18px;font-weight:700}
+h4{font-size:15px;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+.rail{position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid var(--line);background:var(--surface);padding:22px 14px}
+.brand{padding:0 8px 18px;display:grid;gap:4px}
+.brand b{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.01em}
+.rail nav{display:grid;gap:2px}
+.navlink{display:grid;grid-template-columns:28px 1fr;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:14px}
+.navlink .num{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.navlink:hover{background:var(--sunk)}
+.navlink[aria-current="page"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.navlink[aria-current="page"] .num{color:var(--accent)}
+.navgroup{margin:12px 10px 4px}
+.themebtn{margin:18px 8px 0;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px}
+
+main{min-width:0;padding-block:32px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page{max-width:1080px;margin:0 auto;display:grid;gap:28px}
+.lede{font-size:17px;max-width:68ch;color:var(--muted)}
+.section{display:grid;gap:14px}
+.section > header{display:grid;gap:6px}
+
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
+.card.flat{background:transparent}
+.card.tint{background:var(--accent-soft);border-color:transparent}
+.card.warnc{background:var(--signal-soft);border-color:transparent}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:999px;background:var(--sunk);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.tag.a{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.tag.s{background:var(--signal-soft);color:var(--signal);border-color:transparent}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+ul.clean{margin:0;padding-left:18px;display:grid;gap:4px}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+
+/* flow / stepper */
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.step{flex:1 1 120px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;text-align:left;display:grid;gap:2px;position:relative}
+.step .n{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.step .t{font-weight:600;font-size:14px;line-height:1.25}
+.step:hover{border-color:var(--accent)}
+.step[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.step[aria-pressed="true"] .n{color:var(--accent-ink);opacity:.8}
+.arrow{align-self:center;color:var(--muted);font-family:var(--mono)}
+.detail{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:16px 18px;display:grid;gap:10px}
+.detail .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+
+/* tabs / chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input[type=search],input[type=number],select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+label.field{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+
+table{border-collapse:collapse;width:100%;font-size:14px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* checklist */
+.check{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:start;padding:8px 10px;border-radius:8px;cursor:pointer}
+.check:hover{background:var(--sunk)}
+.check input{width:17px;height:17px;margin:2px 0 0;accent-color:var(--accent)}
+.check.done span{color:var(--muted);text-decoration:line-through}
+.bar{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:center}
+.levels{display:grid;gap:8px}
+.level{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--ink)}
+.level:hover{border-color:var(--accent)}
+.level .lv{font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent);text-align:center}
+
+/* infra diagram */
+.infra{display:grid;gap:10px}
+.box{border:1.5px dashed var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;cursor:pointer;background:transparent;text-align:left}
+.box[aria-pressed="true"]{border-color:var(--accent);border-style:solid;background:var(--accent-soft)}
+.box .lbl{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.azrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.dcrow{display:flex;gap:6px;flex-wrap:wrap}
+.dc{width:30px;height:22px;border-radius:4px;background:var(--sunk);border:1px solid var(--line)}
+
+/* shared responsibility */
+.stack{display:grid;gap:4px}
+.layer{display:grid;grid-template-columns:1fr 110px;align-items:center;border-radius:6px;padding:7px 10px;font-size:14px}
+.layer.you{background:var(--signal-soft)} .layer.aws{background:var(--accent-soft)}
+.layer b{font-family:var(--mono);font-size:11.5px;text-align:right;font-weight:500}
+.layer.you b{color:var(--signal)} .layer.aws b{color:var(--accent)}
+
+/* ladder */
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-items:end}
+.rung{border:1px solid var(--line);background:var(--surface);border-radius:var(--r) var(--r) 4px 4px;padding:10px;display:grid;align-content:end;gap:2px;text-align:left}
+.rung[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.rung .h{font-family:var(--display);font-weight:700;font-size:16px}
+
+/* org map */
+.org{display:grid;grid-template-columns:minmax(0,1fr) 80px minmax(0,1fr);gap:10px;align-items:start}
+.orgcol{display:grid;gap:6px}
+.orgnode{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;text-align:left;font-size:14px;display:grid;gap:1px}
+.orgnode small{color:var(--muted);font-size:12px}
+.orgnode[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.bridge{display:grid;place-items:center;height:100%;font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;writing-mode:vertical-rl;border-left:1px dashed var(--line);border-right:1px dashed var(--line)}
+
+/* timeline */
+.months{display:grid;grid-template-columns:repeat(12,minmax(58px,1fr));gap:4px;min-width:720px}
+.mon{display:grid;gap:4px;align-content:start}
+.mon .mh{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:4px 0;border-bottom:2px solid var(--line)}
+.mon .mh.q{border-color:var(--accent)}
+.ev{font-size:11.5px;line-height:1.25;padding:5px 6px;border-radius:6px;background:var(--sunk);border:0;text-align:left}
+.ev.big{background:var(--accent);color:var(--accent-ink)}
+.ev.fin{background:var(--signal-soft);color:var(--ink)}
+.hist{display:grid;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.hi{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:8px 0 8px 14px;position:relative}
+.hi::before{content:"";position:absolute;left:-7px;top:13px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+.hi .y{font-family:var(--mono);font-weight:500;color:var(--accent)}
+
+/* chart */
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-family:var(--mono);font-size:11px}
+
+/* quiz */
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;margin:0}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 14px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--accent)}
+.out{font-family:var(--display);font-size:28px;font-weight:700}
+.do{border-left:3px solid var(--good);padding-left:10px}
+.dont{border-left:3px solid var(--bad);padding-left:10px}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:5;border-right:0;border-bottom:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-left,0px))}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+  .brand{padding:0 4px 8px;grid-template-columns:1fr auto;align-items:center}
+  .brand .muted{display:none}
+  .rail nav{display:flex;overflow-x:auto;gap:4px;padding-bottom:4px}
+  .navlink{white-space:nowrap;grid-template-columns:auto auto;padding:6px 10px}
+  .navgroup,.themebtn.side{display:none}
+  .hero{grid-template-columns:1fr}
+  .ladder{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .org{grid-template-columns:1fr}
+  .bridge{writing-mode:horizontal-tb;height:auto;padding:6px;border:0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+  .azrow{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <b>Partner Field Guide</b>
+      <span class="muted small">AWS for partner teams, from day one to expert</span>
+    </div>
+    <nav id="nav" aria-label="Chapters"></nav>
+    <button class="themebtn side" id="themeBtn" type="button">Switch theme</button>
+  </aside>
+  <main><div class="page" id="view"></div></main>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const h = (s) => String(s);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('pfg:'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('pfg:'+k, JSON.stringify(v)); }catch(e){} }
+};
+const money = (n) => (isFinite(n) ? n : 0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});
+
+/* ---------- chapter list ---------- */
+const CHAPTERS = [
+  {id:'start', n:'00', t:'Start here', g:'Orientation'},
+  {id:'cloud', n:'01', t:'Cloud & AWS basics', g:'Learn AWS'},
+  {id:'services', n:'02', t:'Service explorer', g:'Learn AWS'},
+  {id:'partner', n:'03', t:'Partner Network', g:'Partner business'},
+  {id:'portals', n:'04', t:'Portals & programs', g:'Partner business'},
+  {id:'people', n:'05', t:'Who’s who & RACI', g:'Partner business'},
+  {id:'gtm', n:'06', t:'GTM & co-sell', g:'Partner business'},
+  {id:'funding', n:'07', t:'Funding programs', g:'Partner business'},
+  {id:'revops', n:'08', t:'RevOps', g:'Your job'},
+  {id:'adminops', n:'09', t:'AdminOps & QuickBooks', g:'Your job'},
+  {id:'content', n:'10', t:'Video & content', g:'Your job'},
+  {id:'calendar', n:'11', t:'Calendar & history', g:'Reference'},
+  {id:'glossary', n:'12', t:'Glossary', g:'Reference'},
+  {id:'quiz', n:'13', t:'Quiz', g:'Reference'},
+  {id:'grow', n:'14', t:'Grow & contribute', g:'Career'}
+];
+
+function renderNav(active){
+  let html = '', last = '';
+  CHAPTERS.forEach(c => {
+    if(c.g !== last){ html += `<div class="navgroup eyebrow">${c.g}</div>`; last = c.g; }
+    html += `<a class="navlink" href="#${c.id}" ${c.id===active?'aria-current="page"':''}><span class="num">${c.n}</span><span>${c.t}</span></a>`;
+  });
+  $('#nav').innerHTML = html;
+  const cur = $('#nav [aria-current]'); if(cur && window.innerWidth < 860) cur.scrollIntoView({block:'nearest', inline:'center'});
+}
+
+/* Generic clickable flow: steps = [{t, d, sub?, do:[], check:[], tools:[]}] */
+function flow(id, steps, opts={}){
+  const sel = 0;
+  const btns = steps.map((s,i)=>`${i?'<span class="arrow" aria-hidden="true">→</span>':''}<button type="button" class="step" data-flow="${id}" data-i="${i}" aria-pressed="${i===sel}"><span class="n">${opts.label||'Step'} ${i+1}</span><span class="t">${s.t}</span></button>`).join('');
+  return `<div class="flow" role="group">${btns}</div><div class="detail" id="fd-${id}">${flowDetail(steps[sel])}</div>`;
+}
+function flowDetail(s){
+  const col = (title, arr) => arr && arr.length ? `<div><div class="eyebrow">${title}</div><ul class="clean">${arr.map(x=>`<li>${x}</li>`).join('')}</ul></div>` : '';
+  return `<h3>${s.t}</h3><p>${s.d}</p><div class="cols">${col('What happens / what to do', s.do)}${col('Checks before moving on', s.check)}${col('Tools & owners', s.tools)}</div>`;
+}
+const FLOWS = {};
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-flow]');
+  if(!b) return;
+  const id = b.dataset.flow, i = +b.dataset.i;
+  document.querySelectorAll(`[data-flow="${id}"]`).forEach(x => x.setAttribute('aria-pressed', x===b));
+  $('#fd-'+id).innerHTML = flowDetail(FLOWS[id][i]);
+});
+
+/* ================= DATA ================= */
+
+const LEVELS = [
+  {lv:'L1', t:'Week 1 — Vocabulary', d:'Cloud basics, what AWS sells, what a partner is.', go:'cloud'},
+  {lv:'L2', t:'Month 1 — How the partner business works', d:'Tiers, co-sell in ACE, funding, Marketplace.', go:'partner'},
+  {lv:'L3', t:'Month 2 — Run the machine', d:'Lead-to-cash, invoicing, funding claims, content that drives pipeline.', go:'revops'},
+  {lv:'L4', t:'Month 3+ — Advanced operator', d:'Metrics, forecasting, program strategy, certifications.', go:'grow'}
+];
+
+const CHECKLIST = [
+  'Read chapters 01–03 and write down 10 terms you didn’t know',
+  'Get your AWS Partner Central login and look around (Opportunities, Funding, Marketplace, Training)',
+  'Complete the free AWS Partner Accreditation (Business) course in AWS Skill Builder',
+  'Ask your manager: what tier are we, which Specializations do we hold, which are we chasing?',
+  'Find out who our PDM and PMM at AWS are and what they need from us',
+  'Map our QuickBooks setup: customers, items, classes/projects, payment terms',
+  'List every open funding request (MAP, POC, MDF) and its claim deadline',
+  'Pull the AR aging report and note every invoice over 30 days',
+  'Inventory existing videos and case studies; tag each by service, industry and use case',
+  'Sit in on one customer call and one internal pipeline review',
+  'Pass the AWS Certified Cloud Practitioner exam',
+  'Propose one improvement (a template, a tracker, a checklist) to your manager'
+];
+
+const CATS = {
+  compute:'Compute', storage:'Storage', db:'Databases', net:'Networking & delivery', sec:'Security & identity',
+  ai:'AI & machine learning', analytics:'Analytics', mgmt:'Management & governance', dev:'Developer tools',
+  integ:'Integration', media:'Media', biz:'Business & cost', migrate:'Migration'
+};
+const SERVICES = [
+  ['EC2','compute','Virtual servers you rent by the second.','Renting a computer in someone else’s building.'],
+  ['Lambda','compute','Runs your code only when an event happens; no servers to manage.','A light that switches on only when someone walks in.'],
+  ['ECS / EKS','compute','Run containers. EKS is managed Kubernetes.','Shipping containers on a managed port.'],
+  ['Fargate','compute','Run containers without managing the servers under them.',''],
+  ['Lightsail','compute','Simple, fixed-price servers for small sites.',''],
+  ['S3','storage','Object storage for files of any size. The backbone of most AWS setups.','An infinite, very reliable storage locker.'],
+  ['EBS','storage','Disks attached to EC2 servers.',''],
+  ['EFS / FSx','storage','Shared file systems many servers can use at once.',''],
+  ['S3 Glacier','storage','Very cheap archive storage; slower to retrieve.','A warehouse in the countryside.'],
+  ['AWS Backup','storage','Central backup policies across services.',''],
+  ['RDS','db','Managed relational databases (MySQL, PostgreSQL, SQL Server, Oracle).',''],
+  ['Aurora','db','AWS’s own high-performance MySQL/PostgreSQL-compatible database.',''],
+  ['DynamoDB','db','Serverless key-value / NoSQL database with single-digit-ms speed.',''],
+  ['Redshift','db','Data warehouse for analytics over large datasets.',''],
+  ['ElastiCache','db','In-memory cache (Redis/Valkey, Memcached) to speed apps up.',''],
+  ['VPC','net','Your private, isolated network inside AWS.','Your own fenced office floor in a shared tower.'],
+  ['CloudFront','net','Content delivery network that caches content near viewers. Key for video.',''],
+  ['Route 53','net','DNS: turns domain names into addresses.','The phone book.'],
+  ['Direct Connect','net','Dedicated private line from a data center to AWS.',''],
+  ['IAM','sec','Who can do what in an AWS account. Users, roles, policies.','Badges and door permissions.'],
+  ['IAM Identity Center','sec','Single sign-on across many AWS accounts.',''],
+  ['KMS','sec','Manages encryption keys.',''],
+  ['GuardDuty','sec','Threat detection that watches for suspicious activity.',''],
+  ['Security Hub','sec','One dashboard for security findings and best-practice checks.',''],
+  ['WAF & Shield','sec','Web firewall and DDoS protection.',''],
+  ['Amazon Bedrock','ai','Access to foundation models (Anthropic Claude, Amazon Nova, Llama, others) through one API.','A menu of AI brains you can plug in.'],
+  ['Amazon Q','ai','AWS’s generative AI assistant for business users and developers.',''],
+  ['SageMaker AI','ai','Build, train and deploy your own ML models.',''],
+  ['Rekognition','ai','Image and video analysis: faces, objects, text, moderation.',''],
+  ['Transcribe / Polly / Translate','ai','Speech-to-text, text-to-speech, translation. Useful for captions and dubbing.',''],
+  ['Athena','analytics','Run SQL directly on files in S3.',''],
+  ['Glue','analytics','Data catalog and ETL (moving and cleaning data).',''],
+  ['QuickSight','analytics','Business intelligence dashboards.',''],
+  ['Kinesis','analytics','Real-time streaming data.',''],
+  ['CloudWatch','mgmt','Metrics, logs and alarms for everything.','The building’s monitoring room.'],
+  ['CloudTrail','mgmt','Audit log of every API action in the account.','CCTV for your account.'],
+  ['AWS Organizations','mgmt','Group many accounts; consolidated billing; guardrails.',''],
+  ['Control Tower','mgmt','Sets up a well-governed multi-account landing zone.',''],
+  ['CloudFormation','mgmt','Infrastructure as code: describe resources in a template.','A blueprint the builder follows exactly.'],
+  ['Systems Manager','mgmt','Patch, configure and operate fleets of servers.',''],
+  ['CodePipeline / CodeBuild','dev','CI/CD: build, test and release software automatically.',''],
+  ['CDK','dev','Define infrastructure in normal programming languages.',''],
+  ['API Gateway','integ','Front door for APIs.',''],
+  ['SQS / SNS','integ','Queues and notifications so systems talk without waiting on each other.',''],
+  ['EventBridge','integ','Routes events between services and SaaS apps.',''],
+  ['Step Functions','integ','Visual workflows that orchestrate services.',''],
+  ['AWS Elemental MediaConvert','media','File-based video transcoding into streaming formats.',''],
+  ['AWS Elemental MediaLive','media','Live video encoding for broadcasts and streams.',''],
+  ['Interactive Video Service (IVS)','media','Managed low-latency live streaming.',''],
+  ['Cost Explorer','biz','Visualize and analyze AWS spend.',''],
+  ['AWS Budgets','biz','Alerts when spend crosses thresholds.',''],
+  ['Savings Plans / Reserved Instances','biz','Commit to usage for 1 or 3 years for big discounts.','A gym annual pass versus pay-per-visit.'],
+  ['AWS Marketplace','biz','Digital catalog where customers buy third-party software and services on their AWS bill.',''],
+  ['Pricing Calculator','biz','Estimate the monthly cost of an architecture before building it.',''],
+  ['Migration Hub / Application Migration Service','migrate','Plan and lift-and-shift servers into AWS.',''],
+  ['Database Migration Service','migrate','Move databases into AWS with minimal downtime.',''],
+  ['Snow Family','migrate','Physical devices to ship large data volumes into AWS.','']
+];
+
+const SR = { // shared responsibility: layers and who manages them per model
+  layers:['Data & content','Access management (who can log in)','Application code','Runtime & OS patching','Virtual network config','Virtualization & hosts','Physical data centers'],
+  models:{
+    'IaaS (e.g. EC2)':[1,1,1,1,1,0,0],
+    'PaaS / managed (e.g. RDS, Lambda)':[1,1,1,0,0,0,0],
+    'SaaS (e.g. Amazon Q Business)':[1,1,0,0,0,0,0]
+  }
+};
+
+const WA = [
+  ['Operational excellence','Run and monitor systems, improve processes.'],
+  ['Security','Protect data, systems and assets.'],
+  ['Reliability','Recover from failure, meet demand.'],
+  ['Performance efficiency','Use resources efficiently as needs change.'],
+  ['Cost optimization','Avoid unnecessary cost.'],
+  ['Sustainability','Minimize environmental impact.']
+];
+
+const TIERS = [
+  {t:'Registered', d:'Entry point. Sign up in Partner Central, accept terms, complete the partner profile. Access to training, Partner Central tools, and some programs.', need:['Complete the partner profile','Accept APN terms','Designate an alliance lead'], get:['Partner Central access','Training & accreditations','Ability to list in AWS Marketplace']},
+  {t:'Select', d:'First validated tier. Shows you have trained people and real customer work on AWS.', need:['A set number of trained/accredited and certified staff','Launched customer opportunities in ACE','Customer references'], get:['Eligibility for more funding programs','Co-sell support begins to scale','Listing in AWS Partner Solutions Finder']},
+  {t:'Advanced', d:'Proven depth. More certifications, more launched opportunities, stronger references.', need:['Higher certification counts','More launched opportunities & references','Annual program fee may apply'], get:['Larger funding eligibility','Partner badge for marketing','Priority in programs like MAP']},
+  {t:'Premier', d:'Top tier for a small number of strategic partners with large AWS practices.', need:['Highest certification and launch volumes','Executive alignment and business plan with AWS','Multiple Specializations / competencies'], get:['Dedicated AWS resources','Highest visibility at events','Strategic planning with AWS leaders']}
+];
+
+const PATHS = [
+  ['Services Path','Consulting, professional and managed services firms that help customers build, migrate, run on AWS.'],
+  ['Software Path','ISVs whose software runs on or integrates with AWS. Often sells through AWS Marketplace and ISV Accelerate.'],
+  ['Hardware Path','Companies whose devices work with AWS (IoT, edge, networking).'],
+  ['Training Path','Organizations that deliver AWS training.'],
+  ['Distribution Path','Distributors who recruit and enable resellers.']
+];
+
+const PROGRAMS = [
+  ['AWS Specialization (formerly Competency)','Validated technical expertise in a domain, industry or use case (e.g. Migration, Data & Analytics, Generative AI, Security). Requires case studies and a technical audit.','Credibility, Partner Solutions Finder ranking, funding eligibility'],
+  ['Service Delivery Program','Validates you deliver a specific AWS service well (e.g. Amazon RDS, AWS Lambda).','Badge for that service; easier co-sell'],
+  ['Managed Service Provider (MSP)','Audited program for partners that run customers’ AWS environments day to day.','Trust for managed-services deals'],
+  ['Well-Architected Partner Program','Partners run Well-Architected Framework Reviews (WAFR) for customers and remediate findings.','Customer credits for remediation work, pipeline'],
+  ['Migration Acceleration Program (MAP)','Methodology + funding for large migrations, in three phases: Assess, Mobilize, Migrate & Modernize.','Funding and credits that reduce customer cost'],
+  ['ISV Accelerate','Co-sell program for software partners. AWS sellers can earn credit when the customer buys your software.','AWS field sellers motivated to help'],
+  ['AWS Marketplace','Customers buy your software or services and pay through their AWS bill. Private offers allow custom terms.','Faster procurement; can count toward customer’s AWS commitment (EDP/PPA) when eligible'],
+  ['Solution Provider / resale','Authorized partners resell AWS accounts and bill the customer directly.','Margin on AWS consumption and ownership of billing'],
+  ['AWS Partner Solutions Finder','Public directory where customers find partners by Specialization, location and industry.','Inbound leads']
+];
+
+const PEOPLE = {
+  aws:[
+    ['PDM','Partner Development Manager','Your main business contact at AWS. Owns the partner plan, tier progress and program access.','Monthly business review; pipeline updates; tier/funding asks.'],
+    ['PSA','Partner Solutions Architect','Technical counterpart. Helps with architecture, Specialization audits, enablement.','Technical validation, Specialization prep, workshops.'],
+    ['PMM','Partner Marketing Manager','Runs joint marketing: MDF, campaigns, case studies, event slots.','Every video, case study and campaign you want AWS to promote.'],
+    ['AM / AE','AWS Account Manager','Owns an AWS customer account and its revenue. The person co-selling with you.','Shared opportunities in ACE; account planning.'],
+    ['SA','AWS Solutions Architect','Technical advisor attached to the customer account.','Joint technical calls.'],
+    ['PSM / ISM','Partner Sales Manager / ISV Success Manager','Connects partners to AWS sales teams in a segment or region; for ISVs, drives co-sell.','Referrals, co-sell plays.'],
+    ['Marketplace / Funding ops','Program operations','Process Marketplace listings, funding approvals and claims.','Through Partner Central cases.']
+  ],
+  us:[
+    ['Alliance lead','Owns the AWS relationship','Coordinates the partner plan, tiers, Specializations.','Your go-to for anything partner-program related.'],
+    ['Sales / AE','Owns customer deals','Registers opportunities in ACE, updates stages.','You keep their deals clean for invoicing and funding.'],
+    ['Solutions architects / engineers','Deliver the technical work','Write SOWs, deliver projects, produce evidence for funding claims.','You collect POE (proof of execution) from them.'],
+    ['Marketing','Owns brand and campaigns','Requests MDF, runs events and content.','You produce the videos; they distribute.'],
+    ['Finance / AdminOps (you)','Owns money flow','Invoices, AR, funding claims, Marketplace payouts, reconciliation.','You keep the business paid and audit-ready.'],
+    ['RevOps (you)','Owns the revenue system','CRM hygiene, ACE sync, pipeline reports, forecasting.','You make sure every number ties out.']
+  ]
+};
+
+const ACE = [
+  {t:'Prospect', d:'You have identified a customer need that could involve AWS. The opportunity is registered in ACE (APN Customer Engagements) in Partner Central.', do:['Create the opportunity: customer name, website, country, use case, expected monthly AWS spend, target close date','Choose origin: Partner Referral (you found it) or it arrives as an AWS Referral'], check:['Is the customer a real company with a clear AWS workload?','Is the expected AWS spend realistic and in USD/month?'], tools:['Partner Central → Opportunities','CRM (Salesforce/HubSpot) with the ACE connector','Owner: partner sales rep']},
+  {t:'Qualified', d:'The customer has confirmed interest and there is a real project.', do:['Fill in solution, AWS products, delivery model','Accept or reject AWS referrals quickly (AWS tracks response time)'], check:['Next step and date recorded','Contact person named'], tools:['ACE','AWS PDM can see the opportunity']},
+  {t:'Technical validation', d:'The architecture has been reviewed with the customer; it works on AWS.', do:['Architecture/solution doc','Pricing Calculator estimate','Involve the AWS SA or PSA when needed'], check:['Estimated AWS spend matches the architecture','POC needed? Request POC funding now'], tools:['AWS Pricing Calculator','POC funding request in Partner Central']},
+  {t:'Business validation', d:'Commercials agreed in principle: price, scope, timeline.', do:['Proposal / SOW sent','Identify funding to reduce customer cost (MAP, credits)'], check:['Customer decision-maker identified','Funding pre-approval requested before the work starts'], tools:['SOW template','Funding request']},
+  {t:'Committed', d:'Customer has signed. Work and AWS consumption are about to start.', do:['Signed SOW / PO received','Create customer and project in QuickBooks; set billing schedule','Kick off delivery'], check:['PO number and billing contact on file','AWS account ID(s) captured'], tools:['QuickBooks','Project management tool']},
+  {t:'Launched', d:'The workload is live on AWS and consuming. Launched opportunities count toward your tier and Specializations.', do:['Mark Launched in ACE with launch date and AWS account ID','Ask for a customer reference / case study','Submit funding claims with proof of execution'], check:['Launch is backed by evidence','Case-study permission requested'], tools:['ACE','Funding claims','Video team for the case study']},
+  {t:'Closed lost', d:'The deal did not happen. Close it with a reason so AWS and your pipeline stay accurate.', do:['Select the loss reason','Note learnings in CRM'], check:['No stale opportunities left open past their close date'], tools:['ACE','CRM']}
+];
+
+const FUND_FLOW = [
+  {t:'Identify', d:'Spot a funding fit during the sale: a migration (MAP), a proof of concept (POC), a marketing campaign (MDF), or a Well-Architected remediation.', do:['Check the program eligibility rules for your tier','Link the request to an ACE opportunity (most programs require it)'], check:['Opportunity is in ACE and not stale','Project hasn’t started yet'], tools:['Partner Central → Funding','PDM / PMM']},
+  {t:'Request (pre-approval)', d:'Submit the request before work begins. Funding is almost never granted for work already done.', do:['Scope, timeline, cost breakdown, expected AWS spend','Attach SOW or campaign plan'], check:['Amounts and dates match the SOW exactly','Customer name and AWS account ID correct'], tools:['Partner Central funding request','Owner: alliance lead / AdminOps']},
+  {t:'Approved', d:'AWS approves an amount, a type (cash to partner, or credits to customer) and an execution window.', do:['Record approval ID, amount, type, end date, claim deadline in your tracker','Tell the delivery team what evidence they must capture'], check:['Calendar reminder for the claim deadline','Note approved amount may be lower than requested'], tools:['Funding tracker sheet','Calendar']},
+  {t:'Execute', d:'Deliver the project or run the campaign inside the approved window.', do:['Collect proof as you go: signed SOW, customer invoice, deliverables, sign-off, attendee lists, screenshots, metrics'], check:['Work stays inside approved scope and dates'], tools:['Shared evidence folder per approval ID']},
+  {t:'Claim with proof of execution (POE)', d:'Submit the claim with POE. Missing or mismatched documents are the top reason for rejection.', do:['Upload customer invoice, completion sign-off, and program-specific POE','For MDF: campaign results (leads, attendees, views)'], check:['Invoice amount ≥ claimed amount where required','Names, dates and IDs consistent across every document','Submitted before the claim deadline'], tools:['Partner Central claim','QuickBooks invoice PDF']},
+  {t:'Payout & reconcile', d:'Cash funding arrives as a payment to you (typically via the payment method on file / PO process); credits go to the customer’s AWS account.', do:['Match payment to the claim in QuickBooks','Record per your accountant’s guidance (often other income or a cost offset)','Close the line in your tracker'], check:['Amount received = amount approved','Remittance saved'], tools:['QuickBooks bank feed','Funding tracker']}
+];
+
+const FUNDS = [
+  ['MAP (Assess / Mobilize / Migrate & Modernize)','Large migrations','Cash and/or customer credits, phase-based','Customer assessment (MRA/business case), migration plan, migrated workloads, tagged resources (map-migrated tags)'],
+  ['POC funding','Proving a solution before purchase','Usually customer credits or partner cash','Approved POC scope, results, customer sign-off'],
+  ['MDF (Marketing Development Funds)','Demand generation campaigns, events, webinars','Reimbursement of approved costs','Invoices for spend, attendee/lead lists, screenshots, campaign metrics'],
+  ['Well-Architected remediation credits','Fixing issues found in a WAFR','Customer credits','Completed WAFR in the Well-Architected Tool, remediation evidence'],
+  ['Partner Opportunity Acceleration (POA)','Speeding up specific opportunities','Cash or credits','Opportunity link, SOW, completion proof'],
+  ['Innovation / sandbox credits','Building demos and skills','Credits to partner accounts','Usage purpose aligned to approval'],
+  ['Customer credits via programs (e.g. Activate for startups)','Startups and specific segments','Credits','Program-specific']
+];
+
+const L2C = [
+  {t:'Lead', d:'A person shows interest: webinar attendee, video viewer, Marketplace inquiry, AWS referral.', do:['Capture source (campaign, video, event) in CRM','Route to sales within 24h'], check:['Source field filled — this is how marketing proves ROI'], tools:['CRM, forms, webinar platform']},
+  {t:'Opportunity', d:'Sales qualifies the lead into a deal with an amount and close date.', do:['Create opportunity in CRM','Register it in ACE'], check:['ACE ID stored on the CRM record'], tools:['CRM + ACE connector']},
+  {t:'Quote / SOW', d:'Pricing and scope written up and approved internally.', do:['Use standard rate card and SOW template','Discount approval if below floor'], check:['Payment terms, billing milestones, currency, tax'], tools:['CPQ / doc templates']},
+  {t:'Contract & PO', d:'Customer signs and issues a purchase order.', do:['Store signed copy','Record PO number and expiry'], check:['PO value covers the SOW','Billing contact and invoice portal known'], tools:['Contract folder','QuickBooks customer record']},
+  {t:'Deliver', d:'Project or managed service runs; AWS consumption begins.', do:['Track time/milestones','Capture funding POE'], check:['Milestone sign-offs saved'], tools:['PM tool, time tracking']},
+  {t:'Invoice', d:'Bill per the SOW: milestone, monthly retainer, time & materials, or resale of AWS usage.', do:['Create invoice in QuickBooks with PO#, SOW ref, service period'], check:['Invoice matches SOW line items','Correct tax and terms'], tools:['QuickBooks']},
+  {t:'Collect', d:'Follow up until paid.', do:['Reminders at due date, +7, +15, +30','Escalate to account owner at +30'], check:['AR aging reviewed weekly'], tools:['QuickBooks reminders, AR aging report']},
+  {t:'Recognize & report', d:'Revenue booked in the right period; dashboards updated.', do:['Month-end close','Update ARR/MRR, bookings, pipeline reports'], check:['CRM closed-won = invoiced = ACE launched'], tools:['QuickBooks reports, BI dashboard']},
+  {t:'Expand / renew', d:'Upsell managed services, new workloads, renewals.', do:['Renewal reminders 90 days out','Ask for case study'], check:['Net revenue retention tracked'], tools:['CRM tasks']}
+];
+
+const INVOICE = [
+  {t:'Set up the customer', d:'Create the customer once, correctly. Most invoice problems start here.', do:['Legal entity name exactly as on the contract','Billing email(s), address, tax ID / VAT number','Payment terms (e.g. Net 30)','Currency if multi-currency is on'], check:['Customer portal requirements (Coupa, Ariba) noted in the record'], tools:['QuickBooks → Customers']},
+  {t:'Products & services list', d:'Use consistent items so reports show where revenue comes from.', do:['Separate items: Professional services, Managed services, AWS resale, Marketplace, Software, Reimbursable expenses','Map each to the right income account'], check:['No generic “Services” item used for everything'], tools:['QuickBooks → Products and services']},
+  {t:'Draft the invoice', d:'Build it from the SOW or the billing schedule.', do:['PO number, SOW reference, service period','Line descriptions a customer’s AP clerk understands','Tag a Class/Location or Project per customer/practice'], check:['Totals match SOW milestone','Tax applied correctly','Due date = terms'], tools:['QuickBooks invoice']},
+  {t:'Review & send', d:'A second look prevents most disputes.', do:['Compare to SOW and PO','Attach timesheets or usage report if required','Send from QuickBooks or upload to customer portal'], check:['Right contact, right entity, right currency'], tools:['QuickBooks, customer AP portal']},
+  {t:'Follow up', d:'Polite, scheduled, documented.', do:['Automated reminders','Personal email at +7 days overdue, call at +15','Escalate to account owner at +30'], check:['Every overdue invoice has a next action'], tools:['A/R aging summary report']},
+  {t:'Receive & match', d:'Money arrives via ACH, wire, card or check.', do:['Receive payment against the invoice (not as a bare deposit)','Record bank fees / FX differences'], check:['Invoice shows Paid','No unapplied payments left'], tools:['QuickBooks Receive payment, bank feed']},
+  {t:'Reconcile & close', d:'Bank and card accounts match statements each month.', do:['Reconcile all bank/credit accounts','Review undeposited funds','Lock the period after close'], check:['Reconciliation difference = 0.00'], tools:['QuickBooks Reconcile']}
+];
+
+const CLOSE = [
+  'All invoices for the month sent (including monthly retainers and AWS resale)',
+  'AWS bill / resale usage pulled and re-billed to customers',
+  'AWS Marketplace disbursement report matched to bank deposits',
+  'Funding payouts matched to claims',
+  'Vendor bills entered (including the company’s own AWS bill)',
+  'Bank and credit card accounts reconciled',
+  'Undeposited funds and unapplied payments cleared',
+  'AR aging reviewed; overdue actions logged',
+  'Deferred / prepaid items reviewed with accountant',
+  'P&L by Class/Project reviewed for odd numbers',
+  'CRM closed-won vs invoiced vs ACE launched compared',
+  'Period closed (closing date set) in QuickBooks'
+];
+
+const VIDEO = [
+  {t:'Brief', d:'Every video starts with: audience, one message, call to action, distribution channel.', do:['Who is it for (CIO, developer, procurement)?','Which AWS service/use case and which Specialization does it support?','Is this MDF-funded? Then note POE needs now'], check:['Brief approved by marketing'], tools:['Brief template']},
+  {t:'Script & storyboard', d:'Write for the outcome: customer problem → solution on AWS → measurable result.', do:['Get technical review from an SA','Use customer metrics only with written approval'], check:['AWS names and trademarks used correctly'], tools:['Docs, storyboard tool']},
+  {t:'Approvals (customer & AWS)', d:'Customer stories need customer approval. Anything that mentions AWS as a partner or uses partner badges should follow AWS co-marketing guidelines; your PMM can route it for review when needed.', do:['Customer sign-off on quotes, logos, metrics','Check partner badge and trademark guidelines','Ask PMM about AWS review for joint announcements'], check:['Approval emails saved in the project folder'], tools:['PMM, legal']},
+  {t:'Shoot & edit', d:'Record interviews, screen demos, B-roll. Keep architecture diagrams accurate and current.', do:['Use official AWS architecture icons from the AWS icon set for diagrams','Burned-in or sidecar captions','Hide account IDs, keys and customer data in screen recordings'], check:['No secrets visible on screen','Audio clean, captions accurate'], tools:['Editing suite; Transcribe for draft captions']},
+  {t:'Package & publish', d:'One master edit, many cuts: full, 60s, 15s vertical, thumbnail, transcript.', do:['Upload to site, YouTube, LinkedIn','Add to Partner Solutions Finder profile / Marketplace listing where supported','UTM links on every CTA'], check:['Captions and description include the AWS service names people search for'], tools:['Video host, link builder']},
+  {t:'Measure & claim', d:'Report results back into the pipeline and into MDF claims.', do:['Views, watch time, clicks, leads, influenced pipeline','Screenshots of analytics for POE'], check:['Leads tagged with campaign source in CRM'], tools:['Analytics, CRM, funding claim']}
+];
+
+const CONTENT_TYPES = [
+  ['Customer case study video','Strongest asset. Required evidence for many Specializations is a public case study.','Interview + architecture + result metric'],
+  ['Solution demo','Shows the product or accelerator working on AWS.','Screen capture, 3–6 min'],
+  ['Webinar / workshop recording','Joint webinars with AWS are common MDF activities.','Edit to highlights + full replay'],
+  ['Event recap (Summit, re:Invent)','Shows momentum and partnership.','Short vertical cuts, 30–60s'],
+  ['Marketplace listing media','Helps buyers evaluate your offer in AWS Marketplace.','Short overview video'],
+  ['Explainers & thought leadership','Teaches a concept: migration, GenAI on Bedrock, cost optimization.','Animated or talking head'],
+  ['Internal enablement','Train your own sellers on new AWS programs.','Loom-style walkthroughs'],
+  ['Recruiting & culture','Certifications earned, team at events.','Social shorts']
+];
+
+const ANNUAL = [
+  [0,'AWS planning year starts (AWS fiscal year = calendar year)','fin'],[0,'Funding budgets refresh — request early','fin'],
+  [1,'Partner business plans with PDM',''],[2,'AWS Summits season begins',''],
+  [3,'AWS Summits (many cities)','big'],[4,'AWS Summits continue',''],[5,'AWS re:Inforce (security)','big'],
+  [5,'Mid-year tier / funding check-in','fin'],[6,'Summit New York (typical)',''],[7,'Plan re:Invent content & meetings',''],
+  [8,'Q4 pipeline push begins','fin'],[9,'re:Invent session & booth prep',''],[10,'re:Invent, Las Vegas (late Nov/early Dec)','big'],
+  [10,'Partner awards announced at re:Invent',''],[11,'Year-end: claims deadlines, close launches','fin'],[11,'Many new launches from re:Invent','']
+];
+
+const HISTORY = [
+  ['2006','Amazon S3 and EC2 launch. AWS as we know it begins.'],
+  ['2009','Amazon RDS and VPC arrive.'],
+  ['2010','CloudFront and Route 53 mature; first large enterprise migrations.'],
+  ['2012','AWS Partner Network (APN) launches. First re:Invent. DynamoDB and Redshift announced.'],
+  ['2014','AWS Lambda introduces serverless. Aurora announced.'],
+  ['2015','AWS reports its financials separately for the first time.'],
+  ['2017','Amazon SageMaker launches.'],
+  ['2022','APN reorganizes into Partner Paths (Services, Software, Hardware, Training, Distribution).'],
+  ['2023','Amazon Bedrock becomes generally available; Amazon Q announced.'],
+  ['2024','Generative AI becomes a major partner Specialization and funding focus.']
+];
+const REVENUE = [[2018,25.7],[2019,35.0],[2020,45.4],[2021,62.2],[2022,80.1],[2023,90.8],[2024,107.6]];
+
+const PORTALS = [
+  {abbr:'APC', name:'AWS Partner Central', short:'The partner home base', lead:true, url:'https://partnercentral.awspartner.com/',
+   what:'The main partner portal (often still called the APN Portal or APNP). Everything about your company as an AWS partner lives here: profile, tier status, users, opportunities, funding, training links and program enrollment.',
+   use:['Company profile and Partner Solutions Finder listing','Tier and Specialization progress dashboards','ACE opportunities (co-sell)','Funding requests and claims','Linking employee certifications to the company','Program applications (Specializations, SDP, MSP)'],
+   process:['Alliance lead creates the account and invites users','Each employee gets a login with a role (alliance lead, cloud admin, standard user)','Users link their AWS Certification and Skill Builder accounts','Teams work in Opportunities, Funding and Programs tabs'],
+   out:['Tier achieved and benefits unlocked','Validated badges for marketing','Shared pipeline visible to AWS'],
+   who:'Alliance lead, sales, RevOps, AdminOps, marketing, delivery leads', you:'Keep opportunities and funding records current; download reports for reconciliation; check user access quarterly.', leadtxt:'High. AWS Referrals arrive here and in the ACE tab.'},
+  {abbr:'ACE', name:'APN Customer Engagements', short:'Co-sell pipeline with AWS', lead:true,
+   what:'The co-sell program and opportunity tool inside Partner Central. Partners share opportunities with AWS, and AWS shares customer referrals with partners.',
+   use:['Registering partner-found deals (Partner Referral)','Receiving AWS Referrals','Updating stage, value and launch date','Proving launched opportunities for tiers and Specializations'],
+   process:['Create or accept the opportunity','AWS validates it and may assign an AWS seller','Update stage as the deal progresses','Mark Launched with AWS account ID'],
+   out:['AWS seller support on deals','Referral flow from AWS','Launch count toward tier and funding eligibility'],
+   who:'Partner sellers, RevOps, alliance lead; AWS account managers and PDM', you:'Run monthly hygiene: no stale close dates, launched deals marked, IDs synced to CRM.', leadtxt:'Very high. The main source of AWS-originated leads.'},
+  {abbr:'APFP', name:'AWS Partner Funding Portal', short:'Request & claim funding', lead:false,
+   what:'Where funding (MAP, POC, MDF and others) is requested, approved and claimed. It has been moving into Partner Central’s Funding area; many people still call it APFP.',
+   use:['Funding requests tied to ACE opportunities','Uploading proof of execution','Tracking approval, claim and payment status'],
+   process:['Request before work starts','AWS reviews and approves an amount and window','Execute and gather POE','Submit claim before the deadline','Receive cash or customer credits'],
+   out:['Cash reimbursement to the partner','Credits applied to the customer account','Lower customer cost, faster deal closes'],
+   who:'Alliance lead, AdminOps/finance, delivery leads', you:'Own the tracker, deadlines, POE pack, and matching payouts in QuickBooks.', leadtxt:'Indirect. Funding makes deals easier to close.'},
+  {abbr:'AMMP', name:'AWS Marketplace Management Portal', short:'Sell on AWS Marketplace', lead:true, url:'https://aws.amazon.com/marketplace/management/',
+   what:'The seller console for AWS Marketplace: create product listings, private offers, view buyer agreements, and download disbursement and billing reports.',
+   use:['Public listings (SaaS, AMI, containers, professional services, data)','Private offers with custom price and terms','CPPO offers through channel partners','Reports: billed revenue, disbursements, customer agreements'],
+   process:['Register as a seller (tax and bank info)','Create listing; AWS reviews it','Buyer subscribes or accepts a private offer','AWS invoices the buyer','AWS disburses net proceeds to the seller'],
+   out:['Revenue through the customer’s AWS bill','Faster procurement','Possible burn-down of customer AWS commitments'],
+   who:'Alliance lead, sales ops, finance; buyer’s procurement team', you:'Download disbursement reports monthly and reconcile against the bank; keep listing videos and media up to date.', leadtxt:'High. Listing views, “request private offer” and contact forms create leads.'},
+  {abbr:'PSF', name:'Partner Solutions Finder', short:'Public partner directory', lead:true, url:'https://partners.amazonaws.com/',
+   what:'The public website where customers and AWS sellers search for partners by Specialization, industry, use case and location.',
+   use:['Showcasing your company profile','Showing badges, case studies and offerings'],
+   process:['Profile edited in Partner Central','Validated badges show automatically','Customers contact you through the listing'],
+   out:['Inbound leads','AWS sellers find you when recommending partners'],
+   who:'Marketing, alliance lead', you:'Keep the description, case studies and videos fresh.', leadtxt:'Medium to high, depending on Specializations held.'},
+  {abbr:'SB', name:'AWS Skill Builder', short:'Training & accreditations', lead:false, url:'https://skillbuilder.aws/',
+   what:'AWS’s learning platform. Partners get free accreditations (Business, Technical, Cloud Economics, GenAI) plus exam prep.',
+   use:['Partner accreditations','Certification prep','Team learning plans'],
+   process:['Sign in with the work email linked to Partner Central','Complete courses','Credits sync to the partner account'],
+   out:['Trained staff that count toward tier requirements'],
+   who:'Everyone', you:'Complete the Business accreditation in week one.', leadtxt:'None directly.'},
+  {abbr:'CERT', name:'AWS Certification account', short:'Exams & digital badges', lead:false, url:'https://aws.amazon.com/certification/',
+   what:'Where people schedule AWS Certification exams and manage their certifications. Digital badges are issued through Credly for sharing on LinkedIn.',
+   use:['Booking exams (online or test center)','Downloading certificates and badges','Recertifying before expiry (usually every 3 years)'],
+   process:['Register','Book exam','Pass','Link certification to the partner account in Partner Central'],
+   out:['Certified staff counted for tier, Specializations, SDP and MSP'],
+   who:'Individuals; alliance lead tracks totals', you:'Keep a tracker of who holds what and when it expires.', leadtxt:'Indirect. Certified teams win more trust.'},
+  {abbr:'MKT', name:'Partner Marketing Central', short:'Ready-made campaigns', lead:true,
+   what:'Self-service marketing tools for partners: customizable campaign kits, co-branded assets and agency support, often paired with MDF. Increasingly accessed from Partner Central.',
+   use:['Launching co-branded email, social and web campaigns','Getting approved AWS messaging and assets'],
+   process:['Pick a campaign kit','Customize with your branding','Launch and track leads'],
+   out:['Leads from co-branded campaigns','Faster, guideline-compliant marketing'],
+   who:'Marketing; PMM at AWS', you:'Produce video assets that slot into these campaigns.', leadtxt:'High for top-of-funnel leads.'},
+  {abbr:'WAT', name:'AWS Well-Architected Tool', short:'Run WAFR reviews', lead:true,
+   what:'A free tool in the AWS console for running Well-Architected Framework Reviews against a customer workload.',
+   use:['Documenting a WAFR with the customer','Generating a findings report','Tracking remediation'],
+   process:['Review workload with customer','Record answers per pillar','Share report','Propose remediation work'],
+   out:['Identified risks become paid remediation projects','Evidence for Well-Architected funding'],
+   who:'Partner solutions architects', you:'Keep the WAFR report as part of the POE pack.', leadtxt:'High. Findings convert into follow-on work.'},
+  {abbr:'BILL', name:'AWS Billing console & Billing Conductor', short:'Usage, invoices, resale billing', lead:false,
+   what:'The AWS console areas for viewing bills, cost reports and, for resellers, building custom pricing to re-bill customers.',
+   use:['Downloading your own AWS invoices','Cost and Usage Reports for resale billing','Applying custom rates for customers (Billing Conductor)'],
+   process:['Month closes','AWS invoice issued early next month','Export customer usage','Invoice customers in QuickBooks'],
+   out:['Accurate resale invoices and margins'],
+   who:'Finance/AdminOps, cloud ops', you:'Pull usage, re-bill, reconcile credits and refunds.', leadtxt:'None directly; spend spikes can signal upsell chances.'},
+  {abbr:'CRM', name:'CRM + ACE connector', short:'Sync deals with AWS', lead:false,
+   what:'Integrations (for example the AWS Partner CRM Connector for Salesforce, or the Partner Central API) that sync CRM deals with ACE so sellers don’t double-enter.',
+   use:['Two-way sync of opportunities and referrals','Reporting in one system'],
+   process:['Map CRM fields to ACE fields','Turn on sync','Monitor sync errors'],
+   out:['Cleaner pipeline, less admin'],
+   who:'RevOps', you:'Own field mapping, sync error checks and the data dictionary.', leadtxt:'Makes sure no AWS Referral is missed.'}
+];
+
+const JOURNEY = [
+  {t:'Discover', d:'A customer finds you through a video, Partner Solutions Finder, a Marketplace listing, an event or an AWS seller.', do:['Lead captured in CRM with its source'], check:['Source tagged'], tools:['PSF, Marketplace, website, CRM']},
+  {t:'Register in ACE', d:'Sales registers the deal (or accepts the AWS Referral).', do:['ACE opportunity created and synced'], check:['ACE ID saved in CRM'], tools:['Partner Central → ACE']},
+  {t:'Validate with AWS', d:'AWS seller and SA engage; architecture and pricing are validated.', do:['Pricing Calculator estimate','WAFR or assessment if relevant'], check:['Stage updated'], tools:['Pricing Calculator, Well-Architected Tool']},
+  {t:'Fund it', d:'Request MAP, POC or other funding to lower customer cost.', do:['Funding request linked to the ACE ID'], check:['Approved before work starts'], tools:['Partner Central Funding (APFP)']},
+  {t:'Contract', d:'Signed directly (SOW + PO) or through a Marketplace private offer.', do:['Direct: invoice in QuickBooks','Marketplace: private offer in AMMP'], check:['Billing route clear to finance'], tools:['QuickBooks or AMMP']},
+  {t:'Deliver & launch', d:'Work delivered; workload live on AWS; ACE marked Launched.', do:['Collect POE','Mark Launched'], check:['AWS account ID recorded'], tools:['ACE, project tools']},
+  {t:'Get paid', d:'Customer pays invoices; Marketplace disburses; funding pays out.', do:['Reconcile all three cash streams'], check:['Books tie to bank'], tools:['QuickBooks, AMMP reports, Partner Central']},
+  {t:'Amplify', d:'Case study, PSF update, Specialization evidence, social video.', do:['Customer approval','Publish and tag'], check:['Video added to PSF and Marketplace listing'], tools:['Video tools, PSF, PMM']}
+];
+
+const LEADS = [
+  ['AWS Referral','ACE in Partner Central','AWS seller shares a customer need with you','Partner sales (respond fast)',5],
+  ['AWS seller co-sell','ACE + meetings','You share a deal; AWS account manager introduces you to more stakeholders','Sales + alliance lead',5],
+  ['Marketplace private-offer request','AMMP','Buyer asks for custom pricing on your listing','Sales ops',4],
+  ['Well-Architected / assessment findings','Well-Architected Tool','Review findings become remediation projects','Solutions architects',4],
+  ['Partner Solutions Finder','PSF','Customers contact you from your listing','Marketing → sales',3],
+  ['Joint webinars & events (MDF)','Marketing Central, PMM','Attendees from co-promoted events','Marketing',3],
+  ['AWS Summits / re:Invent','Events','Booth scans, meetings, sponsored sessions','Sales + marketing',3],
+  ['Case study & demo videos','Website, YouTube, LinkedIn, PSF','Viewers convert through CTAs','Video + marketing',2],
+  ['Existing customers','CRM, Billing data','Usage growth, new workloads, renewals','Account managers',4],
+  ['AWS Marketplace public listing','AWS Marketplace','Self-serve trials and subscriptions','Sales ops',2]
+];
+
+const PARTNERSHIPS = [
+  ['Consulting / Services partner','Helps customers plan, migrate, build and run on AWS.','A firm migrating a retailer’s data center under MAP.'],
+  ['ISV / Software partner','Sells software that runs on or integrates with AWS.','A SaaS security tool sold via Marketplace private offers.'],
+  ['Managed Service Provider','Runs customer environments 24/7 for a monthly fee.','Monitoring, patching and cost optimization.'],
+  ['Reseller / Solution Provider','Resells AWS usage and owns the customer billing relationship.','Monthly AWS invoice with support bundled.'],
+  ['Distributor','Supplies AWS and Marketplace products to many resellers.','Regional distributor enabling small resellers.'],
+  ['Partner-to-partner','Two partners team up: e.g. a consultancy implements an ISV’s product, or CPPO resale.','Your firm resells an ISV’s product as a CPPO.']
+];
+
+const CERTS = [
+  ['AWS Partner: Accreditation (Business)','Accreditation (free)','Everyone in sales, marketing, ops, finance','Tier “trained individuals” counts'],
+  ['AWS Partner: Cloud Economics','Accreditation (free)','Sales, finance, RevOps','Tier counts; helps with TCO conversations'],
+  ['AWS Partner: Technical / GenAI accreditations','Accreditation (free)','Pre-sales, engineers','Tier counts'],
+  ['Certified Cloud Practitioner','Foundational','Non-technical staff (you!)','Certification counts for tier'],
+  ['Certified AI Practitioner','Foundational','Anyone working on AI deals or content','Certification counts; supports GenAI focus'],
+  ['Solutions Architect – Associate','Associate','Architects, pre-sales','Tier, Specializations, SDP'],
+  ['Developer / CloudOps / Data Engineer / ML Engineer – Associate','Associate','Engineers by role','Tier, Specializations'],
+  ['Solutions Architect / DevOps Engineer – Professional','Professional','Senior engineers','Higher-tier and Specialization requirements'],
+  ['Specialty (Security, Advanced Networking, others)','Specialty','Domain experts','Specific Specializations']
+];
+
+const CERT_FLOW = [
+  {t:'Choose', d:'Pick the credential that matches your role and the company’s tier gaps.', do:['Ask the alliance lead which counts are short'], check:[], tools:['Partner Central tier dashboard']},
+  {t:'Learn', d:'Use Skill Builder courses, practice exams and study groups.', do:['Block 3–5 hours a week'], check:[], tools:['Skill Builder']},
+  {t:'Book & pass', d:'Book the exam online or at a test center. Partners often get exam vouchers or discounts.', do:['Ask about vouchers first'], check:[], tools:['AWS Certification account']},
+  {t:'Link to partner account', d:'Link your certification to your company in Partner Central so it counts.', do:['Use the same email as your Partner Central login'], check:['Shows in the company’s certification count'], tools:['Partner Central']},
+  {t:'Share & renew', d:'Post your Credly badge, update the tracker, and recertify before it expires.', do:['Expiry reminder 3 months ahead'], check:[], tools:['Credly, tracker']}
+];
+
+const CUSTOMER_ROLES = [
+  ['CIO / CTO','Decides strategy and budget for technology.','Risk, speed, cost, outcomes'],
+  ['Cloud / platform engineers','Build and operate on AWS with you.','Good architecture, clear handover'],
+  ['Security & compliance','Approves designs and vendors.','Controls, certifications, data residency'],
+  ['FinOps / finance','Owns cloud spend and budgets.','Predictable cost, savings, funding'],
+  ['Procurement','Negotiates contracts and onboards vendors.','Terms, Marketplace buying, existing AWS commitments'],
+  ['Accounts payable','Pays your invoices.','Correct PO, legal entity, portal upload']
+];
+
+const TRIANGLE = [
+  ['AWS',['Referrals and co-sell help','Funding and credits','Training, tools, badges','Marketplace platform'],['Customer consumption on AWS','Faster adoption at scale','Satisfied, retained customers']],
+  ['Partner (you)',['Hands-on expertise and delivery','Customer relationships','Pipeline shared in ACE','Case studies and content'],['Services, resale and software revenue','Leads and credibility from AWS','Funding that lowers deal cost']],
+  ['Customer',['Business need and budget','Access, data and decisions','Approval for references'],['A working solution on AWS','Lower cost through funding and credits','Simpler buying via Marketplace']]
+];
+
+const RACI_COLS = ['Partner sales','Alliance lead','AdminOps / RevOps','Video / marketing','Delivery','AWS (PDM/AM/PMM)','Customer'];
+const RACI = [
+  ['Register & update ACE opportunity','RAI-CI-'],
+  ['Accept AWS Referral quickly','RAI--I-'],
+  ['Request funding (MAP/POC/MDF)','CAR-CC-'],
+  ['Collect proof of execution','-ARIRIC'],
+  ['Submit funding claim','-AR-CI-'],
+  ['Invoice customer & collect','C-A-C-I'],
+  ['Marketplace listing & private offers','RAC-CCI'],
+  ['Reconcile disbursements & payouts','-IA----'],
+  ['Case study video','CC-ACCC'],
+  ['Customer approval for publishing','C--R-IA'],
+  ['Tier & Specialization applications','IAC-RC-'],
+  ['Certification tracking','IAR-CI-'],
+  ['Month-end close','-IA----']
+];
+
+const GLOSSARY = [
+  ['APC','AWS Partner Central: the main partner portal.'],
+  ['APNP / APN Portal','Older name for AWS Partner Central that people still use.'],
+  ['APFP','AWS Partner Funding Portal: where funding is requested and claimed; being merged into Partner Central.'],
+  ['AMMP','AWS Marketplace Management Portal: the seller console for listings, offers and reports.'],
+  ['PSF','Partner Solutions Finder: AWS\u2019s public partner directory.'],
+  ['Partner Marketing Central','Self-service co-branded campaign kits for partners.'],
+  ['Credly','Platform that issues AWS digital certification badges.'],
+  ['CRM Connector','Integration that syncs CRM opportunities with ACE.'],
+  ['Billing Conductor','AWS tool resellers use to apply custom pricing when re-billing customers.'],
+  ['Cost and Usage Report (CUR)','Detailed AWS usage and cost export used for analysis and resale billing.'],
+  ['Alliance lead','The partner employee who owns the AWS relationship and Partner Central account.'],
+  ['RACI','Responsible, Accountable, Consulted, Informed: a way to assign roles for each task.'],
+  ['SLA','Service level agreement: a promised response or uptime level.'],
+  ['ACE','APN Customer Engagements. The co-sell program and tool in Partner Central where partners and AWS share opportunities.'],
+  ['ACE stages','Prospect → Qualified → Technical Validation → Business Validation → Committed → Launched (or Closed Lost).'],
+  ['AWS Referral','An opportunity AWS sends to a partner. Respond fast; acceptance speed is tracked.'],
+  ['Partner Referral','An opportunity the partner found and shared with AWS in ACE. Also called partner-originated.'],
+  ['APN','AWS Partner Network: the global program for AWS partners.'],
+  ['Partner Central','The partner portal: opportunities, funding, training, Marketplace, profile.'],
+  ['Partner Path','The track that matches your business model: Services, Software, Hardware, Training, Distribution.'],
+  ['Tier','Registered, Select, Advanced, Premier. Higher tiers unlock more benefits.'],
+  ['Specialization','Validated expertise badge (formerly Competencies) for a domain, industry or workload.'],
+  ['SDP','Service Delivery Program: validation for delivering a specific AWS service.'],
+  ['MSP','Managed Service Provider program: audited ability to run customer environments.'],
+  ['PDM','Partner Development Manager at AWS: your primary business contact.'],
+  ['PSA','Partner Solutions Architect at AWS: your technical contact.'],
+  ['PMM','Partner Marketing Manager at AWS: joint marketing and MDF.'],
+  ['MAP','Migration Acceleration Program: method and funding for migrations.'],
+  ['MRA','Migration Readiness Assessment, part of MAP Assess.'],
+  ['map-migrated tag','Tag applied to migrated resources so MAP credits can be calculated.'],
+  ['MDF','Marketing Development Funds for joint marketing activities.'],
+  ['POC','Proof of concept. Often fundable before purchase.'],
+  ['POE','Proof of execution: evidence submitted to claim funding.'],
+  ['WAFR','Well-Architected Framework Review against the six pillars.'],
+  ['Well-Architected pillars','Operational excellence, Security, Reliability, Performance efficiency, Cost optimization, Sustainability.'],
+  ['AWS Marketplace','Catalog where customers buy third-party software, data and services on their AWS bill.'],
+  ['Private offer','Custom pricing and terms for one buyer in AWS Marketplace.'],
+  ['CPPO','Channel Partner Private Offer: a reseller creates a Marketplace private offer for an ISV’s product.'],
+  ['Listing fee','Percentage AWS Marketplace keeps from each sale before disbursing to the seller.'],
+  ['Disbursement','Marketplace payout to the seller’s bank account, with reports detailing each transaction.'],
+  ['EDP / PPA','Enterprise Discount Program / Private Pricing Agreement: a customer’s committed AWS spend for a discount.'],
+  ['Burn-down','Eligible Marketplace purchases counting toward a customer’s AWS spend commitment.'],
+  ['ISV','Independent software vendor.'],
+  ['ISV Accelerate','Co-sell program for software partners.'],
+  ['SI / GSI','Systems integrator / global systems integrator.'],
+  ['Solution Provider','Partner authorized to resell AWS and own the customer billing.'],
+  ['Region','A geographic area with multiple, isolated Availability Zones.'],
+  ['Availability Zone (AZ)','One or more data centers with independent power and networking inside a Region.'],
+  ['Edge location','Point of presence used by CloudFront and Route 53 to serve users nearby.'],
+  ['Shared responsibility model','AWS secures the cloud; the customer secures what they put in the cloud.'],
+  ['On-Demand','Pay per second/hour with no commitment.'],
+  ['Savings Plans','1- or 3-year spend commitment for lower rates.'],
+  ['Spot Instances','Spare capacity at deep discount; can be reclaimed.'],
+  ['Free Tier','Limited free usage for new accounts and some services.'],
+  ['Landing zone','A well-structured multi-account AWS foundation.'],
+  ['IaC','Infrastructure as code (CloudFormation, CDK, Terraform).'],
+  ['FinOps','The practice of managing cloud cost as a shared responsibility of engineering and finance.'],
+  ['GenAI','Generative AI. On AWS: Bedrock, Amazon Q, SageMaker.'],
+  ['ARR / MRR','Annual / monthly recurring revenue.'],
+  ['NRR','Net revenue retention: revenue kept and expanded from existing customers.'],
+  ['DSO','Days sales outstanding: average days to collect after invoicing.'],
+  ['AR aging','Report of unpaid invoices grouped by how overdue they are.'],
+  ['Pipeline coverage','Open pipeline ÷ target. 3× is a common rule of thumb.'],
+  ['Weighted pipeline','Sum of deal amounts × stage probability.'],
+  ['Win rate','Won deals ÷ (won + lost).'],
+  ['Utilization','Billable hours ÷ available hours for delivery staff.'],
+  ['SOW','Statement of work: scope, deliverables, price, timeline.'],
+  ['PO','Purchase order from the customer authorizing spend.'],
+  ['Net 30','Invoice due 30 days after the invoice date.'],
+  ['Class / Location (QuickBooks)','Tags that slice the P&L by practice, region or business line.'],
+  ['Reconciliation','Matching your books to the bank statement.'],
+  ['Undeposited funds','QuickBooks holding account for payments not yet matched to a deposit.'],
+  ['re:Invent','AWS’s largest annual conference, in Las Vegas.'],
+  ['AWS Summit','Free regional AWS events held in many cities.'],
+  ['Skill Builder','AWS’s training platform, including free partner accreditations.'],
+  ['Accreditation','Free partner courses (Business, Technical, Cloud Economics) that count toward tiers.'],
+  ['Partner Solutions Finder','Public partner directory used by customers.'],
+  ['Co-sell','Partner and AWS sellers working the same customer deal together.'],
+  ['Co-marketing','Joint marketing with AWS, usually involving the PMM and MDF.'],
+  ['TAM','Technical Account Manager, part of AWS Enterprise Support.'],
+  ['QBR / MBR','Quarterly / monthly business review.']
+];
+
+const QUIZ = [
+  ['Where do you download AWS Marketplace disbursement reports?',['Skill Builder','AWS Marketplace Management Portal (AMMP)','Partner Solutions Finder','Credly'],1,'AMMP is the seller console for listings, offers and financial reports.'],
+  ['What must you do so your certification counts toward the company tier?',['Nothing','Link it to the partner account in Partner Central','Email AWS support','Post it on LinkedIn'],1,'Certifications count only once linked to your company in Partner Central.'],
+  ['Which ACE stage comes right after Technical Validation?',['Qualified','Business Validation','Committed','Launched'],1,'Order: Prospect, Qualified, Technical Validation, Business Validation, Committed, Launched.'],
+  ['When should you request funding such as POC or MAP?',['After the project ends','Before the work starts','Only at re:Invent','When the invoice is overdue'],1,'Funding needs pre-approval. Work done before approval usually cannot be claimed.'],
+  ['Who at AWS is usually your primary business contact?',['TAM','PDM','PMM','SA'],1,'The Partner Development Manager owns the partner relationship and plan.'],
+  ['What is POE?',['Point of entry','Proof of execution for a funding claim','Partner onboarding email','Price of EC2'],1,'POE = evidence that the funded work or campaign happened.'],
+  ['In the shared responsibility model, who patches the OS on an EC2 instance?',['AWS','The customer (or their partner)','Nobody','The Marketplace'],1,'With EC2 (IaaS) the customer manages the guest OS.'],
+  ['Which is NOT a Well-Architected pillar?',['Reliability','Sustainability','Marketing efficiency','Cost optimization'],2,'The six pillars are Ops excellence, Security, Reliability, Performance efficiency, Cost optimization, Sustainability.'],
+  ['A customer buys your software in AWS Marketplace. What do you receive?',['The full list price','The price minus the listing fee, via disbursement','AWS credits','Nothing until year-end'],1,'Marketplace disburses proceeds net of the listing fee.'],
+  ['What does DSO measure?',['Deal stage outcome','Days to collect payment after invoicing','Data storage overhead','Direct sales opportunities'],1,'Lower DSO = cash comes in faster.'],
+  ['Pipeline is $900k and quarterly target is $300k. Coverage?',['0.3×','3×','9×','30×'],1,'900 ÷ 300 = 3×.'],
+  ['Which AWS service is a CDN that matters for video delivery?',['CloudTrail','CloudFront','CloudFormation','CloudWatch'],1,'CloudFront caches content near viewers.'],
+  ['What usually must you have before publishing a customer case study video?',['Nothing','Written customer approval','A re:Invent ticket','An EC2 instance'],1,'Always get written approval for names, logos and metrics.'],
+  ['What is a Region made of?',['One data center','Multiple isolated Availability Zones','Edge locations only','Marketplace listings'],1,'Each Region contains multiple AZs.']
+];
+
+const HABITS = [
+  ['Write it down','Every process you learn, turn into a one-page checklist. In three months you will own the playbook.'],
+  ['Close loops fast','Reply within the same day, even if only “got it, answer by Thursday”. Reliability is the fastest way to earn trust.'],
+  ['Make numbers tie out','CRM, ACE, QuickBooks and the bank should tell the same story. Find and fix mismatches every month.'],
+  ['Protect confidential data','Customer names, AWS account IDs, pricing and non-public AWS roadmap info stay internal. AWS shares some information under NDA.'],
+  ['Learn one service a week','Pick a service from the explorer, watch a 10-minute video, and explain it to a colleague.'],
+  ['Ask “what does good look like?”','Before any task, confirm the outcome, the deadline and who reviews it.'],
+  ['Bring options, not just problems','“The claim is missing the sign-off. I can chase the customer or use the email approval. I suggest the first.”'],
+  ['Show your work','A short weekly update: done, next, blocked. Managers love it and it makes your impact visible.'],
+  ['Get certified','Cloud Practitioner first, then AI Practitioner or Solutions Architect Associate. Your certifications count toward the company’s tier.'],
+  ['Be kind under pressure','Quarter-end and re:Invent weeks are stressful. Calm, organized people get remembered.']
+];
+
+const RULES = [
+  ['Never share AWS credentials, access keys or customer data in videos, email or chat.','sec'],
+  ['Never claim AWS endorses you. Use “AWS Partner” badges only as the guidelines allow.','brand'],
+  ['Never alter the AWS logo or use it as your own branding.','brand'],
+  ['Always get written customer approval before naming them publicly.','brand'],
+  ['Funding: request first, then work. Keep every document that proves the work happened.','money'],
+  ['Every invoice carries a PO/SOW reference and the correct legal entity.','money'],
+  ['Opportunities in ACE must be real, up to date and closed when dead.','gtm'],
+  ['Treat AWS NDA information as confidential; don’t post it.','sec']
+];
+
+const USECASES = [
+  {t:'Turn every launch into content', who:'Video + RevOps', s:'When an ACE opportunity hits Launched, auto-create a task to request a case study. Film a 2-minute customer story. Use it in the Specialization application, the Marketplace listing, social, and sales decks.', win:'Case studies are evidence for tiers and Specializations and the best sales asset.'},
+  {t:'Funding claim tracker', who:'AdminOps', s:'One sheet: approval ID, program, customer, amount, execution end, claim deadline, POE checklist, status, payout date. Review weekly.', win:'Fewer expired or rejected claims means real cash recovered.'},
+  {t:'MDF campaign with video at the core', who:'Video + Marketing', s:'Propose a joint webinar with AWS (e.g. “GenAI on Bedrock for retail”). Request MDF early. Record, cut into shorts, run paid social, track leads into CRM, submit POE with analytics screenshots.', win:'Funded pipeline with measurable ROI.'},
+  {t:'Marketplace listing refresh', who:'Video + Alliance', s:'Add an overview video, clear pricing dimensions, and private-offer readiness. Coordinate with sales for a Marketplace-first procurement pitch to customers with AWS commitments.', win:'Shorter procurement cycles for customers.'},
+  {t:'ACE hygiene sprint', who:'RevOps', s:'Monthly: close stale opportunities, update close dates, fill missing AWS account IDs, mark launched deals. Share a one-slide summary with the alliance lead.', win:'Accurate pipeline builds AWS trust and supports tier progress.'},
+  {t:'Invoice-to-cash speedup', who:'AdminOps', s:'Standardize items, add PO numbers, invoice on the day a milestone is signed, set automatic reminders, call at +15 days.', win:'Lower DSO, healthier cash.'},
+  {t:'Certification drive', who:'Everyone', s:'Track team certifications against tier requirements. Organize a study group and a shared calendar of exam dates. Celebrate each pass on social (video!).', win:'Tier progress and recruiting appeal.'},
+  {t:'re:Invent content engine', who:'Video', s:'Before: teaser and meeting-booking video. During: daily 30-second recaps of launches relevant to your customers. After: “what it means for you” webinar.', win:'Timely content when buyers are paying attention.'},
+  {t:'Customer cost-saving story', who:'Sales + Video', s:'Use Cost Explorer data (with permission) to show before/after savings from a Savings Plan or modernization. Explain in a short animated video.', win:'Cost optimization is an easy door-opener.'},
+  {t:'Win/loss library', who:'RevOps', s:'For every Closed Lost and Launched deal, capture three lines: why, competitor, lesson. Review quarterly.', win:'Better win rate over time.'}
+];
+
+const PLAN = [
+  ['Days 1–30: Learn','Learn the vocabulary and systems. Shadow calls. Map QuickBooks, ACE, funding, content inventory. Finish Partner Accreditation (Business). Ask lots of questions.'],
+  ['Days 31–60: Own','Own invoicing and AR end to end. Build the funding tracker. Ship two videos tied to a pipeline goal. Run your first month-end close checklist.'],
+  ['Days 61–90: Improve','Pass Cloud Practitioner. Propose one automation (CRM→QuickBooks, ACE hygiene report). Present a dashboard of DSO, funding recovered and content-sourced leads.']
+];
+
+/* ================= VIEWS ================= */
+
+const V = {};
+
+V.start = () => {
+  const done = store.get('check', []);
+  const pct = Math.round(done.length / CHECKLIST.length * 100);
+  return `
+  <section class="hero">
+    <div class="section">
+      <span class="eyebrow">Orientation</span>
+      <h1>How a cloud partner business actually works</h1>
+      <p class="lede">You edit the videos, run the invoices, keep AdminOps and RevOps tidy. This guide connects those jobs to the bigger picture: what AWS sells, how partners earn money with AWS, and where your work moves the numbers.</p>
+    </div>
+    <div class="levels">${LEVELS.map(l=>`<a class="level" href="#${l.go}"><span class="lv">${l.lv}</span><span><b>${l.t}</b><br><span class="muted small">${l.d}</span></span></a>`).join('')}</div>
+  </section>
+
+  <section class="section">
+    <header><h2>The business in one picture</h2><p class="muted">Money and work flow in a loop. Click any box to see your part in it.</p></header>
+    ${flow('big', FLOWS.big = [
+      {t:'Customer has a problem', d:'A company wants to migrate, cut costs, build with AI, or modernize an app.', do:['Your videos and case studies are often the first thing they see'], check:[], tools:['Marketing, website, AWS Partner Solutions Finder']},
+      {t:'Partner + AWS co-sell', d:'Your sales team and AWS sellers work the deal together through ACE.', do:['RevOps keeps opportunities accurate in CRM and ACE'], check:['Opportunity stage and amounts current'], tools:['ACE, CRM']},
+      {t:'Funding reduces cost', d:'AWS programs (MAP, POC, MDF) fund part of the work to win the deal faster.', do:['AdminOps requests, tracks and claims funding'], check:['Pre-approval before work starts'], tools:['Partner Central funding']},
+      {t:'Partner delivers', d:'Your engineers migrate or build on AWS. The customer starts consuming AWS services.', do:['Collect proof of execution as work happens'], check:['Milestones signed off'], tools:['Delivery team']},
+      {t:'Everyone gets paid', d:'Customer pays your invoices; AWS earns consumption revenue; funding pays out; Marketplace disburses.', do:['You invoice in QuickBooks, chase AR, reconcile'], check:['Books tie to bank'], tools:['QuickBooks']},
+      {t:'Proof fuels growth', d:'Launched deals and case studies raise your tier and Specializations, which bring more AWS referrals.', do:['You turn the win into a case-study video'], check:['Customer approval'], tools:['Video team, PMM']}
+    ], {label:'Loop'})}
+  </section>
+
+  <section class="section">
+    <header><h2>Your first 90 days checklist</h2><p class="muted">Saved in this browser only.</p></header>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><b>Progress</b><span class="mono" id="pct">${pct}%</span></div>
+      <div class="bar"><i id="pbar" style="width:${pct}%"></i></div>
+      <div id="checklist" style="display:grid;gap:2px">${CHECKLIST.map((c,i)=>`<label class="check ${done.includes(i)?'done':''}"><input type="checkbox" id="ck${i}" data-ck="${i}" ${done.includes(i)?'checked':''}><span>${c}</span></label>`).join('')}</div>
+    </div>
+  </section>`;
+};
+
+V.cloud = () => `
+  <header class="section"><span class="eyebrow">Chapter 01 · Beginner</span><h1>Cloud & AWS basics</h1>
+  <p class="lede">Cloud computing means renting computing power, storage and software over the internet and paying only for what you use, instead of buying and running your own servers. AWS (Amazon Web Services) is the largest cloud provider and offers 200+ services.</p></header>
+
+  <section class="section"><header><h2>Why customers move to the cloud</h2></header>
+  <div class="grid g4">
+    ${[['Pay as you go','Operating expense instead of buying hardware up front.'],['Speed','New servers in minutes, not months.'],['Scale','Grow or shrink automatically with demand.'],['Global reach','Deploy near users worldwide.'],['Security & compliance','Built-in controls and certifications.'],['Innovation','AI, analytics and IoT services ready to use.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="muted small">${x[1]}</p></div>`).join('')}
+  </div></section>
+
+  <section class="section"><header><h2>Global infrastructure</h2><p class="muted">Click each layer.</p></header>
+  <div class="grid g2">
+    <div class="infra">
+      <button class="box" type="button" data-infra="region" aria-pressed="true"><span class="lbl">REGION · e.g. us-east-1 (N. Virginia)</span>
+        <span class="azrow">${[1,2,3].map(i=>`<span class="box" data-infra="az" style="cursor:pointer"><span class="lbl">AZ ${String.fromCharCode(96+i)}</span><span class="dcrow"><span class="dc"></span><span class="dc"></span><span class="dc"></span></span></span>`).join('')}</span>
+      </button>
+      <button class="box" type="button" data-infra="edge"><span class="lbl">EDGE LOCATIONS · hundreds of cities</span><span class="dcrow">${'<span class="dc" style="width:14px;height:14px;border-radius:50%"></span>'.repeat(14)}</span></button>
+    </div>
+    <div class="detail" id="infraD"></div>
+  </div></section>
+
+  <section class="section"><header><h2>Shared responsibility</h2><p class="muted">AWS secures <i>the cloud</i>. The customer (often with a partner like you) secures what goes <i>in</i> the cloud. Pick a service model.</p></header>
+  <div class="chips" id="srChips">${Object.keys(SR.models).map((m,i)=>`<button class="chip" type="button" data-sr="${m}" aria-pressed="${i===0}">${m}</button>`).join('')}</div>
+  <div class="stack" id="srStack"></div></section>
+
+  <section class="section"><header><h2>How AWS charges</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Model</th><th>How it works</th><th>Typical discount</th><th>Good for</th></tr></thead><tbody>
+    <tr><td>On-Demand</td><td>Pay per second/hour, no commitment</td><td class="num">0%</td><td>Unpredictable or short workloads</td></tr>
+    <tr><td>Savings Plans / Reserved</td><td>Commit to spend or capacity for 1 or 3 years</td><td class="num">up to ~70%</td><td>Steady workloads</td></tr>
+    <tr><td>Spot</td><td>Use spare capacity; can be interrupted</td><td class="num">up to ~90%</td><td>Batch jobs, rendering, video transcoding</td></tr>
+    <tr><td>Enterprise commitment (EDP/PPA)</td><td>Customer commits to total spend over years</td><td class="num">negotiated</td><td>Large enterprises</td></tr>
+    <tr><td>Free Tier & credits</td><td>Free usage limits; promotional or program credits</td><td class="num">—</td><td>Trials, startups, POCs</td></tr>
+  </tbody></table></div>
+  <p class="muted small">Discount ranges are AWS’s published maximums; actual savings depend on service, term and payment option. Data transfer out to the internet is a cost people often forget, and it matters a lot for video.</p></section>
+
+  <section class="section"><header><h2>The Well-Architected Framework</h2><p class="muted">AWS’s checklist for good systems. Partners run Well-Architected Framework Reviews (WAFR) as a service.</p></header>
+  <div class="grid g3">${WA.map((w,i)=>`<div class="card"><span class="eyebrow">Pillar ${i+1}</span><h4>${w[0]}</h4><p class="muted small">${w[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Certification path</h2></header>
+  <div class="flow">${[['Foundational','Cloud Practitioner · AI Practitioner'],['Associate','Solutions Architect · Developer · Data Engineer · ML Engineer · CloudOps'],['Professional','Solutions Architect Pro · DevOps Engineer Pro'],['Specialty','Security · Advanced Networking and others']].map((c,i)=>`${i?'<span class="arrow">→</span>':''}<div class="step"><span class="n">${c[0]}</span><span class="t" style="font-weight:500">${c[1]}</span></div>`).join('')}</div>
+  <div class="card tint"><b>For you:</b> start with the free <i>AWS Partner Accreditation (Business)</i> in Skill Builder, then Cloud Practitioner. Both count toward your company’s partner tier. The exam catalog changes; check the current list on the AWS Certification site.</div></section>
+`;
+
+const INFRA = {
+  region:['Region','A physical area in the world (for example N. Virginia, Frankfurt, Mumbai). Each has at least three Availability Zones. Customers pick Regions for latency, cost, and data residency laws.',['Data stays in the Region unless you move it','Prices differ by Region','Not every service is in every Region']],
+  az:['Availability Zone (AZ)','One or more data centers with separate power, cooling and networking, connected to other AZs by fast links. Running across 2–3 AZs keeps an app up if one fails.',['“Multi-AZ” = high availability','Partners design this in architectures']],
+  edge:['Edge location','Small sites in many cities used by CloudFront (content delivery) and Route 53 (DNS). They cache video and web content near viewers.',['Faster video start times','Lower load on origin servers']]
+};
+function showInfra(k){ const x = INFRA[k]; $('#infraD').innerHTML = `<h3>${x[0]}</h3><p>${x[1]}</p><ul class="clean">${x[2].map(i=>`<li>${i}</li>`).join('')}</ul>`;
+  document.querySelectorAll('button[data-infra]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.infra===k || (k==='az' && b.dataset.infra==='region'))); }
+function showSR(m){ const v = SR.models[m]; $('#srStack').innerHTML = SR.layers.map((l,i)=>`<div class="layer ${v[i]?'you':'aws'}"><span>${l}</span><b>${v[i]?'CUSTOMER':'AWS'}</b></div>`).join('');
+  document.querySelectorAll('[data-sr]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.sr===m)); }
+
+V.services = () => `
+  <header class="section"><span class="eyebrow">Chapter 02 · Beginner → Intermediate</span><h1>Service explorer</h1>
+  <p class="lede">You don’t need to know all 200+ services. Learn these ${SERVICES.length}, which show up in most partner deals, SOWs and invoices.</p></header>
+  <div class="grid" style="grid-template-columns:minmax(0,1fr)"><input type="search" id="svcQ" placeholder="Search services, e.g. video, database, security" aria-label="Search services"></div>
+  <div class="chips" id="svcChips"><button class="chip" type="button" data-cat="" aria-pressed="true">All</button>${Object.entries(CATS).map(([k,v])=>`<button class="chip" type="button" data-cat="${k}" aria-pressed="false">${v}</button>`).join('')}</div>
+  <div class="grid g3" id="svcGrid"></div>
+  <div class="card warnc"><b>Video editor tip:</b> the AWS media stack (S3 → MediaConvert → CloudFront, plus Transcribe for captions and Rekognition for tagging) is a great topic for demo and explainer content, and you already understand the workflow.</div>
+`;
+let svcCat = '';
+function renderSvc(){
+  const q = ($('#svcQ')?.value||'').toLowerCase();
+  const list = SERVICES.filter(s => (!svcCat || s[1]===svcCat) && (!q || (s[0]+' '+s[2]+' '+s[3]+' '+CATS[s[1]]).toLowerCase().includes(q)));
+  $('#svcGrid').innerHTML = list.length ? list.map(s=>`<div class="card"><span class="tag a">${CATS[s[1]]}</span><h4>${s[0]}</h4><p class="small">${s[2]}</p>${s[3]?`<p class="muted small"><i>Think of it as:</i> ${s[3]}</p>`:''}</div>`).join('') : '<p class="muted">No services match. Try a broader word like “data”.</p>';
+}
+
+V.partner = () => `
+  <header class="section"><span class="eyebrow">Chapter 03 · Intermediate</span><h1>The AWS Partner Network</h1>
+  <p class="lede">AWS can’t migrate and run every customer itself. Partners do the hands-on work, sell software, and bring customers. In return AWS gives partners referrals, funding, training and credibility. Your company’s standing in the APN determines how much of that it gets.</p></header>
+
+  <section class="section"><header><h2>Partner Paths</h2><p class="muted">A company joins one or more paths depending on how it makes money.</p></header>
+  <div class="grid g3">${PATHS.map(p=>`<div class="card"><h4>${p[0]}</h4><p class="muted small">${p[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Tiers</h2><p class="muted">Click a tier. Exact thresholds change; always confirm current numbers in Partner Central.</p></header>
+  <div class="ladder" id="ladder">${TIERS.map((t,i)=>`<button type="button" class="rung" data-tier="${i}" aria-pressed="${i===1}" style="height:${80+i*34}px"><span class="eyebrow" style="color:inherit;opacity:.75">Tier ${i+1}</span><span class="h">${t.t}</span></button>`).join('')}</div>
+  <div class="detail" id="tierD"></div></section>
+
+  <section class="section"><header><h2>Programs that matter</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Program</th><th>What it is</th><th>Why it matters</th></tr></thead><tbody>
+  ${PROGRAMS.map(p=>`<tr><td><b>${p[0]}</b></td><td>${p[1]}</td><td>${p[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>How partners make money</h2></header>
+  <div class="grid g4">
+    ${[['Professional services','Migrations, builds, assessments. Billed by milestone or time & materials.'],['Managed services','Monthly fee to run and optimize customer environments.'],['AWS resale','Bill the customer for AWS usage with a margin (Solution Provider / distribution).'],['Software & Marketplace','Subscriptions sold directly or via AWS Marketplace.'],['Funding','MAP, POC and other programs offset delivery cost.'],['Training','Paid enablement and workshops.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="muted small">${x[1]}</p></div>`).join('')}
+  </div></section>
+`;
+function showTier(i){ const t = TIERS[i]; $('#tierD').innerHTML = `<h3>${t.t}</h3><p>${t.d}</p><div class="cols"><div><div class="eyebrow">Typically requires</div><ul class="clean">${t.need.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><div class="eyebrow">Unlocks</div><ul class="clean">${t.get.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>`;
+  document.querySelectorAll('[data-tier]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.tier===i)); }
+
+V.portals = () => `
+  <header class="section"><span class="eyebrow">Chapter 04 · Intermediate</span><h1>Portals & programs</h1>
+  <p class="lede">Partner work happens across a handful of portals. Learn which one does what, who uses it, and what comes out of it. Click a portal for its process, outcomes and lead potential.</p></header>
+
+  <section class="section"><header><h2>The portal map</h2><p class="muted">Abbreviations you’ll hear: <b>APN</b> AWS Partner Network · <b>APC</b> AWS Partner Central · <b>APFP</b> AWS Partner Funding Portal · <b>AMMP</b> AWS Marketplace Management Portal · <b>PSF</b> Partner Solutions Finder.</p></header>
+  <div class="grid g4" id="portalGrid">${PORTALS.map((p,i)=>`<button type="button" class="orgnode" data-portal="${i}" aria-pressed="${i===0}" style="padding:12px"><span class="tag ${p.lead?'s':'a'}" style="justify-self:start">${p.abbr}</span><b style="margin-top:4px">${p.name}</b><small>${p.short}</small></button>`).join('')}</div>
+  <div class="detail" id="portalD"></div>
+  <p class="small muted">Orange tags mark portals that directly produce leads or pipeline. AWS has been folding several tools (funding, marketing, analytics) into Partner Central, so names and menu locations may differ from what you see. The function stays the same.</p></section>
+
+  <section class="section"><header><h2>A deal, portal by portal</h2><p class="muted">How one customer engagement moves through the tools.</p></header>
+  ${flow('journey', FLOWS.journey = JOURNEY, {label:'Step'})}</section>
+
+  <section class="section"><header><h2>Where leads come from</h2><p class="muted">Ranked roughly by how warm the lead usually is.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Source</th><th>Portal / channel</th><th>How it works</th><th>Who acts</th><th>Warmth</th></tr></thead><tbody>
+  ${LEADS.map(l=>`<tr><td><b>${l[0]}</b></td><td>${l[1]}</td><td>${l[2]}</td><td>${l[3]}</td><td><span class="mono">${'●'.repeat(l[4])}<span class="muted">${'○'.repeat(5-l[4])}</span></span></td></tr>`).join('')}
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Partnership types</h2></header>
+  <div class="grid g3">${PARTNERSHIPS.map(p=>`<div class="card"><h4>${p[0]}</h4><p class="small">${p[1]}</p><p class="small muted"><b>Example:</b> ${p[2]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Certifications & accreditations</h2><p class="muted">People earn these individually; they count toward the company’s tier and Specializations once linked to the partner account in Partner Central.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Credential</th><th>Level</th><th>Who should take it</th><th>Counts toward</th></tr></thead><tbody>
+  ${CERTS.map(c=>`<tr><td><b>${c[0]}</b></td><td><span class="tag">${c[1]}</span></td><td>${c[2]}</td><td>${c[3]}</td></tr>`).join('')}
+  </tbody></table></div>
+  ${flow('certflow', FLOWS.certflow = CERT_FLOW, {label:'Step'})}</section>
+`;
+function showPortal(i){ const p = PORTALS[i];
+  const li = a => `<ul class="clean">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  $('#portalD').innerHTML = `<h3>${p.name} <span class="muted" style="font-weight:500">· ${p.abbr}</span></h3><p>${p.what}</p>
+  <div class="cols"><div><div class="eyebrow">Used for</div>${li(p.use)}</div><div><div class="eyebrow">Process</div>${li(p.process)}</div><div><div class="eyebrow">Outcomes</div>${li(p.out)}</div></div>
+  <div class="kv"><dt>Who uses it</dt><dd>${p.who}</dd><dt>Your part</dt><dd>${p.you}</dd><dt>Lead potential</dt><dd>${p.leadtxt}</dd>${p.url?`<dt>Where</dt><dd><a href="${p.url}" target="_blank" rel="noopener">${p.url.replace('https://','')}</a></dd>`:''}</div>`;
+  document.querySelectorAll('[data-portal]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.portal===i)); }
+
+V.people = () => `
+  <header class="section"><span class="eyebrow">Chapter 05 · Intermediate</span><h1>Who’s who & RACI</h1>
+  <p class="lede">Half of partner work is knowing who to ask. Click a role to see what they do and when you’ll work with them.</p></header>
+  <div class="org">
+    <div class="orgcol"><span class="eyebrow">At AWS</span>${PEOPLE.aws.map((p,i)=>`<button type="button" class="orgnode" data-org="aws-${i}" aria-pressed="${i===0}"><b>${p[0]}</b><small>${p[1]}</small></button>`).join('')}</div>
+    <div class="bridge">Partner Central · ACE · meetings</div>
+    <div class="orgcol"><span class="eyebrow">At your company</span>${PEOPLE.us.map((p,i)=>`<button type="button" class="orgnode" data-org="us-${i}" aria-pressed="false"><b>${p[0]}</b><small>${p[1]}</small></button>`).join('')}</div>
+  </div>
+  <div class="detail" id="orgD"></div>
+  <div class="card tint"><b>Practical tip:</b> keep a one-page contact sheet with your PDM, PSA, PMM and key AWS account managers by territory, plus what each one cares about this quarter.</div>
+
+  <section class="section"><header><h2>On the customer side</h2><p class="muted">The people your invoices, videos and proposals actually reach.</p></header>
+  <div class="grid g3">${CUSTOMER_ROLES.map(c=>`<div class="card"><h4>${c[0]}</h4><p class="small">${c[1]}</p><p class="small muted"><b>Cares about:</b> ${c[2]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>How the three work together</h2><p class="muted">Each side gives something and gets something.</p></header>
+  <div class="grid g3">${TRIANGLE.map(t=>`<div class="card"><span class="eyebrow">${t[0]}</span><div><div class="small"><b>Gives:</b></div><ul class="clean small">${t[1].map(x=>`<li>${x}</li>`).join('')}</ul></div><div><div class="small"><b>Gets:</b></div><ul class="clean small">${t[2].map(x=>`<li>${x}</li>`).join('')}</ul></div></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Responsibility matrix (RACI)</h2><p class="muted"><b>R</b> does the work · <b>A</b> owns the outcome (and often does it) · <b>C</b> consulted · <b>I</b> kept informed. Typical split; your company may differ.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Activity</th>${RACI_COLS.map(c=>`<th style="text-align:center">${c}</th>`).join('')}</tr></thead><tbody>
+  ${RACI.map(r=>`<tr><td>${r[0]}</td>${r[1].split('').map(x=>`<td style="text-align:center">${x==='-'?'<span class="muted">–</span>':`<span class="tag ${x==='A'?'s':x==='R'?'a':''}">${x}</span>`}</td>`).join('')}</tr>`).join('')}
+  </tbody></table></div></section>
+`;
+function showOrg(k){ const [side,i] = k.split('-'); const p = PEOPLE[side][+i];
+  $('#orgD').innerHTML = `<h3>${p[0]} <span class="muted" style="font-weight:500">· ${p[1]}</span></h3><p>${p[2]}</p><p class="small"><b>You’ll work with them on:</b> ${p[3]}</p>`;
+  document.querySelectorAll('[data-org]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.org===k)); }
+
+V.gtm = () => `
+  <header class="section"><span class="eyebrow">Chapter 06 · Intermediate → Advanced</span><h1>Go-to-market & co-sell</h1>
+  <p class="lede">GTM is how the company finds and wins customers. In the AWS world, the big lever is <b>co-selling</b>: sharing opportunities with AWS in ACE so AWS sellers help you win, and AWS sends you referrals.</p></header>
+
+  <section class="section"><header><h2>The ACE pipeline</h2><p class="muted">Click each stage. These are the stages in Partner Central.</p></header>
+  ${flow('ace', FLOWS.ace = ACE, {label:'Stage'})}</section>
+
+  <section class="section"><header><h2>Motions</h2></header>
+  <div class="grid g2">
+    <div class="card"><h4>Partner-originated (Partner Referral)</h4><p class="small">You found the deal and share it with AWS. AWS may assign an account manager to help. Counts toward your tier when launched.</p></div>
+    <div class="card"><h4>AWS-originated (AWS Referral)</h4><p class="small">AWS sends you a customer need. Accept or reject quickly and keep it updated; your responsiveness affects future referrals.</p></div>
+    <div class="card"><h4>Marketplace-led</h4><p class="small">Customer buys through AWS Marketplace, often via a private offer. Eligible purchases can count toward their AWS commitment, which can make procurement easier.</p></div>
+    <div class="card"><h4>Program-led</h4><p class="small">MAP for migrations, Well-Architected reviews, GenAI programs. The program gives a reason to engage and funding to lower cost.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>MAP: the migration motion</h2></header>
+  ${flow('map', FLOWS.map = [
+    {t:'Assess', d:'Understand what the customer has and build the business case (TCO, readiness).', do:['Migration Readiness Assessment (MRA)','Discovery of servers/apps','Business case'], check:['Assess funding approved before starting'], tools:['Migration Evaluator, MRA']},
+    {t:'Mobilize', d:'Build the foundation and the plan: landing zone, security, pilot migrations, skills.', do:['Landing zone (Control Tower)','Wave plan','Pilot migrations'], check:['Mobilize funding/credits approved'], tools:['Control Tower, Migration Hub']},
+    {t:'Migrate & Modernize', d:'Move workloads in waves and modernize where it makes sense.', do:['Tag migrated resources (map-migrated) so credits apply','Track migrated ARR'], check:['Tagging applied consistently'], tools:['Application Migration Service, DMS']}
+  ], {label:'Phase'})}</section>
+
+  <section class="section"><header><h2>Plays that work</h2></header>
+  <div class="grid g3">
+    ${[['Cost optimization review','Free/funded review that finds savings. Opens doors fast.'],['GenAI quick start','Short Bedrock POC on a real use case, funded where eligible.'],['Data center exit','Deadline-driven migration with MAP.'],['Security & compliance','WAFR security pillar + remediation.'],['Managed services upsell','After migration, offer ongoing operations.'],['Marketplace private offer','For customers with AWS commitments.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="muted small">${x[1]}</p></div>`).join('')}
+  </div></section>
+`;
+
+V.funding = () => `
+  <header class="section"><span class="eyebrow">Chapter 07 · Intermediate</span><h1>Funding programs</h1>
+  <p class="lede">AWS invests in partner deals so customers adopt AWS faster. For AdminOps this is real money: requested, tracked, proven and reconciled. Missed deadlines and weak proof are money left on the table.</p></header>
+  <section class="section"><header><h2>Lifecycle of a funding request</h2></header>
+  ${flow('fund', FLOWS.fund = FUND_FLOW)}</section>
+  <section class="section"><header><h2>Program cheat sheet</h2><p class="muted">Names, eligibility and amounts change often. Use this as a map, then confirm in Partner Central.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Program</th><th>Use it for</th><th>Paid as</th><th>Typical proof of execution</th></tr></thead><tbody>
+  ${FUNDS.map(f=>`<tr><td><b>${f[0]}</b></td><td>${f[1]}</td><td>${f[2]}</td><td>${f[3]}</td></tr>`).join('')}</tbody></table></div></section>
+  <section class="section"><header><h2>Top reasons claims get rejected</h2></header>
+  <div class="grid g3">${['Work started before approval','Claim submitted after the deadline','Customer invoice missing or lower than claimed amount','Names or dates don’t match across documents','No customer sign-off','Opportunity not linked or stale in ACE'].map(x=>`<div class="card warnc small">${x}</div>`).join('')}</div></section>
+`;
+
+V.revops = () => `
+  <header class="section"><span class="eyebrow">Chapter 08 · Intermediate → Advanced</span><h1>RevOps</h1>
+  <p class="lede">Revenue operations connects marketing, sales, delivery and finance so that leads turn into cash predictably and every number can be trusted.</p></header>
+  <section class="section"><header><h2>Lead-to-cash pipeline</h2></header>${flow('l2c', FLOWS.l2c = L2C, {label:'Stage'})}</section>
+
+  <section class="section"><header><h2>Weighted pipeline calculator</h2><p class="muted">Edit the amounts. Probabilities are common defaults; set your own.</p></header>
+  <div class="grid g2">
+    <div class="card" id="wpIn">${[['Prospect',10,200000],['Qualified',20,150000],['Technical validation',40,120000],['Business validation',60,90000],['Committed',90,60000]].map((r,i)=>`<div class="grid" style="grid-template-columns:1.3fr 70px 1fr;gap:8px;align-items:end"><span class="small">${r[0]}</span><label class="field">Prob %<input type="number" id="wpp${i}" value="${r[1]}" min="0" max="100"></label><label class="field">Amount $<input type="number" id="wpa${i}" value="${r[2]}" min="0" step="1000"></label></div>`).join('')}
+      <label class="field">Quarterly target $<input type="number" id="wpT" value="250000" min="0" step="1000"></label></div>
+    <div class="card tint" id="wpOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>Metrics you’ll be asked about</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Metric</th><th>Formula</th><th>Healthy signal</th></tr></thead><tbody>
+    <tr><td>Pipeline coverage</td><td class="mono small">open pipeline ÷ target</td><td>~3× or more</td></tr>
+    <tr><td>Win rate</td><td class="mono small">won ÷ (won + lost)</td><td>Rising over time</td></tr>
+    <tr><td>Sales cycle</td><td class="mono small">avg days created → won</td><td>Shrinking</td></tr>
+    <tr><td>MRR / ARR</td><td class="mono small">recurring monthly revenue; ARR = MRR × 12</td><td>Growing</td></tr>
+    <tr><td>Net revenue retention</td><td class="mono small">(start MRR + expansion − churn − contraction) ÷ start MRR</td><td>&gt; 100%</td></tr>
+    <tr><td>DSO</td><td class="mono small">AR ÷ revenue × days in period</td><td>Below your payment terms + 10</td></tr>
+    <tr><td>Utilization</td><td class="mono small">billable hrs ÷ available hrs</td><td>~70–85% for delivery</td></tr>
+    <tr><td>Gross margin</td><td class="mono small">(revenue − delivery cost) ÷ revenue</td><td>Services often 30–50%; resale much lower</td></tr>
+    <tr><td>ACE launched opps</td><td class="mono small">count of Launched in period</td><td>On track for next tier</td></tr>
+    <tr><td>Funding recovered</td><td class="mono small">paid claims ÷ approved funding</td><td>Close to 100%</td></tr>
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Systems map</h2><p class="muted">Where data lives and how it should flow.</p></header>
+  <div class="flow">${[['CRM','Leads, deals, contacts'],['ACE','Shared opportunities with AWS'],['PSA / PM tool','Projects, time'],['QuickBooks','Invoices, payments, P&L'],['BI / dashboards','One view of truth']].map((x,i)=>`${i?'<span class="arrow">⇄</span>':''}<div class="step"><span class="t">${x[0]}</span><span class="n" style="font-family:var(--body);font-size:12px">${x[1]}</span></div>`).join('')}</div>
+  <div class="card tint small"><b>Rule of thumb:</b> one record ID should travel through every system. Store the ACE opportunity ID in CRM, and the CRM deal ID / PO number on the QuickBooks invoice. Then any number can be traced end to end.</div></section>
+`;
+function calcWP(){
+  let w = 0, t = 0;
+  for(let i=0;i<5;i++){ const p = +($('#wpp'+i)?.value||0), a = +($('#wpa'+i)?.value||0); w += a*p/100; t += a; }
+  const T = +($('#wpT')?.value||0);
+  const cov = T ? t/T : 0;
+  const state = cov >= 3 ? ['Healthy coverage','var(--good)'] : cov >= 2 ? ['Thin — add pipeline','var(--warn)'] : ['At risk','var(--bad)'];
+  $('#wpOut').innerHTML = `<div class="eyebrow">Total pipeline</div><div class="out mono">${money(t)}</div><div class="eyebrow">Weighted forecast</div><div class="out mono">${money(w)}</div><div class="eyebrow">Coverage vs target</div><div class="out mono">${cov.toFixed(1)}×</div><span class="tag" style="color:${state[1]};border-color:${state[1]}">${state[0]}</span><p class="small muted">Weighted forecast ${w>=T?'meets':'is below'} target by ${money(Math.abs(w-T))}.</p>`;
+}
+
+V.adminops = () => {
+  const done = store.get('close', []);
+  return `
+  <header class="section"><span class="eyebrow">Chapter 09 · Your daily work</span><h1>AdminOps & QuickBooks</h1>
+  <p class="lede">Clean books are a growth tool. They prove funding claims, keep cash coming in, and give leaders numbers they can trust.</p></header>
+
+  <section class="section"><header><h2>Invoice lifecycle in QuickBooks</h2></header>${flow('inv', FLOWS.inv = INVOICE)}</section>
+
+  <section class="section"><header><h2>What you’ll invoice in an AWS partner</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Revenue type</th><th>How it’s billed</th><th>Watch out for</th></tr></thead><tbody>
+    <tr><td>Professional services</td><td>Milestones or time & materials per SOW</td><td>Invoice the day the milestone is signed off</td></tr>
+    <tr><td>Managed services</td><td>Monthly recurring</td><td>Set up recurring invoices; adjust for scope changes</td></tr>
+    <tr><td>AWS resale</td><td>Monthly, based on the customer’s AWS usage plus margin</td><td>AWS bills arrive after month-end; usage swings; credits and refunds</td></tr>
+    <tr><td>AWS Marketplace sales</td><td>AWS bills the customer; you receive a disbursement net of the listing fee</td><td>Don’t also invoice the customer; record gross vs fee per your accountant’s guidance</td></tr>
+    <tr><td>Funding payouts</td><td>Cash from AWS after a claim</td><td>Match to the claim ID; ask your accountant how to classify</td></tr>
+    <tr><td>Reimbursable expenses</td><td>Travel etc., per contract</td><td>Attach receipts</td></tr>
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Marketplace payout calculator</h2></header>
+  <div class="grid g2">
+    <div class="card"><label class="field">Contract value $<input type="number" id="mpV" value="120000" min="0" step="1000"></label>
+      <label class="field">Listing fee %<input type="number" id="mpF" value="3" min="0" max="100" step="0.5"></label>
+      <label class="field">Reseller (CPPO) margin % if any<input type="number" id="mpR" value="0" min="0" max="100" step="0.5"></label>
+      <p class="muted small">Example rate only. Your fee depends on offer type and seller agreement.</p></div>
+    <div class="card tint" id="mpOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>DSO calculator</h2></header>
+  <div class="grid g2">
+    <div class="card"><label class="field">Accounts receivable today $<input type="number" id="dsA" value="180000" min="0" step="1000"></label>
+      <label class="field">Revenue in last 90 days $<input type="number" id="dsR" value="390000" min="0" step="1000"></label>
+      <label class="field">Standard terms (days)<input type="number" id="dsT" value="30" min="0"></label></div>
+    <div class="card tint" id="dsOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>Month-end close checklist</h2><p class="muted">Ticks are saved in this browser. Reset each month.</p></header>
+  <div class="card"><div id="closeList" style="display:grid;gap:2px">${CLOSE.map((c,i)=>`<label class="check ${done.includes(i)?'done':''}"><input type="checkbox" id="cl${i}" data-cl="${i}" ${done.includes(i)?'checked':''}><span>${c}</span></label>`).join('')}</div>
+  <div><button class="btn ghost" type="button" id="closeReset">Reset for a new month</button></div></div></section>
+
+  <section class="section"><header><h2>QuickBooks setup that scales</h2></header>
+  <div class="grid g2">
+    <div class="card"><h4 class="do">Do</h4><ul class="clean small"><li>Turn on Classes (practice: Migration, Data/AI, Managed, Resale) and/or Projects (per customer engagement)</li><li>Use a consistent customer naming rule: Legal Name (Country)</li><li>Put the PO and SOW number in a custom field and on every invoice</li><li>Attach the signed SOW to the customer record</li><li>Use bank rules for recurring items like the company’s AWS bill and Marketplace disbursements</li><li>Run A/R aging every Monday</li></ul></div>
+    <div class="card"><h4 class="dont">Don’t</h4><ul class="clean small"><li>Record customer payments as bare deposits (they won’t clear the invoice)</li><li>Edit or delete invoices from a closed period</li><li>Mix resale and services on one generic item</li><li>Leave payments in Undeposited Funds for weeks</li><li>Guess how to record funding or Marketplace fees; ask the accountant once and document the rule</li></ul></div>
+  </div></section>`;
+};
+function calcMP(){
+  const v = +$('#mpV').value||0, f = +$('#mpF').value||0, r = +$('#mpR').value||0;
+  const fee = v*f/100, res = v*r/100, net = v - fee - res;
+  $('#mpOut').innerHTML = `<div class="kv"><dt>Customer pays (via AWS bill)</dt><dd class="mono">${money(v)}</dd><dt>Listing fee</dt><dd class="mono">−${money(fee)}</dd><dt>Reseller margin</dt><dd class="mono">−${money(res)}</dd></div><div class="eyebrow">Your disbursement</div><div class="out mono">${money(net)}</div><p class="small muted">Match each disbursement in your bank to the Marketplace seller report line by line.</p>`;
+}
+function calcDSO(){
+  const a = +$('#dsA').value||0, r = +$('#dsR').value||0, t = +$('#dsT').value||0;
+  const d = r ? a/r*90 : 0;
+  const st = d <= t+10 ? ['On track','var(--good)'] : d <= t+25 ? ['Slipping','var(--warn)'] : ['Needs action','var(--bad)'];
+  $('#dsOut').innerHTML = `<div class="eyebrow">Days sales outstanding</div><div class="out mono">${d.toFixed(0)} days</div><span class="tag" style="color:${st[1]};border-color:${st[1]}">${st[0]}</span><p class="small muted">Each day of DSO ties up about ${money(r/90)} of cash.</p>`;
+}
+
+V.content = () => `
+  <header class="section"><span class="eyebrow">Chapter 10 · Your craft</span><h1>Video & content</h1>
+  <p class="lede">In a partner business, content does real work: it generates leads, serves as evidence for Specializations, gets featured by AWS, and justifies MDF. Treat each video as a pipeline asset with a goal and a number.</p></header>
+  <section class="section"><header><h2>Production pipeline</h2></header>${flow('vid', FLOWS.vid = VIDEO)}</section>
+  <section class="section"><header><h2>What to make</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Format</th><th>Why it matters</th><th>Shape</th></tr></thead><tbody>
+  ${CONTENT_TYPES.map(c=>`<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td></tr>`).join('')}</tbody></table></div></section>
+  <section class="section"><header><h2>Brand & trademark basics</h2><p class="muted">Follow AWS’s current trademark and partner co-marketing guidelines. Your PMM can confirm specifics.</p></header>
+  <div class="grid g2">
+    <div class="card"><h4 class="do">Do</h4><ul class="clean small"><li>Use the official partner tier / Specialization badges exactly as provided</li><li>Write “Amazon Web Services (AWS)” on first mention, then “AWS”</li><li>Use the official AWS architecture icons for diagrams</li><li>Get written customer approval for names, logos, quotes and metrics</li><li>Keep proof of every MDF-funded asset (final file, publish date, analytics)</li></ul></div>
+    <div class="card"><h4 class="dont">Don’t</h4><ul class="clean small"><li>Modify, recolor or animate the AWS logo</li><li>Imply AWS endorses your company or product</li><li>Show account IDs, keys, emails or customer data on screen</li><li>Share unreleased or NDA information</li><li>Use AWS event names or logos without permission</li></ul></div>
+  </div></section>
+  <section class="section"><header><h2>Measure what content does</h2></header>
+  <div class="grid g4">${[['Reach','Views, impressions'],['Attention','Average watch time, completion %'],['Action','Clicks, sign-ups, meetings booked'],['Revenue','Leads tagged to the video → pipeline → won']].map(x=>`<div class="card"><span class="eyebrow">${x[0]}</span><p class="small">${x[1]}</p></div>`).join('')}</div></section>
+`;
+
+V.calendar = () => `
+  <header class="section"><span class="eyebrow">Chapter 11 · Reference</span><h1>Calendar & history</h1>
+  <p class="lede">The AWS year has a rhythm. Funding, events and pipeline pushes repeat every year, so plan content and admin work around them. Dates are typical; check each year’s announcements.</p></header>
+  <section class="section"><header><h2>A typical AWS partner year</h2><div class="tags"><span class="tag" style="background:var(--accent);color:var(--accent-ink);border-color:transparent">Major event</span><span class="tag s">Money / planning</span><span class="tag">Other</span></div></header>
+  <div class="tablewrap" style="padding:10px"><div class="months">${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i)=>`<div class="mon"><div class="mh ${i%3===0?'q':''}">${m}${i%3===0?' · Q'+(i/3+1):''}</div>${ANNUAL.filter(a=>a[0]===i).map(a=>`<div class="ev ${a[2]}">${a[1]}</div>`).join('')}</div>`).join('')}</div></div></section>
+
+  <section class="grid g2">
+    <div class="section"><header><h2>Milestones</h2></header><div class="hist">${HISTORY.map(x=>`<div class="hi"><span class="y">${x[0]}</span><span>${x[1]}</span></div>`).join('')}</div></div>
+    <div class="section"><header><h2>AWS annual revenue</h2><p class="muted small">US$ billions, from Amazon’s annual reports.</p></header><div class="card chart">${revChart()}</div>
+    <p class="small muted">Scale matters for you: AWS is a very large business that relies on partners to reach customers, which is why it funds partner work.</p></div>
+  </section>
+`;
+function revChart(){
+  const W=480,H=260,pl=40,pr=12,pt=22,pb=28, max=120;
+  const bw=(W-pl-pr)/REVENUE.length;
+  const y=v=>pt+(H-pt-pb)*(1-v/max);
+  let g='';
+  [0,30,60,90,120].forEach(t=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end">${t}</text>`; });
+  REVENUE.forEach((r,i)=>{ const x=pl+i*bw+bw*.18, w=bw*.64, last=i===REVENUE.length-1;
+    g+=`<rect x="${x}" y="${y(r[1])}" width="${w}" height="${y(0)-y(r[1])}" rx="3" fill="${last?'var(--accent)':'var(--accent-soft)'}" stroke="var(--accent)" stroke-width="${last?0:1}"/><text x="${x+w/2}" y="${y(r[1])-6}" text-anchor="middle" style="fill:var(--ink)">${r[1]}</text><text x="${x+w/2}" y="${H-8}" text-anchor="middle">${r[0]}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="AWS revenue grew from 25.7 billion dollars in 2018 to 107.6 billion in 2024">${g}</svg>`;
+}
+
+V.glossary = () => `
+  <header class="section"><span class="eyebrow">Chapter 12 · Reference</span><h1>Glossary</h1>
+  <p class="lede">${GLOSSARY.length} terms you’ll hear in meetings, emails and Partner Central.</p></header>
+  <input type="search" id="glQ" placeholder="Search terms or definitions" aria-label="Search glossary">
+  <div class="tablewrap"><table><thead><tr><th style="width:30%">Term</th><th>Meaning</th></tr></thead><tbody id="glBody"></tbody></table></div>
+`;
+function renderGl(){ const q = ($('#glQ')?.value||'').toLowerCase();
+  const rows = GLOSSARY.filter(g=>!q || (g[0]+' '+g[1]).toLowerCase().includes(q)).sort((a,b)=>a[0].localeCompare(b[0]));
+  $('#glBody').innerHTML = rows.length ? rows.map(g=>`<tr><td><b>${g[0]}</b></td><td>${g[1]}</td></tr>`).join('') : '<tr><td colspan="2" class="muted">No match.</td></tr>'; }
+
+let qi = 0, qscore = 0, qanswered = false;
+V.quiz = () => `
+  <header class="section"><span class="eyebrow">Chapter 13 · Check yourself</span><h1>Quiz</h1>
+  <p class="lede">${QUIZ.length} questions across cloud basics, the partner program, funding, RevOps and content.</p></header>
+  <div class="card" id="quizBox" style="max-width:680px"></div>
+`;
+function renderQuiz(){
+  const box = $('#quizBox'); if(!box) return;
+  if(qi >= QUIZ.length){
+    const best = Math.max(store.get('best',0), qscore); store.set('best', best);
+    box.innerHTML = `<span class="eyebrow">Result</span><div class="out">${qscore} / ${QUIZ.length}</div><p>${qscore>=10?'Excellent. You’re ready to explain this to new joiners.':qscore>=7?'Solid. Revisit the chapters for questions you missed.':'Good start. Go through chapters 03–08 again and retry.'}</p><p class="muted small">Best score in this browser: ${best}</p><div><button class="btn" type="button" id="qRestart">Try again</button></div>`;
+    return;
+  }
+  const q = QUIZ[qi]; qanswered = false;
+  box.innerHTML = `<div style="display:flex;justify-content:space-between;gap:8px"><span class="eyebrow">Question ${qi+1} of ${QUIZ.length}</span><span class="eyebrow">Score ${qscore}</span></div>
+  <div class="bar"><i style="width:${qi/QUIZ.length*100}%"></i></div><h3>${q[0]}</h3>
+  <div style="display:grid;gap:6px">${q[1].map((o,i)=>`<button class="opt" type="button" data-q="${i}">${o}</button>`).join('')}</div><div id="qFb"></div>`;
+}
+
+V.grow = () => `
+  <header class="section"><span class="eyebrow">Chapter 14 · Career</span><h1>Grow & contribute</h1>
+  <p class="lede">You sit where content, money and pipeline meet, which is rare. People in that seat who keep systems clean and connect the dots become indispensable.</p></header>
+
+  <section class="section"><header><h2>Your 30-60-90 day plan</h2></header>
+  <div class="flow">${PLAN.map((p,i)=>`${i?'<span class="arrow">→</span>':''}<div class="step" style="flex-basis:220px"><span class="n">${p[0]}</span><span class="small" style="font-weight:400">${p[1]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Use cases & strategies</h2><p class="muted">Filter by who leads it.</p></header>
+  <div class="chips" id="ucChips">${['All','Video','AdminOps','RevOps','Marketing','Everyone'].map((c,i)=>`<button class="chip" type="button" data-uc="${c}" aria-pressed="${i===0}">${c}</button>`).join('')}</div>
+  <div class="grid g2" id="ucGrid"></div></section>
+
+  <section class="section"><header><h2>Rules you never break</h2></header>
+  <div class="grid g2">${RULES.map(r=>`<div class="card small" style="grid-template-columns:auto 1fr;align-items:start;display:grid;gap:10px"><span class="tag ${r[1]==='money'?'s':'a'}">${r[1]}</span><span>${r[0]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Habits of people who grow fast</h2></header>
+  <div class="grid g3">${HABITS.map(x=>`<div class="card"><h4>${x[0]}</h4><p class="muted small">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Impact you can report</h2><p class="muted">Track these monthly and bring them to your review.</p></header>
+  <div class="grid g4">${[['Funding recovered','$ claimed and paid vs approved'],['DSO','Days, trending down'],['Content-sourced pipeline','$ from leads tagged to your videos'],['Case studies shipped','Count, and which support Specializations'],['Close on time','Month-end closed by day X'],['ACE hygiene','% opportunities current']].map(x=>`<div class="card tint"><b>${x[0]}</b><span class="small muted">${x[1]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Where to keep learning</h2></header>
+  <div class="grid g3">
+    <div class="card"><h4>AWS Skill Builder</h4><p class="small muted">Free partner accreditations and Cloud Practitioner prep.</p><a href="https://skillbuilder.aws/" target="_blank" rel="noopener">skillbuilder.aws</a></div>
+    <div class="card"><h4>AWS Partner Central</h4><p class="small muted">Program guides, funding rules, ACE, Marketplace management.</p><a href="https://partnercentral.awspartner.com/" target="_blank" rel="noopener">partnercentral.awspartner.com</a></div>
+    <div class="card"><h4>AWS Partner Network blog</h4><p class="small muted">Program changes and partner stories.</p><a href="https://aws.amazon.com/blogs/apn/" target="_blank" rel="noopener">aws.amazon.com/blogs/apn</a></div>
+    <div class="card"><h4>AWS Marketplace seller guide</h4><p class="small muted">Listings, private offers, disbursements.</p><a href="https://docs.aws.amazon.com/marketplace/latest/userguide/" target="_blank" rel="noopener">docs.aws.amazon.com/marketplace</a></div>
+    <div class="card"><h4>Well-Architected Framework</h4><p class="small muted">The six pillars in depth.</p><a href="https://aws.amazon.com/architecture/well-architected/" target="_blank" rel="noopener">aws.amazon.com/architecture/well-architected</a></div>
+    <div class="card"><h4>QuickBooks Online help</h4><p class="small muted">Classes, projects, reconciliation, reports.</p><a href="https://quickbooks.intuit.com/learn-support/" target="_blank" rel="noopener">quickbooks.intuit.com/learn-support</a></div>
+  </div></section>
+`;
+let ucFilter = 'All';
+function renderUC(){ $('#ucGrid').innerHTML = USECASES.filter(u=>ucFilter==='All'||u.who.includes(ucFilter)).map(u=>`<div class="card"><div class="tags"><span class="tag a">${u.who}</span></div><h4>${u.t}</h4><p class="small">${u.s}</p><p class="small muted"><b>Why it wins:</b> ${u.win}</p></div>`).join(''); }
+
+/* ================= ROUTER & EVENTS ================= */
+function route(){
+  let id = (location.hash||'').slice(1);
+  if(!V[id]) id = 'start';
+  renderNav(id);
+  $('#view').innerHTML = V[id]();
+  window.scrollTo(0,0);
+  if(id==='cloud'){ showInfra('region'); showSR(Object.keys(SR.models)[0]); }
+  if(id==='services') renderSvc();
+  if(id==='partner') showTier(1);
+  if(id==='portals') showPortal(0);
+  if(id==='people') showOrg('aws-0');
+  if(id==='revops') calcWP();
+  if(id==='adminops'){ calcMP(); calcDSO(); }
+  if(id==='glossary') renderGl();
+  if(id==='quiz'){ qi=0; qscore=0; renderQuiz(); }
+  if(id==='grow') renderUC();
+  try{ store.set('last', id); }catch(e){}
+}
+window.addEventListener('hashchange', route);
+
+document.addEventListener('click', e => {
+  const t = e.target;
+  const inf = t.closest('[data-infra]'); if(inf){ e.stopPropagation(); showInfra(inf.dataset.infra); return; }
+  const sr = t.closest('[data-sr]'); if(sr) return showSR(sr.dataset.sr);
+  const tier = t.closest('[data-tier]'); if(tier) return showTier(+tier.dataset.tier);
+  const org = t.closest('[data-org]'); if(org) return showOrg(org.dataset.org);
+  const por = t.closest('[data-portal]'); if(por) return showPortal(+por.dataset.portal);
+  const cat = t.closest('[data-cat]'); if(cat){ svcCat = cat.dataset.cat; document.querySelectorAll('[data-cat]').forEach(b=>b.setAttribute('aria-pressed', b===cat)); return renderSvc(); }
+  const uc = t.closest('[data-uc]'); if(uc){ ucFilter = uc.dataset.uc; document.querySelectorAll('[data-uc]').forEach(b=>b.setAttribute('aria-pressed', b===uc)); return renderUC(); }
+  const opt = t.closest('[data-q]');
+  if(opt && !qanswered){ qanswered = true; const q = QUIZ[qi], pick = +opt.dataset.q;
+    document.querySelectorAll('[data-q]').forEach(b=>{ const i=+b.dataset.q; if(i===q[2]) b.classList.add('right'); else if(i===pick) b.classList.add('wrong'); });
+    if(pick===q[2]) qscore++;
+    $('#qFb').innerHTML = `<p class="small" style="margin-top:6px">${pick===q[2]?'<b style="color:var(--good)">Correct.</b>':'<b style="color:var(--bad)">Not quite.</b>'} ${q[3]}</p><div style="margin-top:8px"><button class="btn" type="button" id="qNext">${qi===QUIZ.length-1?'See result':'Next question'}</button></div>`;
+    return; }
+  if(t.id==='qNext'){ qi++; return renderQuiz(); }
+  if(t.id==='qRestart'){ qi=0; qscore=0; return renderQuiz(); }
+  if(t.id==='closeReset'){ store.set('close', []); return route(); }
+  if(t.id==='themeBtn'){ const cur = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'); document.documentElement.dataset.theme = cur==='dark'?'light':'dark'; }
+});
+
+document.addEventListener('change', e => {
+  const t = e.target;
+  if(t.dataset.ck !== undefined){ let d = store.get('check', []); const i=+t.dataset.ck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('check', d);
+    t.closest('.check').classList.toggle('done', t.checked); const p = Math.round(d.length/CHECKLIST.length*100); $('#pct').textContent = p+'%'; $('#pbar').style.width = p+'%'; }
+  if(t.dataset.cl !== undefined){ let d = store.get('close', []); const i=+t.dataset.cl; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('close', d); t.closest('.check').classList.toggle('done', t.checked); }
+});
+document.addEventListener('input', e => {
+  const id = e.target.id||'';
+  if(id==='svcQ') renderSvc();
+  if(id==='glQ') renderGl();
+  if(id.startsWith('wp')) calcWP();
+  if(id.startsWith('mp')) calcMP();
+  if(id.startsWith('ds')) calcDSO();
+});
+
+route();
+</script>
+
+</body>
+</html>
