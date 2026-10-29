@@ -278,6 +278,8 @@ const CHAPTERS = [
   {id:'kpis', t:'KPIs & tracking', g:'Your job'},
   {id:'adminops', t:'AdminOps & QuickBooks', g:'Your job'},
   {id:'content', t:'Video & content', g:'Your job'},
+  {id:'marketing', t:'Digital marketing', g:'Your job'},
+  {id:'enablement', t:'Sales & success enablement', g:'Your job'},
   {id:'calendar', t:'Calendar & history', g:'Reference'},
   {id:'glossary', t:'Glossary', g:'Reference'},
   {id:'quiz', t:'Quiz', g:'Reference'},
@@ -732,6 +734,29 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['ICP','Ideal customer profile: the type of company you serve best.'],
+  ['Persona','A typical buyer role, with their goals and concerns.'],
+  ['MQL / SQL','Marketing-qualified lead / sales-qualified (sales-accepted) lead.'],
+  ['CPL','Cost per lead: spend ÷ leads.'],
+  ['CAC','Customer acquisition cost: sales and marketing cost ÷ new customers.'],
+  ['LTV','Customer lifetime value: gross profit from a customer over the relationship.'],
+  ['CTR','Click-through rate: clicks ÷ impressions.'],
+  ['Engagement rate','Interactions ÷ impressions on a post.'],
+  ['UTM parameters','Tags added to links to track source, medium, campaign and content.'],
+  ['Attribution','Deciding which marketing touches get credit for a deal.'],
+  ['Sourced vs influenced pipeline','Deals that started from marketing vs deals marketing touched along the way.'],
+  ['Share of voice','Your share of mentions compared with competitors.'],
+  ['SEO','Search engine optimization: ranking in organic search results.'],
+  ['ABM','Account-based marketing: tailored campaigns for a short list of target accounts.'],
+  ['Employee advocacy','Employees sharing company content to extend reach.'],
+  ['Funnel','Stages from awareness to purchase: visitors, leads, MQL, SQL, won.'],
+  ['Enablement','Giving sellers and account teams the content, tools and training to win.'],
+  ['Battlecard','A one-page guide to winning against a specific competitor or objection.'],
+  ['Mutual action plan','A shared plan with the customer listing steps and dates to signature and launch.'],
+  ['Health score','A combined rating of a customer’s adoption, satisfaction and risk.'],
+  ['QBR','Quarterly business review with a customer or with AWS.'],
+  ['NPS','Net Promoter Score: % promoters − % detractors.'],
+  ['Time to value','Time from kickoff to the first measurable customer result.'],
   ['TCO','Total cost of ownership: all costs of running a system over several years.'],
   ['CapEx / OpEx','Capital expenditure (buy up front) vs operating expenditure (pay as you go).'],
   ['Cloud Value Framework','AWS’s way to frame value: cost savings, staff productivity, operational resilience, business agility (and sustainability).'],
@@ -841,6 +866,9 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['Which metric best shows marketing’s impact on revenue?',['Followers','Impressions','Marketing-sourced pipeline','Likes'],2,'Pipeline ties marketing to revenue; followers and likes are early signals.'],
+  ['What do UTM parameters do?',['Speed up the website','Track which link or campaign brought a visitor','Encrypt emails','Book meetings'],1,'UTM tags record source, medium, campaign and content.'],
+  ['A customer’s health score drops because invoices are 60 days late. Who should hear first?',['Nobody','The account owner','AWS support','The customer’s competitors'],1,'AdminOps signals like late payment are early churn warnings; flag them to the account owner.'],
   ['Which Cloud Practitioner domain has the largest weight?',['Billing, Pricing & Support','Cloud Concepts','Cloud Technology & Services','Security & Compliance'],2,'Cloud Technology & Services is 34%, Security & Compliance 30%.'],
   ['A system must lose almost no data and recover in minutes. Which DR strategy fits best?',['Backup & restore','Pilot light','Warm standby or multi-site','None'],2,'Lower RPO/RTO needs warm standby or multi-site, at higher cost.'],
   ['What does RAG do?',['Trains a new model','Looks up your documents and answers from them','Encrypts data','Scales servers'],1,'Retrieval-augmented generation grounds answers in your own content.'],
@@ -2002,6 +2030,284 @@ function renderKpis(){
 function renderKpiLib(){ const b=$('#kpiLib'); if(!b) return;
   b.innerHTML = KPI_LIB.map((k,i)=>[k,i]).filter(([k])=>kpiArea==='All'||k[0]===kpiArea).map(([k,i])=>`<tr><td><span class="tag">${k[0]}</span><br><b>${k[1]}</b></td><td class="small">${k[2]}</td><td class="small">${k[3]}</td><td class="small">${k[4]}</td><td class="small">${k[5]}</td><td><button class="btn ghost" type="button" data-kadd="${i}" style="padding:4px 10px;font-size:13px">Track</button></td></tr>`).join(''); }
 
+/* ================= DIGITAL MARKETING ================= */
+const MK_FACTORS = [
+  ['Clear ideal customer profile','Know exactly who you serve: industry, company size, region, AWS maturity, trigger events.'],
+  ['Sharp positioning','One sentence on what you do better than other partners, backed by Specializations and results.'],
+  ['Proof over claims','Case studies, metrics, certifications and AWS badges beat adjectives in B2B.'],
+  ['AWS alignment','Ride AWS priorities (migration, GenAI, security). Co-market with your PMM and use MDF.'],
+  ['Consistency','Showing up weekly beats one big campaign a year.'],
+  ['Distribution','Great content nobody sees doesn’t count. Plan where each piece goes before making it.'],
+  ['Sales alignment','Agree what a qualified lead is, and hand leads over within hours.'],
+  ['Measurement','Every link tracked, every lead sourced, every campaign tied to pipeline.']
+];
+const PERSONAS = [
+  ['CIO / CTO','Strategy, risk, speed','Short exec videos, case studies, industry reports, events','LinkedIn, events, AWS Summits'],
+  ['Head of engineering / Cloud architect','How it works, effort, best practice','Architecture deep dives, demos, technical blogs, GitHub','YouTube, blog, communities'],
+  ['CFO / FinOps lead','Cost, ROI, predictability','TCO stories, cost-savings case studies, calculators','LinkedIn, email, webinars'],
+  ['CISO / Security','Compliance, controls','Security reviews, compliance checklists','Webinars, whitepapers'],
+  ['Procurement','Ease of buying, terms','Marketplace listing, pricing clarity','AWS Marketplace, website'],
+  ['AWS sellers (internal audience!)','Which partner to bring in','90-second offer videos, one-pagers, win stories','Email via PDM/PSM, internal enablement sessions']
+];
+const PLATFORMS = [
+  ['LinkedIn',5,'Visibility, leads, employer brand','Company posts, employee posts, carousels, short video, events, newsletters','3–5 posts/week company; 1–2/week per key employee','Impressions, engagement rate, followers, profile visits, leads'],
+  ['Website & SEO',5,'Credibility, inbound leads','Service pages per offer, case studies, blog, calculators, clear CTA','2–4 articles/month; keep service pages fresh','Organic traffic, rankings, conversion rate, form fills'],
+  ['YouTube',4,'Education, search, long-term visibility','Demos, architecture explainers, webinar replays, Shorts','2–4 videos/month','Views, watch time, subscribers, clicks'],
+  ['Email newsletter',4,'Nurture, retention','Monthly digest: AWS news decoded, one case study, one event','Monthly; event-triggered nurture flows','Open rate, click rate, replies, meetings'],
+  ['Webinars & events',4,'Leads, trust, co-marketing with AWS','Joint webinars with AWS, workshops, Summit and re:Invent presence','1 webinar/month or quarter','Registrants, attendance %, meetings booked, pipeline'],
+  ['AWS Marketplace & Partner Solutions Finder',4,'Buyer intent, AWS visibility','Listing video, clear offers, case studies','Review quarterly','Listing views, inquiries, private offer requests'],
+  ['AWS co-marketing (PMM, APN blog, AWS social)',4,'Reach and credibility through AWS','Joint case studies, blog posts, campaign kits','Per campaign','Reach, leads from AWS channels'],
+  ['Paid search & LinkedIn ads',3,'Targeted demand capture','Search ads on high-intent terms (“AWS migration partner”), ABM ads to target accounts','Always-on, small budget, tested','CTR, CPL, cost per opportunity'],
+  ['Communities',3,'Expertise, recruiting, word of mouth','AWS User Groups, meetups, AWS re:Post answers, Reddit, Slack groups','Weekly participation','Mentions, inbound DMs, speaking invites'],
+  ['Podcast / live shows',2,'Thought leadership','“Ask an architect” live, customer conversations','Monthly','Listens, guests from target accounts']
+];
+const STAGES = {
+  'Awareness':{goal:'Get noticed by the right people.', fmt:['Short vertical videos (AWS news in 60s)','LinkedIn carousels of architectures','Myth-busting posts','Event recaps','Employee expertise posts'], kpi:'Impressions, reach, followers, video views, share of voice'},
+  'Consideration':{goal:'Show you can solve their problem.', fmt:['Industry case study videos','Webinars with AWS','Architecture deep dives','Guides and checklists','Comparison content (e.g. 7 Rs explained)'], kpi:'Engagement rate, watch time, webinar attendance, content downloads'},
+  'Decision':{goal:'Make choosing you easy and safe.', fmt:['Customer testimonials','ROI/TCO calculators','Demo videos','Marketplace listing','Pricing and offer sheets','Security & compliance pack'], kpi:'Demo requests, meetings booked, proposals, win rate'},
+  'Retention & advocacy':{goal:'Keep customers and turn them into promoters.', fmt:['Customer newsletter','Results recap videos','Training content','Customer spotlight posts','Joint talks at AWS events'], kpi:'NRR, renewals, NPS, referrals, case studies approved'}
+};
+const MK_METRICS = [
+  ['Awareness','Impressions / reach','Times content was shown / unique people reached','Trend up month over month'],
+  ['Awareness','Share of voice','Your mentions ÷ total mentions of you + competitors','Growing'],
+  ['Engagement','Engagement rate','(Reactions + comments + shares + clicks) ÷ impressions','LinkedIn B2B often 2–5%'],
+  ['Engagement','Video completion rate','Viewers who watched to the end ÷ viewers','Short form > 50%'],
+  ['Engagement','Click-through rate (CTR)','Clicks ÷ impressions','Ads ~0.4–1% on LinkedIn; higher for email'],
+  ['Conversion','Conversion rate','Form fills ÷ visitors','Landing pages 2–5%+'],
+  ['Conversion','Cost per lead (CPL)','Spend ÷ leads','Falling; compare by channel'],
+  ['Pipeline','MQL → SQL rate','Sales-accepted leads ÷ marketing-qualified leads','Rising; 20–40% is common'],
+  ['Pipeline','Marketing-sourced pipeline','$ value of opportunities from marketing leads','Annual target'],
+  ['Pipeline','Marketing-influenced pipeline','$ value of opportunities that touched marketing','Annual target'],
+  ['Revenue','Customer acquisition cost (CAC)','Sales + marketing cost ÷ new customers','Falling'],
+  ['Revenue','LTV : CAC','Customer lifetime gross profit ÷ CAC','3:1 or better'],
+  ['Revenue','Marketing ROI','(Revenue attributed − cost) ÷ cost','Positive and growing'],
+  ['Funding','MDF ROI','Pipeline from MDF campaign ÷ MDF spent','Agree target with PMM']
+];
+const ATTRIB = [
+  ['First touch','All credit to the first interaction (e.g. a LinkedIn video).','Shows what creates awareness.'],
+  ['Last touch','All credit to the final interaction before conversion (e.g. a demo request page).','Shows what closes; undervalues content.'],
+  ['Multi-touch','Credit split across all interactions.','Fairer, needs good tracking in CRM.'],
+  ['Self-reported','Ask “How did you hear about us?” on forms and in calls.','Catches dark social (DMs, word of mouth) that tools miss.']
+];
+const MK_PLAN = [
+  {t:'Days 1–30 · Foundations', d:'Get the basics right so everything after can be measured.', do:['Define ICP and 3–5 personas with sales','Write positioning and 4–5 content pillars (e.g. Migration, Data & AI, Cost, Security, Customer stories)','Audit website, LinkedIn page, PSF profile, Marketplace listing','Set up UTM conventions, CRM lead source fields and a dashboard','Agree MQL/SQL definitions and lead handoff SLA with sales'], check:['Baseline numbers recorded'], tools:['CRM, analytics, brand guide']},
+  {t:'Days 31–60 · Launch engine', d:'Start a steady publishing rhythm and one flagship campaign.', do:['Publish 3–5 LinkedIn posts/week; 2 videos/month','Produce 2 customer case study videos','Plan a joint webinar with AWS; request MDF','Launch a monthly newsletter','Start an employee advocacy program (10 people sharing weekly)'], check:['Content calendar 4 weeks ahead'], tools:['Calendar, editing suite, scheduler']},
+  {t:'Days 61–90 · Scale & optimize', d:'Double down on what works and connect to pipeline.', do:['Run the webinar; cut into 10+ clips','Account-based campaign for 20 target accounts with personalized video','Create an AWS seller enablement kit for your top offer','Review metrics: cut the bottom 20% of formats, scale the top','Monthly marketing report to leadership'], check:['Marketing-sourced pipeline reported'], tools:['Dashboard, CRM reports']}
+];
+const IDEAS = [
+  ['AWS launch, decoded','Within 48 hours of a big AWS announcement, post a 60-second video: what it is and what it means for customers.','Awareness'],
+  ['Architecture whiteboard series','5-minute videos where an architect sketches a real (anonymized) solution.','Consideration'],
+  ['“Cloud bill of the month”','Anonymized cost-optimization story: before vs after, with the levers used.','Consideration'],
+  ['Customer “before & after”','30-second cut of a case study with one hard metric on screen.','Decision'],
+  ['Interactive TCO or readiness quiz','A web calculator that captures leads with a personalized report.','Decision'],
+  ['Ask an architect live','Monthly LinkedIn Live answering audience questions.','Consideration'],
+  ['Myth busters','“Moving to the cloud always saves money: true or false?” Short, punchy videos.','Awareness'],
+  ['Certification wall','Celebrate each certification with a branded post. Shows depth and attracts talent.','Awareness'],
+  ['Day in the life','A cloud engineer’s day on a migration project. Humanizes the brand.','Awareness'],
+  ['Personalized video outreach','60-second videos recorded for a specific target account, referencing their industry trigger.','Decision'],
+  ['AWS seller enablement kit','One-pager + 90-second video that an AWS account manager can forward to customers.','Decision'],
+  ['re:Invent field reporter','Daily recaps from the event floor; post-event “top 10 for your industry” webinar.','Awareness'],
+  ['Industry playbooks','Downloadable guides like “GenAI for retail: 5 use cases on AWS”.','Consideration'],
+  ['Customer advisory roundtable','Small dinner or virtual roundtable for prospects with a happy customer as host.','Decision'],
+  ['Marketplace demo video','Short overview embedded in the Marketplace listing and PSF profile.','Decision'],
+  ['Employee advocacy kit','Weekly ready-to-post snippets for the team. Employee reach often beats company page reach.','Awareness'],
+  ['Cost optimization challenge','“Find 20% savings in 30 days” offer with a funded review.','Decision'],
+  ['Quarterly customer results reel','Compile metrics from all launches this quarter into one video.','Retention & advocacy']
+];
+const WEEK = [
+  ['Mon','LinkedIn: industry insight or AWS news take','Plan the week, check last week’s metrics'],
+  ['Tue','Short video (60–90s) + caption','Newsletter drafting (monthly)'],
+  ['Wed','Carousel: architecture or checklist','Blog / SEO article (every other week)'],
+  ['Thu','Customer proof: case study clip or quote','Webinar promotion (when running)'],
+  ['Fri','Culture: certifications, team, events','Report: top posts, leads, learnings']
+];
+let mkStage = 'Awareness';
+V.marketing = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Your craft</span><h1>Digital marketing</h1>
+  <p class="lede">B2B cloud marketing is a trust game. Buyers research quietly for months, involve 6–10 people, and choose partners they’ve seen proving results. Marketing’s job is to be visible to the right people, prove expertise, and hand sales warm conversations.</p></header>
+
+  <section class="section"><header><h2>Key success factors</h2></header>
+  <div class="grid g4">${MK_FACTORS.map((f,i)=>`<div class="card"><span class="eyebrow">Factor ${i+1}</span><h4>${f[0]}</h4><p class="small muted">${f[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>The marketing process</h2></header>
+  ${flow('mkproc', FLOWS.mkproc = [
+    {t:'Strategy', d:'Decide who you’re for and what you stand for.', do:['ICP and personas','Positioning and messaging','Content pillars aligned to Specializations'], check:['Sales agrees with the ICP'], tools:['Workshop with sales and leadership']},
+    {t:'Plan', d:'Turn strategy into a calendar and budget.', do:['Quarterly campaign themes','Content calendar','Budget and MDF requests to the PMM'], check:['Each campaign has a goal and KPI'], tools:['Calendar, budget sheet, Partner Central']},
+    {t:'Create', d:'Produce content in batches; one hero asset, many cut-downs.', do:['Script, shoot, edit','Repurpose into posts, clips, blog, email'], check:['Approvals: customer, legal, AWS where needed'], tools:['Editing suite, design tool']},
+    {t:'Distribute', d:'Publish where your buyers are and amplify.', do:['Company page + employee sharing','Email, ads, AWS channels, Marketplace/PSF'], check:['UTM on every link'], tools:['Scheduler, UTM builder below']},
+    {t:'Capture', d:'Turn attention into contacts.', do:['Landing pages with one clear offer','Forms with “How did you hear about us?”'], check:['Lead source recorded in CRM'], tools:['Website forms, CRM']},
+    {t:'Nurture', d:'Stay helpful until they’re ready to talk.', do:['Email sequences by persona','Retargeting','Invite to webinars'], check:['Unsubscribes stay low'], tools:['Email platform']},
+    {t:'Hand off', d:'Pass qualified leads to sales fast.', do:['MQL definition met → assign to sales','Context note: what they consumed'], check:['Follow-up within 24 hours'], tools:['CRM workflow']},
+    {t:'Measure & improve', d:'Report on pipeline, not just likes.', do:['Monthly dashboard','Kill weak formats, scale strong ones'], check:['Sourced and influenced pipeline tracked'], tools:['Dashboard, CRM reports']}
+  ], {label:'Step'})}</section>
+
+  <section class="section"><header><h2>Who you’re talking to</h2><p class="muted">Including AWS sellers: an AWS account manager who remembers your offer can send you a deal.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Persona</th><th>Cares about</th><th>Content that works</th><th>Where to reach them</th></tr></thead><tbody>${PERSONAS.map(p=>`<tr><td><b>${p[0]}</b></td><td>${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Platforms to focus on</h2><p class="muted">Priority for a B2B AWS partner (5 = highest). Start with the top four done well.</p></header>
+  ${hbars(PLATFORMS.map(p=>[p[0].replace(' (PMM, APN blog, AWS social)','').replace(' & Partner Solutions Finder',' & PSF'), p[1]]), {max:5, pl:230, fmt:v=>v+'/5', label:'Platform priority'})}
+  <div class="tablewrap"><table><thead><tr><th>Platform</th><th>Purpose</th><th>What to post</th><th>Cadence</th><th>Measure</th></tr></thead><tbody>${PLATFORMS.map(p=>`<tr><td><b>${p[0]}</b></td><td>${p[2]}</td><td class="small">${p[3]}</td><td class="small">${p[4]}</td><td class="small">${p[5]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Content by funnel stage</h2><p class="muted">Pick a stage.</p></header>
+  <div class="chips">${Object.keys(STAGES).map(k=>`<button class="chip" type="button" data-mstage="${k}" aria-pressed="${k===mkStage}">${k}</button>`).join('')}</div>
+  <div class="detail" id="mstageD"></div></section>
+
+  <section class="section"><header><h2>A weekly publishing rhythm</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Day</th><th>Publish</th><th>Behind the scenes</th></tr></thead><tbody>${WEEK.map(w=>`<tr><td><b>${w[0]}</b></td><td>${w[1]}</td><td class="muted">${w[2]}</td></tr>`).join('')}</tbody></table></div>
+  <div class="card tint small"><b>Repurposing rule:</b> one 30-minute webinar → 1 replay, 6–10 short clips, 3 carousels, 1 blog post, 1 newsletter section, quotes for sales decks. Plan the cut-downs before you record.</div></section>
+
+  <section class="section"><header><h2>Funnel calculator</h2><p class="muted">See how traffic turns into revenue, and what it costs. Sample rates; replace them with your own.</p></header>
+  <div class="grid g2">
+    <div class="card"><div class="grid g2" style="gap:8px">${[['fnV','Website visitors / month',4000,100],['fnL','Visitor → lead %',1.5,0.1],['fnM','Lead → MQL %',40,1],['fnS','MQL → SQL %',30,1],['fnW','SQL → won %',25,1],['fnD','Average deal size $',45000,1000],['fnB','Marketing spend / month $',8000,500],['fnT','Revenue target / quarter $',300000,10000]].map(f=>`<label class="field">${f[1]}<input type="number" id="${f[0]}" value="${f[2]}" min="0" step="${f[3]}"></label>`).join('')}</div></div>
+    <div class="card tint" id="fnOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>Metrics that matter</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Stage</th><th>Metric</th><th>Formula</th><th>Healthy signal</th></tr></thead><tbody>${MK_METRICS.map(m=>`<tr><td><span class="tag">${m[0]}</span></td><td><b>${m[1]}</b></td><td class="small mono">${m[2]}</td><td class="small">${m[3]}</td></tr>`).join('')}</tbody></table></div>
+  <p class="small muted">Benchmarks vary widely by industry and audience. Your own trend over time matters more than outside averages.</p></section>
+
+  <section class="section"><header><h2>Measuring your work</h2><p class="muted">Attribution means deciding which marketing gets credit for a deal. Use more than one view.</p></header>
+  <div class="grid g4">${ATTRIB.map(a=>`<div class="card"><h4>${a[0]}</h4><p class="small">${a[1]}</p><p class="small muted">${a[2]}</p></div>`).join('')}</div>
+  <h3>UTM link builder</h3>
+  <p class="small muted">UTM tags on links tell your analytics and CRM which post, video or email brought someone in.</p>
+  <div class="grid g2">
+    <div class="card"><div class="grid g2" style="gap:8px">${[['utmU','Page URL','https://example.com/aws-migration'],['utmS','Source (where)','linkedin'],['utmM','Medium (type)','social'],['utmC','Campaign','q3-genai-webinar'],['utmX','Content (which asset)','case-study-clip-1']].map(f=>`<label class="field">${f[1]}<input type="text" id="${f[0]}" value="${f[2]}" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>`).join('')}</div></div>
+    <div class="card"><div class="eyebrow">Tracked link</div><p class="mono small" id="utmOut" style="word-break:break-all;user-select:all"></p><div><button class="btn" type="button" id="utmCopy">Copy link</button></div><p class="small muted">Use lowercase and hyphens, and keep one naming convention for the whole team.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>Your 90-day marketing plan</h2></header>
+  ${flow('mkplan', FLOWS.mkplan = MK_PLAN, {label:'Phase'})}</section>
+
+  <section class="section"><header><h2>Creative ideas</h2><p class="muted">${IDEAS.length} ideas tagged by funnel stage. Filter them.</p></header>
+  <div class="chips">${['All',...Object.keys(STAGES)].map(k=>`<button class="chip" type="button" data-idea="${k}" aria-pressed="${k==='All'}">${k}</button>`).join('')}</div>
+  <div class="grid g3" id="ideaGrid"></div></section>
+
+  <section class="section"><header><h2>Staying professional</h2></header>
+  <div class="grid g2">
+    <div class="card"><h4 class="do">Do</h4><ul class="clean small"><li>Follow a brand guide: fonts, colors, logo use, tone of voice</li><li>Caption every video; add alt text to images</li><li>Use real numbers with customer approval</li><li>Follow AWS trademark and co-marketing guidelines</li><li>Keep a single source of approved claims and stats</li><li>Respond to comments within a day</li></ul></div>
+    <div class="card"><h4 class="dont">Don’t</h4><ul class="clean small"><li>Chase vanity metrics without pipeline</li><li>Post customer names, logos or screenshots without approval</li><li>Overclaim (“the best”, “guaranteed savings”)</li><li>Buy followers or use engagement pods</li><li>Ignore privacy and email consent rules (e.g. GDPR, CAN-SPAM)</li><li>Publish AWS NDA information</li></ul></div>
+  </div></section>
+`;
+function showStage(k){ mkStage=k; const s=STAGES[k];
+  $('#mstageD').innerHTML = `<h3>${k}</h3><p>${s.goal}</p><div class="tags">${s.fmt.map(f=>`<span class="tag a">${f}</span>`).join('')}</div><p class="small"><b>Measure with:</b> ${s.kpi}</p>`;
+  document.querySelectorAll('[data-mstage]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.mstage===k)); }
+function renderIdeas(k){ $('#ideaGrid').innerHTML = IDEAS.filter(i=>k==='All'||i[2]===k).map(i=>`<div class="card"><span class="tag s" style="justify-self:start">${i[2]}</span><h4>${i[0]}</h4><p class="small muted">${i[1]}</p></div>`).join('');
+  document.querySelectorAll('[data-idea]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.idea===k)); }
+function calcFunnel(){
+  const v=id=>+($('#'+id)?.value||0);
+  const vis=v('fnV'), leads=vis*v('fnL')/100, mql=leads*v('fnM')/100, sql=mql*v('fnS')/100, won=sql*v('fnW')/100, rev=won*v('fnD');
+  const spend=v('fnB'), cpl=leads?spend/leads:0, cac=won?spend/won:0, roi=spend?(rev-spend)/spend*100:0;
+  const perVisitor = vis ? rev/vis : 0, needVis = perVisitor ? v('fnT')/3/perVisitor : 0;
+  const rows=[['Visitors',vis],['Leads',leads],['MQLs',mql],['SQLs',sql],['Won deals',won]];
+  const W=420,lh=34,H=rows.length*lh+4, mx=Math.max(vis,1);
+  let g=''; rows.forEach((r,i)=>{ const w=Math.max((W-210)*Math.sqrt(r[1]/mx),3), x=150+((W-210)-w)/2;
+    g+=`<text x="10" y="${i*lh+22}" style="fill:var(--ink)">${r[0]}</text><rect x="${x}" y="${i*lh+6}" width="${w}" height="24" rx="4" fill="${i===rows.length-1?'var(--signal)':'var(--accent)'}" opacity="${1-i*0.12}"/><text x="${W-4}" y="${i*lh+22}" text-anchor="end" style="fill:var(--ink)">${r[1]<10?r[1].toFixed(1):Math.round(r[1]).toLocaleString()}</text>`; });
+  $('#fnOut').innerHTML = `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly funnel">${g}</svg></div>
+  <div class="kv"><dt>Revenue / month</dt><dd class="mono">${money(rev)}</dd><dt>Cost per lead</dt><dd class="mono">${money(cpl)}</dd><dt>Marketing cost per won deal</dt><dd class="mono">${money(cac)}</dd><dt>Marketing ROI</dt><dd class="mono">${roi.toFixed(0)}%</dd><dt>Visitors needed / month for target</dt><dd class="mono">${Math.ceil(needVis).toLocaleString()}</dd></div>
+  <p class="small muted">Square-root scale so small stages stay visible. ROI here counts marketing spend only, not sales salaries. Improving any one conversion rate by a few points often beats buying more traffic.</p>`;
+}
+function calcUTM(){ const g=id=>($('#'+id)?.value||'').trim();
+  const base=g('utmU'); const p=[['utm_source','utmS'],['utm_medium','utmM'],['utm_campaign','utmC'],['utm_content','utmX']].filter(x=>g(x[1])).map(x=>x[0]+'='+encodeURIComponent(g(x[1]).toLowerCase().replace(/\s+/g,'-'))).join('&');
+  $('#utmOut').textContent = base ? base + (base.includes('?')?'&':'?') + p : 'Enter a page URL'; }
+
+/* ================= SALES & SUCCESS ENABLEMENT ================= */
+const KIT = [
+  ['Pitch deck','Master deck with modular slides per offer and industry','Marketing + sales'],
+  ['Offer one-pagers','One page per offer: problem, approach, outcome, proof, AWS funding fit','Marketing'],
+  ['Case study library','Searchable by industry, AWS service, outcome; with video links','You (video) + marketing'],
+  ['Demo & explainer videos','2–5 minute videos sellers can send after calls','You'],
+  ['Battlecards','How we win vs other partners or doing nothing; key objections','Sales + marketing'],
+  ['ROI / TCO calculator','Spreadsheet or web tool for business cases','Pre-sales + RevOps'],
+  ['Proposal & SOW templates','Standard scope, rates, terms, billing milestones','Sales + AdminOps'],
+  ['Pricing sheet & approval rules','Rate card, discount floors, who approves','Finance'],
+  ['Funding guide','Which AWS program fits which deal; how to request','Alliance lead + AdminOps'],
+  ['Email & follow-up templates','Post-meeting recap, proposal follow-up, check-ins','Marketing'],
+  ['AWS seller kit','What to forward to AWS account managers about your offers','Alliance + marketing'],
+  ['Security & compliance pack','Certifications, policies, answers to common questionnaires','Delivery + ops']
+];
+const CLOSE_CHECKS = [
+  'Economic buyer identified and has seen the proposal',
+  'Customer’s success metrics written into the proposal',
+  'Mutual action plan agreed: steps and dates to signature and kickoff',
+  'Technical validation done (architecture, estimate, POC if needed)',
+  'AWS funding requested and approval status known',
+  'Buying route chosen: direct PO or AWS Marketplace private offer',
+  'Legal and security review started early',
+  'SOW scope, milestones and billing terms checked by AdminOps',
+  'Customer billing entity, PO process and AP portal confirmed',
+  'ACE opportunity updated to Business Validation / Committed',
+  'Relevant case study and reference call offered',
+  'Kickoff date and delivery team tentatively reserved'
+];
+const CS_FLOW = [
+  {t:'Handoff', d:'Sales hands the customer to delivery and customer success with full context.', do:['Internal handoff call: goals, stakeholders, promises made','Share SOW, success metrics, funding details'], check:['No surprises for the customer'], tools:['CRM, handoff template']},
+  {t:'Onboard', d:'Kickoff sets expectations and builds trust.', do:['Kickoff meeting and project plan','Welcome email with contacts and billing info','Set up communication channel'], check:['Customer billing contact and PO confirmed'], tools:['PM tool, QuickBooks']},
+  {t:'Deliver & adopt', d:'Deliver milestones and make sure the customer actually uses what was built.', do:['Weekly status','Training sessions and recorded walkthrough videos','Milestone sign-offs'], check:['Sign-offs saved (also POE for funding)'], tools:['Video, docs']},
+  {t:'Prove value', d:'Show the results against the original success metrics.', do:['Results report with before/after numbers','Mark Launched in ACE'], check:['Metrics agreed with customer'], tools:['Dashboard, ACE']},
+  {t:'Review (QBR)', d:'Quarterly business review: results, health, roadmap.', do:['Present value delivered','Collect feedback (CSAT/NPS)','Propose next steps'], check:['Health score updated'], tools:['QBR template']},
+  {t:'Renew & expand', d:'Renew managed services and find the next workload.', do:['Renewal conversation 90 days before end','Identify new use cases (data, AI, security)'], check:['Expansion opportunity in CRM and ACE'], tools:['CRM, ACE']},
+  {t:'Advocate', d:'Turn happy customers into references.', do:['Ask for a review, quote, case study video','Invite to co-present at an AWS event or webinar'], check:['Written approval for public use'], tools:['Video team, PMM']}
+];
+const HS = [['hsU','Adoption / usage of what we delivered',30],['hsS','Satisfaction (CSAT / NPS)',25],['hsE','Engagement (attends meetings, responsive)',20],['hsP','Pays on time (from AR aging)',15],['hsI','Few escalations or support issues',10]];
+const HELP = [
+  ['As video & content','Make one demo video per offer; build the case study library; record customer training walkthroughs; produce personalized prospecting videos for key deals; deliver results recap videos for QBRs.'],
+  ['As AdminOps','Pre-check SOW billing terms before signature; set up customers in QuickBooks the day they sign; invoice same day as milestone; flag accounts with late payments to account managers early; package funding to reduce customer cost.'],
+  ['As RevOps','Keep CRM and ACE clean so forecasts are trusted; build a pipeline dashboard; flag stale deals; track win/loss reasons; measure time-to-close and where deals stall; maintain the customer health dashboard.']
+];
+V.enablement = () => {
+  const done = store.get('dealcheck', []);
+  return `
+  <header class="section"><span class="eyebrow">Chapter 00 · Your job</span><h1>Sales & success enablement</h1>
+  <p class="lede">Enablement means giving sellers and account teams what they need to win and keep customers: the right content, clean data, smooth paperwork and fast answers. You are well placed to do all of it.</p></header>
+
+  <section class="section"><header><h2>How you specifically can help</h2></header>
+  <div class="grid g3">${HELP.map(h=>`<div class="card tint"><h4>${h[0]}</h4><p class="small">${h[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>The sales enablement kit</h2><p class="muted">Keep these in one shared, well-organized folder. Review quarterly.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Asset</th><th>What it is</th><th>Owner</th></tr></thead><tbody>${KIT.map(k=>`<tr><td><b>${k[0]}</b></td><td>${k[1]}</td><td>${k[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Closing checklist</h2><p class="muted">Use this on any deal in Business Validation or later. Ticks are saved in this browser.</p></header>
+  <div class="card"><div style="display:grid;gap:2px">${CLOSE_CHECKS.map((c,i)=>`<label class="check ${done.includes(i)?'done':''}"><input type="checkbox" id="dc${i}" data-dc="${i}" ${done.includes(i)?'checked':''}><span>${c}</span></label>`).join('')}</div>
+  <div><button class="btn ghost" type="button" id="dcReset">Clear for the next deal</button></div></div></section>
+
+  <section class="section"><header><h2>What speeds deals up (and what stalls them)</h2></header>
+  <div class="grid g2">
+    <div class="card"><h4 class="do">Accelerators</h4><ul class="clean small"><li>A mutual action plan with dates</li><li>AWS funding that lowers the price</li><li>Buying through AWS Marketplace against an existing AWS commitment</li><li>A reference call with a similar customer</li><li>AWS account manager supporting the deal</li><li>A short, clear proposal tied to the customer’s metrics</li></ul></div>
+    <div class="card"><h4 class="dont">Stallers</h4><ul class="clean small"><li>No access to the economic buyer</li><li>Security or legal review started too late</li><li>Unclear scope or pricing surprises</li><li>Funding requested after the work started</li><li>Slow follow-up after meetings</li><li>No compelling reason to act now</li></ul></div>
+  </div></section>
+
+  <section class="section"><header><h2>Account-based marketing (ABM)</h2><p class="muted">Marketing and sales focus together on a short list of high-value accounts.</p></header>
+  ${flow('abm', FLOWS.abm = [
+    {t:'Pick accounts', d:'Choose 20–50 accounts that fit the ICP, ideally with an AWS account manager who supports the plan.', do:['Use triggers: hiring cloud roles, data center exits, AI announcements'], check:['Sales agrees on the list'], tools:['CRM, LinkedIn Sales Navigator']},
+    {t:'Research', d:'Map stakeholders and their priorities.', do:['3–5 contacts per account','Note their AWS usage and initiatives'], check:[], tools:['LinkedIn, company reports']},
+    {t:'Personalize', d:'Create tailored content.', do:['Personalized intro videos','Industry-specific case studies','Invite to roundtable or webinar'], check:['Message references their situation'], tools:['Video, email']},
+    {t:'Orchestrate', d:'Coordinated touches across channels over 4–8 weeks.', do:['Ads to the account, emails, calls, AWS AM introduction'], check:['Touches logged in CRM'], tools:['CRM, ads']},
+    {t:'Measure', d:'Track account engagement and pipeline, not just clicks.', do:['Accounts engaged, meetings, opportunities, pipeline $'], check:['Review every two weeks'], tools:['Dashboard']}
+  ], {label:'Step'})}</section>
+
+  <section class="section"><header><h2>Customer success lifecycle</h2></header>
+  ${flow('cs', FLOWS.cs = CS_FLOW, {label:'Stage'})}</section>
+
+  <section class="section"><header><h2>Customer health score</h2><p class="muted">Rate an account from 0–10 on each factor. Weights are a starting point; adjust them with your team.</p></header>
+  <div class="grid g2">
+    <div class="card">${HS.map(h=>`<label class="field">${h[1]} <span class="mono">(weight ${h[2]}%)</span><input type="range" id="${h[0]}" min="0" max="10" value="${h[0]==='hsP'?5:7}" style="accent-color:var(--accent)"></label>`).join('')}</div>
+    <div class="card tint" id="hsOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>QBR agenda template</h2></header>
+  <div class="grid g4">${[['1. Goals recap','What we agreed to achieve'],['2. Results','Metrics vs baseline, wins, launches'],['3. Health','Usage, satisfaction, open issues'],['4. Cost & AWS','Spend trends, savings found, funding used'],['5. Feedback','What to improve'],['6. Roadmap','Next quarter priorities, new use cases'],['7. Asks','Reference, case study, introductions'],['8. Actions','Owners and dates']].map(x=>`<div class="card"><b>${x[0]}</b><span class="small muted">${x[1]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>The advocacy ladder</h2><p class="muted">Each step up is more valuable to marketing and to your AWS tier.</p></header>
+  <div class="flow">${['Satisfied customer','Gives a quote or review','Takes reference calls','Approves a case study video','Co-presents at an AWS event'].map((x,i)=>`${i?'<span class="arrow">→</span>':''}<div class="step"><span class="n">Level ${i+1}</span><span class="t">${x}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Measure enablement</h2></header>
+  <div class="grid g4">${[['Win rate','Up after enablement content is used'],['Sales cycle','Days to close shrinking'],['Content usage','Which assets sellers actually send'],['Time to first invoice','Signature → first invoice, in days'],['Net revenue retention','Expansion minus churn'],['CSAT / NPS','After milestones and QBRs'],['Referenceable customers','Count willing to speak'],['Time to value','Kickoff → first measurable result']].map(x=>`<div class="card"><b>${x[0]}</b><span class="small muted">${x[1]}</span></div>`).join('')}</div></section>
+`;
+};
+function calcHS(){ let s=0; HS.forEach(h=>{ s += (+($('#'+h[0])?.value||0))/10*h[2]; });
+  const st = s>=75?['Healthy','var(--good)','Ask for a reference or case study; explore expansion.']:s>=50?['Watch','var(--warn)','Schedule a check-in; fix the lowest factor first.']:['At risk','var(--bad)','Escalate to the account owner; build a recovery plan this week.'];
+  $('#hsOut').innerHTML = `<div class="eyebrow">Health score</div><div class="out mono" style="color:${st[1]}">${Math.round(s)} / 100</div><div class="bar"><i style="width:${s}%;background:${st[1]}"></i></div><span class="pill" style="color:${st[1]}">${st[0]}</span><p class="small"><b>Next step:</b> ${st[2]}</p>`; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -2022,6 +2328,8 @@ function route(){
   if(id==='quiz'){ qi=0; qscore=0; renderQuiz(); }
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
+  if(id==='marketing'){ showStage(mkStage); renderIdeas('All'); calcFunnel(); calcUTM(); }
+  if(id==='enablement') calcHS();
   if(id==='ai') calcAI();
   if(id==='industries') showInd(indSel);
   if(id==='ccp'){ cardI=0; cardFlip=false; renderFC(); }
@@ -2053,6 +2361,10 @@ document.addEventListener('click', e => {
     const show = () => { ta.hidden = false; ta.select(); };
     try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; }, show); }catch(err){ show(); }
     return; }
+  const ms = t.closest('[data-mstage]'); if(ms) return showStage(ms.dataset.mstage);
+  const idea = t.closest('[data-idea]'); if(idea) return renderIdeas(idea.dataset.idea);
+  if(t.id==='dcReset'){ store.set('dealcheck', []); return route(); }
+  if(t.id==='utmCopy'){ const txt = $('#utmOut').textContent; try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; }, ()=>{ getSelection().selectAllChildren($('#utmOut')); }); }catch(err){ getSelection().selectAllChildren($('#utmOut')); } return; }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -2074,6 +2386,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if(t.dataset.ck !== undefined){ let d = store.get('check', []); const i=+t.dataset.ck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('check', d);
     t.closest('.check').classList.toggle('done', t.checked); const p = Math.round(d.length/CHECKLIST.length*100); $('#pct').textContent = p+'%'; $('#pbar').style.width = p+'%'; }
+  if(t.dataset.dc !== undefined){ let d = store.get('dealcheck', []); const i=+t.dataset.dc; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('dealcheck', d); t.closest('.check').classList.toggle('done', t.checked); }
   if(t.dataset.cl !== undefined){ let d = store.get('close', []); const i=+t.dataset.cl; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('close', d); t.closest('.check').classList.toggle('done', t.checked); }
 });
 document.addEventListener('input', e => {
@@ -2084,6 +2397,9 @@ document.addEventListener('input', e => {
   if(id.startsWith('mp')) calcMP();
   if(id.startsWith('ds')) calcDSO();
   if(id.startsWith('tc')) calcTCO();
+  if(id.startsWith('fn')) calcFunnel();
+  if(id.startsWith('utm')) calcUTM();
+  if(id.startsWith('hs')) calcHS();
   if(id.startsWith('ai')) calcAI();
   if(id.startsWith('ce')) calcCE();
   if(e.target.dataset.kf) kpiField(e.target, false);

@@ -28,7 +28,9 @@ Open `index.html` in any browser. No install or build step needed.
 | | KPIs & tracking | How to set KPIs, leading vs lagging, KPI tree, 27-KPI library, editable KPI tracker with status and copyable update |
 | | AdminOps & QuickBooks | Invoice lifecycle, Marketplace payout and DSO calculators, month-end close checklist |
 | | Video & content | Production pipeline, formats, brand rules, measurement |
-| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 100+ terms, 18 questions |
+| | Digital marketing | Success factors, 8-step process, personas (incl. AWS sellers), platform priorities, content by funnel stage, weekly rhythm, funnel/ROI calculator, metrics, attribution, UTM link builder, 90-day plan, 18 creative ideas |
+| | Sales & success enablement | How video/AdminOps/RevOps help sales, enablement kit, closing checklist, deal accelerators and stallers, ABM, customer success lifecycle, health score, QBR agenda, advocacy ladder |
+| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 21 questions |
 | Career | Grow & contribute | 30-60-90 plan, use cases, rules, habits, impact metrics |
 
 Checklists, the KPI tracker and quiz scores are saved in your browser only.
