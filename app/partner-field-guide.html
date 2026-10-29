@@ -276,7 +276,8 @@ const CHAPTERS = [
   {id:'calendar', t:'Calendar & history', g:'Reference'},
   {id:'glossary', t:'Glossary', g:'Reference'},
   {id:'quiz', t:'Quiz', g:'Reference'},
-  {id:'grow', t:'Grow & contribute', g:'Career'}
+  {id:'grow', t:'Grow & contribute', g:'Career'},
+  {id:'recognition', t:'Recognition & growth', g:'Career'}
 ];
 CHAPTERS.forEach((c,i)=>{ c.n = String(i).padStart(2,'0'); });
 
@@ -727,6 +728,11 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Brag document','A running log of your wins, with results and evidence, used for reviews.'],
+  ['Compa-ratio','Your salary ÷ the midpoint of your pay band.'],
+  ['Pay band','The salary range (minimum to maximum) for a role level.'],
+  ['Merit increase','Annual raise based on performance.'],
+  ['STAR / CAR','Situation–Task–Action–Result or Context–Action–Result: a way to describe achievements.'],
   ['ICP','Ideal customer profile: the type of company you serve best.'],
   ['Persona','A typical buyer role, with their goals and concerns.'],
   ['MQL / SQL','Marketing-qualified lead / sales-qualified (sales-accepted) lead.'],
@@ -2301,6 +2307,184 @@ function calcHS(){ let s=0; HS.forEach(h=>{ s += (+($('#'+h[0])?.value||0))/10*h
   const st = s>=75?['Healthy','var(--good)','Ask for a reference or case study; explore expansion.']:s>=50?['Watch','var(--warn)','Schedule a check-in; fix the lowest factor first.']:['At risk','var(--bad)','Escalate to the account owner; build a recovery plan this week.'];
   $('#hsOut').innerHTML = `<div class="eyebrow">Health score</div><div class="out mono" style="color:${st[1]}">${Math.round(s)} / 100</div><div class="bar"><i style="width:${s}%;background:${st[1]}"></i></div><span class="pill" style="color:${st[1]}">${st[0]}</span><p class="small"><b>Next step:</b> ${st[2]}</p>`; }
 
+/* ================= RECOGNITION & GROWTH ================= */
+const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = () => new Date().toISOString().slice(0,10);
+const OWN_TYPES = ['Process','System / tool','Asset library','Report / dashboard','Template','Relationship'];
+const OWN_DEFAULT = [
+  {n:'QuickBooks invoicing & AR follow-up', t:'Process', f:'Weekly', s:'Healthy', r:'', ex:true},
+  {n:'Funding claim tracker (MAP / POC / MDF)', t:'System / tool', f:'Weekly', s:'Needs attention', r:'', ex:true},
+  {n:'Video & case study library', t:'Asset library', f:'Monthly', s:'Healthy', r:'', ex:true},
+  {n:'ACE / CRM data hygiene', t:'Process', f:'Monthly', s:'Needs attention', r:'', ex:true},
+  {n:'Month-end close checklist', t:'Template', f:'Monthly', s:'Healthy', r:'', ex:true},
+  {n:'Marketing & KPI dashboard', t:'Report / dashboard', f:'Monthly', s:'Not started', r:'', ex:true}
+];
+const LOG_CATS = ['Revenue & sales','Cash & cost savings','Time saved / efficiency','Quality & risk reduced','Visibility & brand','Team & knowledge','Learning & certification'];
+const LOG_DEFAULT = [
+  {d:'2026-09-30', w:'Built a funding claim tracker and recovered two MAP claims close to their deadline', c:'Cash & cost savings', i:'$38,000 recovered that would have expired', e:'Partner Central claim IDs; tracker link', ex:true},
+  {d:'2026-10-15', w:'Produced a customer case study video used in the Migration Specialization application', c:'Revenue & sales', i:'Required evidence for Specialization; used in 4 sales calls', e:'Video link; sales feedback email', ex:true},
+  {d:'2026-10-28', w:'Standardized invoice items and set automatic payment reminders in QuickBooks', c:'Time saved / efficiency', i:'DSO from 52 to 44 days; ~6 hours/month saved', e:'AR aging before/after', ex:true}
+];
+const MAINT = [
+  ['Video & content library','Tag new assets (industry, service, persona); retire outdated videos; refresh captions and end cards; check customer approvals haven’t expired','Monthly'],
+  ['QuickBooks','Reconcile accounts; review customer and item lists for duplicates; check recurring invoices; close the period','Monthly'],
+  ['Funding tracker','Update statuses; check deadlines for the next 30 days; attach POE as it arrives','Weekly'],
+  ['CRM & ACE data','Close stale deals; fill missing fields; check sync errors','Weekly / monthly'],
+  ['Templates (SOW, invoice, proposal, brief)','Version number and date; owner named; review after any process change','Quarterly'],
+  ['Dashboards & reports','Check numbers tie to source; remove unused charts; note data definitions','Monthly'],
+  ['Brand & partner badges','Use current AWS badge versions; check tier/Specialization still valid','Quarterly'],
+  ['Documentation / playbooks','Update after every change; add “last reviewed” date; link from a single index page','Quarterly'],
+  ['Access & accounts','Review who has access to Partner Central, QuickBooks, social accounts; remove leavers','Quarterly']
+];
+const PERF = [
+  ['Impact','Results that matter to the business: revenue, cash, cost, risk, time.','“Recovered $38k funding”, “cut DSO 8 days”'],
+  ['Ownership','You take things end to end and nobody has to chase you.','“Owns the funding process; no missed deadlines this year”'],
+  ['Reliability','Deadlines met, numbers right, follow-through.','“Month-end closed by day 5 for 6 months running”'],
+  ['Quality','Work is accurate, professional, on-brand.','“Zero invoice disputes this quarter”'],
+  ['Initiative','You spot problems and fix them without being asked.','“Built the KPI dashboard on my own initiative”'],
+  ['Collaboration','You make others more effective.','“Sales uses my demo videos in every proposal”'],
+  ['Growth','You learn and take on more scope.','“Passed Cloud Practitioner; now own RevOps reporting”'],
+  ['Visibility','The right people know what you did and why it matters.','“Presented funding results at the quarterly review”']
+];
+const VIS = [
+  ['Weekly 5-line update','Done, next, blocked, numbers, ask. Send to your manager every Friday.','Weekly'],
+  ['Monthly wins note','Three wins with numbers, shared in the team channel or meeting. Credit others too.','Monthly'],
+  ['Show the work','Short demo of a new dashboard, tracker or video at a team meeting.','When something ships'],
+  ['Teach others','Write a one-page guide or record a 3-minute walkthrough of a process you own.','Monthly'],
+  ['Help other teams','Offer a video for sales, a report for leadership, a template for delivery.','Ongoing'],
+  ['Share external wins','Post certifications and company wins on LinkedIn; tag the team.','When it happens'],
+  ['Skip-level coffee','Short catch-up with your manager’s manager twice a year: what you’re working on and learning.','Twice a year'],
+  ['Own a number','Become “the person who knows DSO / funding / content pipeline”. Leaders remember owners of numbers.','Always']
+];
+const RAISE = [
+  {t:'Track all year', d:'Raises are won with evidence collected over months, not memory in the meeting.', do:['Log wins weekly in the work log below','Save proof: emails, screenshots, reports'], check:['At least 2 entries per month'], tools:['Work log, evidence folder']},
+  {t:'Know the expectations', d:'Understand what your role and the next level are expected to deliver.', do:['Ask for the job description and leveling guide','Ask: “What would make you say I’m exceeding expectations?”'], check:['Written expectations'], tools:['Manager 1:1']},
+  {t:'Map evidence to expectations', d:'Line up your wins against each expectation and performance factor.', do:['Pick your top 5 impacts with numbers','Note where you did work above your level'], check:['Every claim has a number or proof'], tools:['Brag document export']},
+  {t:'Get feedback', d:'Collect short quotes from colleagues you helped (sales, finance, leadership).', do:['Ask: “Could you share a sentence on how X helped you?”'], check:['3–5 quotes'], tools:['Email, chat']},
+  {t:'Research pay', d:'Know the market range for your role, location and experience.', do:['Check salary surveys and job postings for similar roles','Understand your company’s pay bands if shared'], check:['A realistic range, not one number'], tools:['Salary sites, recruiters, HR']},
+  {t:'Time it well', d:'Ask before budgets are set, usually 1–3 months before the review or fiscal year.', do:['Ask HR or your manager when the review cycle and budget planning happen','Ideally after a visible win'], check:['Meeting booked with a clear agenda'], tools:['Calendar']},
+  {t:'Have the conversation', d:'Present a one-page case calmly and focus on value delivered and the role you’re growing into.', do:['Open with impact, then scope growth, then the ask','Listen; ask what’s needed if the answer is “not yet”'], check:['Agreed next steps and a date'], tools:['One-page case']},
+  {t:'Follow up', d:'Confirm in writing and keep delivering on the plan.', do:['Email a summary of what was agreed','Review progress monthly'], check:['Written plan with milestones'], tools:['Email, 1:1 notes']}
+];
+const PAY = [
+  ['Base salary','Fixed pay. Usually set within a pay band (minimum–midpoint–maximum) for your level.'],
+  ['Merit increase','Annual raise based on performance, usually a percentage of base.'],
+  ['Promotion increase','A larger raise when you move to a higher level or broader role.'],
+  ['Variable pay / bonus','Tied to company, team or personal targets (e.g. collections, pipeline, content goals).'],
+  ['Commission / SPIFFs','Common in sales; sometimes ops roles get a share for deals they support.'],
+  ['Equity','Shares or options, more common in startups and growth companies.'],
+  ['Benefits & learning budget','Certification vouchers, courses, conference tickets (e.g. re:Invent), health and leave.'],
+  ['Title & scope','A bigger title or ownership area that leads to future pay growth.']
+];
+const PATHS_CAREER = [
+  ['Content & brand lead','Video, content strategy, AWS co-marketing','Campaign strategy, analytics, team leadership'],
+  ['Marketing operations','Funnels, tracking, automation, reporting','CRM/marketing automation, attribution, SQL basics'],
+  ['RevOps manager','Pipeline, forecasting, CRM/ACE systems','Data modeling, dashboards, sales process design'],
+  ['Finance & operations manager','Billing, AR, funding, close, reporting','Accounting fundamentals, controls, FP&A'],
+  ['Partner / alliance manager','Owning the AWS relationship','Program knowledge, negotiation, AWS certifications'],
+  ['Partner marketing manager','Joint marketing with AWS, MDF','Campaign ROI, event planning, stakeholder management']
+];
+const SCRIPTS = [
+  ['Opening','“I’d like to talk about my growth and compensation. I’ve put together a summary of what I’ve delivered this year and where I’d like to grow.”'],
+  ['Impact','“Since January I took ownership of funding claims; we recovered $X that would have expired, and DSO is down N days.”'],
+  ['Scope','“My role started as video editing and invoicing. I now also own RevOps reporting and the KPI dashboard.”'],
+  ['The ask','“Based on this and market data for similar roles, I’d like to discuss moving my salary to the range of $A–$B.”'],
+  ['If “not now”','“I understand. What specifically would I need to show, and can we agree on a date to revisit?”']
+];
+let impactRate = 45;
+V.recognition = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Career</span><h1>Recognition & growth</h1>
+  <p class="lede">Doing great work is only half of it. The other half is owning things clearly, keeping them in good shape, recording what you did, and making sure the right people know its impact. That is what turns work into promotions and raises.</p></header>
+
+  <section class="section"><header><h2>1. Own things clearly</h2><p class="muted">List everything you own. Owners of processes and numbers get trusted with more. Saved in this browser only; rows marked “example” are samples to replace.</p></header>
+  <div class="card">
+    <div class="grid" style="grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr)) auto;gap:8px;align-items:end">
+      <label class="field">What you own<input type="text" id="ownN" placeholder="e.g. Marketplace disbursement reconciliation" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field">Type<select id="ownT">${OWN_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></label>
+      <label class="field">Review every<select id="ownF">${['Weekly','Monthly','Quarterly'].map(t=>`<option>${t}</option>`).join('')}</select></label>
+      <button class="btn" type="button" id="ownAdd">Add</button>
+    </div>
+    <div class="tablewrap"><table><thead><tr><th>Owned item</th><th>Type</th><th>Review</th><th>Health</th><th>Last reviewed</th><th></th></tr></thead><tbody id="ownBody"></tbody></table></div>
+  </div></section>
+
+  <section class="section"><header><h2>2. Keep it maintained</h2><p class="muted">What “well maintained” looks like for the things you typically own.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Item</th><th>Maintenance tasks</th><th>How often</th></tr></thead><tbody>${MAINT.map(m=>`<tr><td><b>${m[0]}</b></td><td class="small">${m[1]}</td><td>${m[2]}</td></tr>`).join('')}</tbody></table></div>
+  <div class="grid g3">${[['Name an owner and a backup','Every process has a primary owner (you) and a backup who can step in.'],['Write it down','A one-page “how this works” for each owned item, with a last-reviewed date.'],['Version and date','Templates and reports carry a version number and date so everyone uses the latest.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>3. Log your work (brag document)</h2><p class="muted">Write each win as <b>situation → action → result</b>, with a number and proof. Two minutes every Friday is enough.</p></header>
+  <div class="card">
+    <div class="grid g2" style="gap:8px">
+      <label class="field">Date<input type="date" id="logD" value="${today()}" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field">Category<select id="logC">${LOG_CATS.map(c=>`<option>${c}</option>`).join('')}</select></label>
+      <label class="field" style="grid-column:1/-1">What you did (action)<input type="text" id="logW" placeholder="e.g. Automated Marketplace disbursement matching in QuickBooks" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field">Result / impact (with a number)<input type="text" id="logI" placeholder="e.g. 4 hours/month saved; zero unmatched payouts" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field">Evidence<input type="text" id="logE" placeholder="e.g. report link, email from sales lead" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="logAdd">Add to log</button><button class="btn ghost" type="button" id="logCopy">Copy as review summary</button></div>
+    <textarea id="logText" readonly hidden style="width:100%;min-height:160px;font-family:var(--mono);font-size:12px;background:var(--sunk);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px"></textarea>
+    <div id="logSum" class="tags"></div>
+    <div id="logList" style="display:grid;gap:8px"></div>
+  </div></section>
+
+  <section class="section"><header><h2>4. Turn work into numbers</h2><p class="muted">Leaders remember results in money and time. Use these to quantify your wins.</p></header>
+  <div class="grid g3">
+    <div class="card"><h4>Time saved</h4><label class="field">Hours saved per month<input type="number" id="imH" value="10" min="0"></label><label class="field">Loaded cost per hour $<input type="number" id="imR" value="45" min="0"></label><div id="imOut1"></div></div>
+    <div class="card"><h4>Cash freed by lower DSO</h4><label class="field">Annual revenue $<input type="number" id="imA" value="3000000" min="0" step="50000"></label><label class="field">Days DSO reduced<input type="number" id="imD" value="8" min="0"></label><div id="imOut2"></div></div>
+    <div class="card"><h4>Money recovered or influenced</h4><label class="field">Funding claims recovered $<input type="number" id="imF" value="38000" min="0" step="1000"></label><label class="field">Pipeline influenced by your content $<input type="number" id="imP" value="250000" min="0" step="5000"></label><div id="imOut3"></div></div>
+  </div></section>
+
+  <section class="section"><header><h2>5. Performance factors managers look at</h2></header>
+  <div class="grid g4">${PERF.map(p=>`<div class="card"><h4>${p[0]}</h4><p class="small">${p[1]}</p><p class="small muted"><i>${p[2]}</i></p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>6. Build visibility inside the company</h2><p class="muted">Visibility is sharing results so decisions about you are made with full information. Credit others generously; it raises your standing too.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Habit</th><th>How</th><th>When</th></tr></thead><tbody>${VIS.map(v=>`<tr><td><b>${v[0]}</b></td><td>${v[1]}</td><td>${v[2]}</td></tr>`).join('')}</tbody></table></div>
+  <div class="grid g2">
+    <div class="card"><h4 class="do">Do</h4><ul class="clean small"><li>Lead with outcomes and numbers, not hours worked</li><li>Mention who helped</li><li>Share learnings from mistakes too</li><li>Keep updates short and regular</li></ul></div>
+    <div class="card"><h4 class="dont">Don’t</h4><ul class="clean small"><li>Take credit for others’ work</li><li>Only speak up at review time</li><li>Share confidential numbers outside the right audience</li><li>Compare yourself to named colleagues when asking for a raise</li></ul></div>
+  </div></section>
+
+  <section class="section"><header><h2>7. From evidence to a raise or promotion</h2></header>
+  ${flow('raise', FLOWS.raise = RAISE, {label:'Step'})}
+  <div class="grid g2">
+    <div class="card"><h4>One-page case: structure</h4><ol class="small" style="margin:0;padding-left:18px;display:grid;gap:4px"><li>Role today and how scope has grown</li><li>Top 5 results with numbers</li><li>What you own and its health</li><li>Skills and certifications gained</li><li>Feedback quotes</li><li>The ask (range, title or scope) and the plan for next year</li></ol></div>
+    <div class="card"><h4>Phrases that work</h4><div style="display:grid;gap:6px">${SCRIPTS.map(s=>`<p class="small"><b>${s[0]}:</b> <span class="muted">${s[1]}</span></p>`).join('')}</div></div>
+  </div></section>
+
+  <section class="section"><header><h2>8. Understand pay structure</h2></header>
+  <div class="grid g4">${PAY.map(p=>`<div class="card"><h4>${p[0]}</h4><p class="small muted">${p[1]}</p></div>`).join('')}</div>
+  <div class="grid g2">
+    <div class="card"><h4>Where you sit in a pay band</h4><p class="small muted">Compa-ratio = your salary ÷ band midpoint. Below about 0.9 often means room to grow within the band. Ask HR whether bands are shared.</p>
+      <div class="grid g3" style="gap:8px"><label class="field">Your salary<input type="number" id="crS" value="52000" min="0" step="1000"></label><label class="field">Band minimum<input type="number" id="crL" value="48000" min="0" step="1000"></label><label class="field">Band maximum<input type="number" id="crH" value="72000" min="0" step="1000"></label></div>
+      <div id="crOut"></div></div>
+    <div class="card"><h4>If the answer on pay is “not yet”</h4><ul class="clean small"><li>Agree specific goals and a review date in writing</li><li>Ask for a title change or bigger scope now</li><li>Ask for learning budget: certification vouchers, courses, a conference</li><li>Ask about a bonus tied to measurable results (e.g. funding recovered, DSO)</li><li>Keep logging wins; revisit on the agreed date</li></ul></div>
+  </div></section>
+
+  <section class="section"><header><h2>9. Where this role can lead</h2><p class="muted">Your mix of video, finance ops and RevOps is unusual. Pick a direction and build the skills for it.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Path</th><th>Focus</th><th>Skills to build</th></tr></thead><tbody>${PATHS_CAREER.map(p=>`<tr><td><b>${p[0]}</b></td><td>${p[1]}</td><td class="small">${p[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Quarterly self-review</h2></header>
+  <div class="grid g3">${[['What did I deliver?','Top results, with numbers.'],['What do I own now that I didn’t before?','Growth in scope.'],['What did I learn?','Skills, certifications, feedback.'],['What didn’t go well?','And what I changed.'],['Who did I help?','Teams and people.'],['What’s next quarter’s focus?','2–3 goals tied to company priorities.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+`;
+function ownLoad(){ return store.get('own', null) || OWN_DEFAULT.map(o=>({...o})); }
+function logLoad(){ return store.get('worklog', null) || LOG_DEFAULT.map(o=>({...o})); }
+function renderOwn(){ const b=$('#ownBody'); if(!b) return; const l=ownLoad();
+  const col = s => s==='Healthy'?'var(--good)':s==='Needs attention'?'var(--warn)':s==='At risk'?'var(--bad)':'var(--muted)';
+  b.innerHTML = l.length ? l.map((o,i)=>`<tr><td><b>${esc(o.n)}</b>${o.ex?' <span class="tag">example</span>':''}</td><td class="small">${esc(o.t)}</td><td class="small">${esc(o.f)}</td>
+    <td><select id="ownS${i}" data-own-st="${i}" style="width:auto;padding:4px 6px;color:${col(o.s)}">${['Healthy','Needs attention','At risk','Not started'].map(s=>`<option ${s===o.s?'selected':''}>${s}</option>`).join('')}</select></td>
+    <td class="small mono">${o.r?esc(o.r):'<span class="muted">never</span>'} <button class="btn ghost" type="button" data-own-rev="${i}" style="padding:2px 8px;font-size:12px">Reviewed today</button></td>
+    <td><button class="xbtn" type="button" data-own-del="${i}" aria-label="Remove">×</button></td></tr>`).join('') : '<tr><td colspan="6" class="muted">Nothing listed yet. Add the first thing you own above.</td></tr>'; }
+function renderLog(){ const box=$('#logList'); if(!box) return; const l=logLoad().map((x,i)=>[x,i]).sort((a,b)=>b[0].d.localeCompare(a[0].d));
+  const counts = {}; l.forEach(([x])=>counts[x.c]=(counts[x.c]||0)+1);
+  $('#logSum').innerHTML = `<span class="small muted">${l.length} entries:</span>` + Object.entries(counts).map(([k,v])=>`<span class="tag a">${esc(k)} · ${v}</span>`).join('');
+  box.innerHTML = l.length ? l.map(([x,i])=>`<div class="card flat" style="grid-template-columns:1fr auto;display:grid;gap:4px 10px"><div><span class="mono small muted">${esc(x.d)}</span> <span class="tag">${esc(x.c)}</span>${x.ex?' <span class="tag">example</span>':''}<p style="margin-top:4px"><b>${esc(x.w)}</b></p><p class="small">Result: ${esc(x.i)||'<span class="muted">add a number</span>'}</p>${x.e?`<p class="small muted">Evidence: ${esc(x.e)}</p>`:''}</div><button class="xbtn" type="button" data-log-del="${i}" aria-label="Remove entry">×</button></div>`).join('') : '<p class="muted small">No entries yet. Add your first win above.</p>'; }
+function calcImpact(){ const v=id=>+($('#'+id)?.value||0);
+  const yr = v('imH')*v('imR')*12; $('#imOut1').innerHTML = `<div class="eyebrow">Value per year</div><div class="out mono">${money(yr)}</div><p class="small muted">Say: “saves about ${Math.round(v('imH')*12)} hours a year.”</p>`;
+  const cash = v('imA')/365*v('imD'); $('#imOut2').innerHTML = `<div class="eyebrow">Cash freed</div><div class="out mono">${money(cash)}</div><p class="small muted">Money in the bank sooner instead of sitting in receivables.</p>`;
+  $('#imOut3').innerHTML = `<div class="eyebrow">Total to report</div><div class="out mono">${money(v('imF')+v('imP'))}</div><p class="small muted">Report recovered money and influenced pipeline separately; pipeline isn’t revenue yet.</p>`;
+  const s=v('crS'), lo=v('crL'), hi=v('crH'), mid=(lo+hi)/2, cr=mid? s/mid:0, pos = hi>lo ? Math.min(Math.max((s-lo)/(hi-lo),0),1) : 0;
+  $('#crOut').innerHTML = `<div style="position:relative;height:28px;margin-top:8px"><div class="bar" style="position:absolute;inset:10px 0 auto"><i style="width:100%;background:var(--accent-soft)"></i></div><span style="position:absolute;left:50%;top:4px;width:2px;height:20px;background:var(--muted)"></span><span style="position:absolute;left:calc(${pos*100}% - 7px);top:7px;width:14px;height:14px;border-radius:50%;background:var(--signal)"></span></div>
+    <div class="kv small"><dt>Band midpoint</dt><dd class="mono">${money(mid)}</dd><dt>Compa-ratio</dt><dd class="mono">${cr.toFixed(2)}</dd><dt>Gap to midpoint</dt><dd class="mono">${money(Math.max(mid-s,0))}</dd></div>`; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -2323,6 +2507,7 @@ function route(){
   if(id==='economics') calcTCO();
   if(id==='marketing'){ showStage(mkStage); renderIdeas('All'); calcFunnel(); calcUTM(); }
   if(id==='enablement') calcHS();
+  if(id==='recognition'){ renderOwn(); renderLog(); calcImpact(); }
   if(id==='ai') calcAI();
   if(id==='industries') showInd(indSel);
   if(id==='ccp'){ cardI=0; cardFlip=false; renderFC(); }
@@ -2358,6 +2543,16 @@ document.addEventListener('click', e => {
   const idea = t.closest('[data-idea]'); if(idea) return renderIdeas(idea.dataset.idea);
   if(t.id==='dcReset'){ store.set('dealcheck', []); return route(); }
   if(t.id==='utmCopy'){ const txt = $('#utmOut').textContent; try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; }, ()=>{ getSelection().selectAllChildren($('#utmOut')); }); }catch(err){ getSelection().selectAllChildren($('#utmOut')); } return; }
+  const odel = t.closest('[data-own-del]'); if(odel){ const l=ownLoad(); l.splice(+odel.dataset.ownDel,1); store.set('own', l); return renderOwn(); }
+  const orev = t.closest('[data-own-rev]'); if(orev){ const l=ownLoad(); const o=l[+orev.dataset.ownRev]; o.r=today(); delete o.ex; store.set('own', l); return renderOwn(); }
+  const ldel = t.closest('[data-log-del]'); if(ldel){ const l=logLoad(); l.splice(+ldel.dataset.logDel,1); store.set('worklog', l); return renderLog(); }
+  if(t.id==='ownAdd'){ const n=$('#ownN').value.trim(); if(!n){ $('#ownN').focus(); return; } const l=ownLoad(); l.push({n, t:$('#ownT').value, f:$('#ownF').value, s:'Healthy', r:today()}); store.set('own', l); $('#ownN').value=''; return renderOwn(); }
+  if(t.id==='logAdd'){ const w=$('#logW').value.trim(); if(!w){ $('#logW').focus(); return; } const l=logLoad(); l.push({d:$('#logD').value||today(), w, c:$('#logC').value, i:$('#logI').value.trim(), e:$('#logE').value.trim()}); store.set('worklog', l); ['logW','logI','logE'].forEach(id=>$('#'+id).value=''); return renderLog(); }
+  if(t.id==='logCopy'){ const l=logLoad().slice().sort((a,b)=>a.d.localeCompare(b.d)); const by={}; l.forEach(x=>(by[x.c]=by[x.c]||[]).push(x));
+    const own=ownLoad().map(o=>`- ${o.n} (${o.s})`).join('\n');
+    const txt = 'WORK SUMMARY\n\nWhat I own\n'+own+'\n\n'+Object.entries(by).map(([k,v])=>k.toUpperCase()+'\n'+v.map(x=>`- ${x.d}: ${x.w}${x.i?' -> '+x.i:''}${x.e?' [evidence: '+x.e+']':''}`).join('\n')).join('\n\n');
+    const ta=$('#logText'); ta.value=txt; const show=()=>{ ta.hidden=false; ta.select(); };
+    try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; ta.hidden=false; }, show); }catch(err){ show(); } return; }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -2379,6 +2574,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if(t.dataset.ck !== undefined){ let d = store.get('check', []); const i=+t.dataset.ck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('check', d);
     t.closest('.check').classList.toggle('done', t.checked); const p = Math.round(d.length/CHECKLIST.length*100); $('#pct').textContent = p+'%'; $('#pbar').style.width = p+'%'; }
+  if(t.dataset.ownSt !== undefined){ const l=ownLoad(); const o=l[+t.dataset.ownSt]; o.s=t.value; delete o.ex; store.set('own', l); return renderOwn(); }
   if(t.dataset.dc !== undefined){ let d = store.get('dealcheck', []); const i=+t.dataset.dc; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('dealcheck', d); t.closest('.check').classList.toggle('done', t.checked); }
   if(t.dataset.cl !== undefined){ let d = store.get('close', []); const i=+t.dataset.cl; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('close', d); t.closest('.check').classList.toggle('done', t.checked); }
 });
@@ -2393,6 +2589,7 @@ document.addEventListener('input', e => {
   if(id.startsWith('fn')) calcFunnel();
   if(id.startsWith('utm')) calcUTM();
   if(id.startsWith('hs')) calcHS();
+  if(id.startsWith('im') || id.startsWith('cr')) calcImpact();
   if(id.startsWith('ai')) calcAI();
   if(id.startsWith('ce')) calcCE();
   if(e.target.dataset.kf) kpiField(e.target, false);

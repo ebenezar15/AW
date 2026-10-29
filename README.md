@@ -32,8 +32,9 @@ Open `index.html` in any browser. No install or build step needed.
 | | Sales & success enablement | How video/AdminOps/RevOps help sales, enablement kit, closing checklist, deal accelerators and stallers, ABM, customer success lifecycle, health score, QBR agenda, advocacy ladder |
 | Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 21 questions |
 | Career | Grow & contribute | 30-60-90 plan, use cases, rules, habits, impact metrics |
+| | Recognition & growth | Ownership register with health and review dates, maintenance standards, work log (brag document) with copyable review summary, impact calculators (time, cash from DSO, money recovered), performance factors, visibility habits, 8-step raise/promotion process with phrases, pay structure and compa-ratio, career paths, quarterly self-review |
 
-Checklists, the KPI tracker and quiz scores are saved in your browser only.
+Checklists, the KPI tracker, ownership register, work log and quiz scores are saved in your browser only.
 
 ## Editing
 
