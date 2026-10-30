@@ -275,6 +275,7 @@ const CHAPTERS = [
   {id:'gtm', t:'GTM & co-sell', g:'Partner business'},
   {id:'sales', t:'Sales essentials', g:'Partner business'},
   {id:'value', t:'Business value realisation', g:'Partner business'},
+  {id:'bvr', t:'BVR pit stops', g:'Partner business'},
   {id:'funding', t:'Funding programs', g:'Partner business'},
   {id:'revops', t:'RevOps', g:'Your job'},
   {id:'kpis', t:'KPIs & tracking', g:'Your job'},
@@ -737,6 +738,12 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['BVR motion','AWS Partner Central motion that funds partners for guiding customers to measurable outcomes through pit stops.'],
+  ['Pit stop','A stage in the BVR motion (Activate, Adapt, Scaled adoption, Retain & attest, Recommend & expand) with required activities and a KPI threshold; some carry a funding milestone.'],
+  ['VRP','Value Realization Plan: the KPIs and thresholds defined when nominating a customer to BVR.'],
+  ['PSS','Partner Success Specialist: the AWS person who reviews BVR activity submissions.'],
+  ['Adoption report','Weekly BVR report of active users, feature use and champion engagement, with AI insights.'],
+  ['Amazon Payee Central','Portal where partners submit invoices against AWS-generated PO numbers to get paid.'],
   ['Business value realisation','Defining, measuring and proving the business outcomes a customer actually gets.'],
   ['Baseline','The “before” measurement that results are compared against.'],
   ['Value hypothesis','The expected business value, estimated before the sale.'],
@@ -882,6 +889,8 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['In the BVR motion, what moves an initiative to the next pit stop?',['Paying a fee','Required activities approved by the PSS and the VRP KPI threshold met','Publishing a blog post','Closing the ACE opportunity'],1,'Both conditions are needed; then the initiative advances automatically.'],
+  ['A BVR pit stop with a funding milestone is complete and a PO appears. What does AdminOps do?',['Nothing, money arrives automatically','Submit an invoice in Amazon Payee Central with that PO number','Email the PSS for a check','Create a Marketplace listing'],1,'Payment is processed after the invoice is submitted against the PO.'],
   ['What is the most commonly skipped step that makes value impossible to prove later?',['Writing the SOW','Capturing the baseline','Sending the invoice','Booking the kickoff'],1,'Without “before” numbers there is nothing to compare results against.'],
   ['What’s the simplest, cheapest way to host a static marketing website on AWS?',['EC2 with a database','S3 + CloudFront (or Amplify Hosting)','SAP on EC2','WorkSpaces'],1,'Static sites need no servers: S3 for files, CloudFront for global delivery.'],
   ['A hospital in the US wants to store patient data on AWS. What must happen first?',['Nothing','Sign the AWS Business Associate Addendum and use HIPAA-eligible services','Buy Spot Instances','List on Marketplace'],1,'HIPAA workloads require the BAA and eligible services.'],
@@ -2704,7 +2713,7 @@ V.value = () => `
   <header class="section"><span class="eyebrow">Chapter 00 · Intermediate → Advanced</span><h1>Business value realisation</h1>
   <p class="lede">Selling a solution promises value; delivering it doesn’t guarantee it. Business value realisation is the discipline of defining, measuring and proving the business outcomes a customer actually gets after go-live. It is what earns renewals, expansions, references and AWS’s trust.</p></header>
 
-  <section class="section"><header><h2>Promised value vs realised value</h2></header>
+  <section class="section"><header><h2>Promised value vs realised value</h2><p class="muted">AWS also runs a formal Business Value Realization (BVR) motion in Partner Central with funded pit stops. See the <a href="#bvr">BVR pit stops</a> chapter.</p></header>
   <div class="grid g3">
     <div class="card"><span class="eyebrow">Before the sale</span><h4>Value hypothesis</h4><p class="small muted">“Moving to AWS should cut your infrastructure cost by about 25% and reduce downtime.” Based on discovery and a business case.</p></div>
     <div class="card"><span class="eyebrow">At signature</span><h4>Success plan</h4><p class="small muted">Agreed KPIs, baselines, targets, owners and review dates, ideally referenced in the SOW.</p></div>
@@ -2782,6 +2791,95 @@ function valSummary(){ const l=valLoad(); let real=0, tgt=0; l.forEach(r=>{ cons
   const cost=+($('#valCost')?.value||0), roi = cost ? (real-cost)/cost*100 : 0, payback = real ? cost/(real/12) : 0;
   $('#valOut').innerHTML = `<div class="card tint"><div class="eyebrow">Promised value / yr</div><div class="out mono">${money(tgt)}</div></div><div class="card tint"><div class="eyebrow">Realised value / yr</div><div class="out mono" style="color:${real>=tgt?'var(--good)':'var(--ink)'}">${money(real)}</div><span class="small muted">${tgt?Math.round(real/tgt*100):0}% of promise</span></div><div class="card tint"><div class="eyebrow">First-year ROI</div><div class="out mono">${roi.toFixed(0)}%</div></div><div class="card tint"><div class="eyebrow">Payback period</div><div class="out mono">${real?payback.toFixed(1)+' mo':'–'}</div></div>`; }
 
+/* ================= BVR PIT STOPS ================= */
+/* The five BVR pit stops, in order. */
+const BVR_STOPS = [
+  {t:'Activate', d:'The service is deployed and switched on for the first real users or workloads. The goal is a working start in the customer’s environment with the measurement in place.', do:['Confirm deployment and link the customer’s AWS account','Enable a first group of users or a first workload','Name a customer champion and executive sponsor','Record a baseline for every KPI in the Value Realization Plan (VRP)'], check:['Required activities approved by your Partner Success Specialist (PSS)','Activation KPI threshold met (e.g. first users active)'], tools:['Partner Central BVR initiative page','Customer AWS account telemetry']},
+  {t:'Adapt', d:'The solution is fitted to how the customer actually works: their data, workflows, roles and language. Users are trained, and early blockers are removed so usage becomes a habit.', do:['Connect the right data sources and configure for each team’s workflows','Run training and publish short how-to videos','Launch an internal communications plan with the customer','Review the weekly adoption report and fix blockers (permissions, missing data, unclear use cases)'], check:['Weekly active users rising week over week','Adapt KPI threshold met'], tools:['Adoption report (weekly)','Training materials and videos']},
+  {t:'Scaled adoption', d:'Usage spreads across the intended teams and into more features and use cases. The service becomes part of daily work.', do:['Extend to more teams, sites or use cases','Promote the advanced features that drive outcomes','Use the report’s AI insights to target low-usage groups','Grow a network of champions and share internal success stories'], check:['Feature utilization at target','Scaled adoption KPI threshold met'], tools:['Adoption report charts','Champion network']},
+  {t:'Retain & attest', d:'Usage holds steady over time and the business outcomes are measured against the baseline. The customer formally attests to the value achieved.', do:['Keep usage at or above target across the retention period','Measure each VRP KPI exactly as the baseline was measured','Build the value report: before vs after in time, money or risk','Customer sponsor attests to the outcomes achieved'], check:['Sustained usage','VRP KPI achievement threshold met','Customer attestation submitted'], tools:['Value scorecard (Business value realisation chapter)','Customer sign-off']},
+  {t:'Recommend & expand', d:'The customer becomes an advocate and the account grows. Proven value turns into references, case studies and the next workload.', do:['Ask for a reference, testimonial or case study (with written approval)','Present the results in a value review and propose the next use case','Open the expansion opportunity in CRM and ACE','Share the outcome with your AWS account team and PSS'], check:['Customer recommendation or reference secured','Next opportunity identified'], tools:['QBR template, ACE, video team, PMM']}
+];
+const BVR_CASES = [
+  {n:'Generative AI assistant for employees', org:'Manufacturing company, 2,000 employees', goal:'Cut time spent searching for policies, specs and procedures.', kpis:'Weekly active users; searches answered; minutes saved per employee per week',
+   rows:[['Activate','Assistant connected to SharePoint and wiki; 50 pilot users in engineering; baseline of 45 min/week spent searching','≥ 40 pilot users active','46 active'],['Adapt','Added engineering specs and HR policies; prompts tuned to plant terminology; 3 training webinars and 90-second how-to videos','≥ 50% of 800 rollout users active weekly','58%'],['Scaled adoption','Extended to quality and procurement; champions in every department','≥ 1,200 weekly active users; 4 departments','1,310 users, 5 departments'],['Retain & attest','Usage held for two quarters; survey + telemetry vs baseline; COO signs the attestation','≥ 20 min saved per user per week','27 min (≈ 590 hours/week)'],['Recommend & expand','Customer approved a case study video and a reference call; next use case: supplier contract Q&A','Reference + expansion opportunity','Both secured']], series:[46,58,82,86,88], unit:'Active usage index'},
+  {n:'Cloud contact center modernization', org:'Online retailer', goal:'Shorter waits and more self-service for customer support.', kpis:'Contacts handled; self-service containment; average handle time; CSAT',
+   rows:[['Activate','First queue (order status) live; 20 agents onboarded; baseline handle time and CSAT captured','First 1,000 contacts handled','1,240'],['Adapt','Flows rebuilt around the retailer’s returns policy; bot trained on real customer phrasing; agent coaching','≥ 90% of agents using new desktop daily','94%'],['Scaled adoption','All 150 agents moved; chat and returns added; agent assist enabled','≥ 25% self-service containment','31%'],['Retain & attest','Metrics held through peak season; VP of Customer Service attests','Handle time −15%; CSAT +5 pts','−19%; +7 pts'],['Recommend & expand','Customer co-presents at an AWS Summit session; expansion to SMS and Spanish support','Reference + expansion opportunity','Both secured']], series:[20,60,78,88,92], unit:'Adoption index'},
+  {n:'Developer AI coding assistant', org:'Software company, 300 developers', goal:'Ship features faster with fewer manual tasks.', kpis:'Active developers; suggestions accepted; lead time for changes',
+   rows:[['Activate','Enabled for one squad of 25 developers; baseline lead time of 6 days','≥ 20 developers active','23'],['Adapt','Configured for the company’s code standards and repositories; internal demo day recorded','≥ 60% of developers active weekly','67%'],['Scaled adoption','All squads; used for code reviews, tests and upgrades','≥ 30% acceptance rate; 3+ use cases','34%; 4 use cases'],['Retain & attest','Gains held two quarters; CTO attests to lead-time results','Lead time −20%','−28% (4.3 days)'],['Recommend & expand','Testimonial for the partner’s website; new project: legacy Java upgrade','Reference + expansion opportunity','Both secured']], series:[25,67,80,86,90], unit:'Adoption index'}
+];
+let bvrCase = 0;
+V.bvr = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Advanced</span><h1>BVR pit stops</h1>
+  <p class="lede">Business Value Realization (BVR) is a motion in AWS Partner Central. After a customer deploys an eligible AWS service, the partner guides adoption through five <b>pit stops</b>: Activate, Adapt, Scaled adoption, Retain & attest, and Recommend & expand. Each stop has activities and a KPI threshold, and AWS pays funding when stops with a funding milestone are completed. You get paid for proven outcomes, not just for deployment.</p></header>
+
+  <div class="flow">${BVR_STOPS.map((x,i)=>`${i?'<span class="arrow">→</span>':''}<div class="step" style="cursor:default"><span class="n">Pit stop ${i+1}</span><span class="t">${x.t}</span></div>`).join('')}</div>
+
+  <section class="section"><header><h2>Who is involved</h2></header>
+  <div class="grid g3">
+    <div class="card tint"><span class="eyebrow">Partner (your company)</span><p class="small">Owns the customer engagement, completes activities, submits KPI progress, manages the adoption journey.</p></div>
+    <div class="card"><span class="eyebrow">AWS Partner Success Specialist (PSS)</span><p class="small">Reviews activity submissions, gives feedback, supports the partner throughout.</p></div>
+    <div class="card"><span class="eyebrow">Customer</span><p class="small">Deploys the AWS service, shares usage data, and attests to the business outcomes achieved.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>Before the first pit stop</h2></header>
+  ${flow('bvrstart', FLOWS.bvrstart = [
+    {t:'Enroll', d:'Apply in Partner Central: Funding benefits → Business Value Realization → Get started with BVR motion, accept the terms and submit. Eligibility is evaluated automatically.', do:['Approved: start nominating customers','Not approved: review the feedback and fix the gaps'], check:['Enrollment approved'], tools:['AWS Partner Central']},
+    {t:'Check the nomination prerequisites', d:'Before nominating, confirm the basics are in place.', do:['Customer is deploying an eligible AWS service','Active opportunity for the customer in Partner Central (ACE)','SOW signed or expected soon','Customer executive sponsor in place'], check:['All five prerequisites true'], tools:['ACE, SOW, sponsor confirmation']},
+    {t:'Nominate & define KPIs', d:'Nominate customer → follow the wizard: engagement details, eligibility, customer KPIs. These KPIs form the Value Realization Plan (VRP).', do:['Pick 3–5 measurable KPIs with baselines','Agree thresholds with the customer sponsor'], check:['Nomination submitted'], tools:['Value scorecard, success plan']},
+    {t:'PSS review', d:'The nomination goes to “In review”. If approved, the initiative moves to the first pit stop and its activities unlock. If not, you get specific feedback and can edit and resubmit.', do:['Respond to feedback quickly'], check:['Initiative at pit stop 1'], tools:['Partner Central notifications']}
+  ], {label:'Step'})}</section>
+
+  <section class="section"><header><h2>The five pit stops in detail</h2><p class="muted">Click each stop. To advance: complete the required activities, have them approved by the PSS, and meet the KPI threshold in the VRP. Optional activities help adoption but don’t block progress. Activities for future stops are visible but locked.</p></header>
+  ${flow('pit', FLOWS.pit = BVR_STOPS, {label:'Pit stop'})}</section>
+
+  <section class="section"><header><h2>Examples across the five stops</h2><p class="muted">Illustrative scenarios showing what each stop looks like in practice. Pick one.</p></header>
+  <div class="chips">${BVR_CASES.map((c,i)=>`<button class="chip" type="button" data-bvrcase="${i}" aria-pressed="${i===bvrCase}">${c.n}</button>`).join('')}</div>
+  <div id="bvrCaseD" class="section"></div></section>
+
+  <section class="section"><header><h2>Activity statuses</h2></header>
+  <div class="flow">${[['Not submitted','Choose Submit to begin'],['Under review','PSS is reviewing; no action needed'],['Action required','PSS asked for changes; read feedback and resubmit'],['Complete','Approved and final']].map((s,i)=>`${i?'<span class="arrow">→</span>':''}<div class="step"><span class="t">${s[0]}</span><span class="n" style="font-family:var(--body);font-size:12px">${s[1]}</span></div>`).join('')}</div>
+  <p class="small muted">Submissions can be a file upload, a KPI value entry or a confirmation; some activities include a downloadable template.</p></section>
+
+  <section class="section"><header><h2>The weekly adoption report</h2><p class="muted">Available during the adoption-focused stops, generated weekly from account telemetry.</p></header>
+  <div class="grid g3">
+    <div class="card"><h4>Key metrics</h4><p class="small muted">Weekly active users, feature utilization and champion engagement, with week-over-week trends.</p></div>
+    <div class="card"><h4>AI-generated insights</h4><p class="small muted">What’s working, risks to address, and recommended next actions with links to enablement resources.</p></div>
+    <div class="card"><h4>Charts</h4><p class="small muted">User engagement, feature adoption and service use over time. If something looks wrong, submit a “Request changes to adoption report” activity with notes.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>Getting paid: disbursements</h2><p class="muted">This part lands on AdminOps. Funding is automatic once a stop with a funding milestone is complete; the amount depends on the size of the opportunity.</p></header>
+  ${flow('bvrpay', FLOWS.bvrpay = [
+    {t:'Pit stop complete', d:'Required activities approved by the PSS and KPI threshold met for a stop with a funding milestone.', do:[], check:['Disbursement status was “Locked” until now'], tools:['Initiative detail page']},
+    {t:'PO generated', d:'A purchase order number is generated automatically; the disbursement status changes to “In progress”.', do:['Note the PO number in your funding tracker'], check:[], tools:['Disbursement summary section']},
+    {t:'Invoice', d:'Submit an invoice through Amazon Payee Central using that PO number.', do:['Match amount and PO exactly','Keep a PDF copy'], check:['Invoice accepted'], tools:['Amazon Payee Central','QuickBooks (record the receivable)']},
+    {t:'Paid', d:'Payment is processed after the invoice is submitted. Status shows “Paid”.', do:['Match the payment in QuickBooks','Close the line in the funding tracker'], check:['Amount received = amount expected'], tools:['QuickBooks bank feed']}
+  ], {label:'Step'})}</section>
+
+  <section class="section"><header><h2>How each team helps at the pit stops</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Team</th><th>Activate & Adapt</th><th>Scaled adoption · Retain & attest</th><th>Recommend & expand</th></tr></thead><tbody>
+    <tr><td><b>Delivery / customer success</b></td><td>Deployment, pilot users, fitting to workflows, training</td><td>New teams and use cases, KPI measurement, value report, attestation</td><td>Value review, reference request, next workload</td></tr>
+    <tr><td><b>Video & content (you)</b></td><td>Short how-to videos and launch comms for the customer’s users</td><td>Internal success-story clips; value report visuals</td><td>Case study and testimonial videos with before/after numbers</td></tr>
+    <tr><td><b>RevOps (you)</b></td><td>Link the initiative to the ACE opportunity; track stop dates</td><td>KPI tracker, adoption trends, attestation evidence</td><td>Expansion opportunity in CRM/ACE; NRR reporting</td></tr>
+    <tr><td><b>AdminOps (you)</b></td><td>Funding tracker entry per initiative</td><td>Evidence folder for submissions</td><td>PO → Payee Central invoice → payment matched in QuickBooks</td></tr>
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Tips that keep initiatives moving</h2></header>
+  <div class="grid g3">${[['Baseline on day one','Every KPI in the VRP needs a “before” value, or value realization can’t be proven later.'],['Pick KPIs the telemetry can see','Active users and feature use come from the adoption report; outcome KPIs need customer data or surveys.'],['Find a champion early','Champion engagement is tracked; one enthusiastic customer user drives adoption more than any email.'],['Submit clean evidence','Names, dates and numbers consistent across files. Fewer “Action required” loops.'],['Act on the weekly report','Use its risks and recommended actions in your weekly customer check-in.'],['Calendar the money','Log each PO the day it appears and invoice the same day.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <p class="small muted">Pit stop names as used in AWS Partner Central; descriptions and examples are this guide’s explanation. Mechanics source: AWS Partner Central Getting Started Guide, sections on Business Value Realization, Pit stop progression, Pit stop activities, Adoption report and Disbursements. Details change; confirm in Partner Central.</p>
+`;
+function showBvrCase(i){ bvrCase=i; const c=BVR_CASES[i];
+  const W=760,H=240,pl=50,pr=60,pt=16,pb=40, n=c.series.length, x=k=>pl+(W-pl-pr)*(k/(n-1)), y=v=>pt+(H-pt-pb)*(1-v/100);
+  let g=''; [0,25,50,75,100].forEach(t=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end">${t}</text>`; });
+  g+=`<path d="${c.series.map((v,k)=>(k?'L':'M')+x(k)+' '+y(v)).join(' ')} L${x(n-1)} ${y(0)} L${x(0)} ${y(0)} Z" fill="var(--accent-soft)"/>`;
+  g+=`<path d="${c.series.map((v,k)=>(k?'L':'M')+x(k)+' '+y(v)).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`;
+  c.series.forEach((v,k)=>{ g+=`<circle cx="${x(k)}" cy="${y(v)}" r="5" fill="${k===n-1?'var(--signal)':'var(--accent)'}"/><text x="${x(k)}" y="${H-pb+18}" text-anchor="middle">${k+1}. ${BVR_STOPS[k].t.split(' ')[0]}</text>`; });
+  $('#bvrCaseD').innerHTML = `<div class="card tint"><span class="eyebrow">${c.org}</span><h3>${c.n}</h3><p class="small"><b>Goal:</b> ${c.goal}</p><p class="small"><b>VRP KPIs:</b> ${c.kpis}</p></div>
+  <div class="tablewrap"><table><thead><tr><th>Pit stop</th><th>What the partner did</th><th>KPI threshold</th><th>Result</th></tr></thead><tbody>${c.rows.map((r,k)=>`<tr><td><b>${k+1}. ${BVR_STOPS[k].t}</b></td><td>${r[1]}</td><td class="small">${r[2]}</td><td><span class="tag a">${r[3]}</span></td></tr>`).join('')}</tbody></table></div>
+  <div class="card chart"><div class="eyebrow">${c.unit} across the stops (illustrative)</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${c.unit} rising across five pit stops">${g}</svg></div>`;
+  document.querySelectorAll('[data-bvrcase]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.bvrcase===i)); }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -2803,6 +2901,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='bvr') showBvrCase(bvrCase);
   if(id==='solutions'){ renderSolList(); calcHost(); }
   if(id==='marketing'){ showStage(mkStage); renderIdeas('All'); calcFunnel(); calcUTM(); }
   if(id==='enablement') calcHS();
@@ -2858,6 +2957,7 @@ document.addEventListener('click', e => {
   const vdel = t.closest('[data-vdel]'); if(vdel){ const l=valLoad(); l.splice(+vdel.dataset.vdel,1); store.set('value', l); return renderVal(); }
   if(t.id==='valAdd'){ const l=valLoad(); l.push({n:'New value KPI', b:0, t:0, c:0, v:0}); store.set('value', l); return renderVal(); }
   if(t.id==='valReset'){ store.set('value', VAL_DEFAULT.map(v=>({...v}))); return renderVal(); }
+  const bc = t.closest('[data-bvrcase]'); if(bc) return showBvrCase(+bc.dataset.bvrcase);
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
