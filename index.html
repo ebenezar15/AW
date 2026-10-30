@@ -89,7 +89,8 @@ ul.clean{margin:0;padding-left:18px;display:grid;gap:4px}
 .step:hover{border-color:var(--accent)}
 .step[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .step[aria-pressed="true"] .n{color:var(--accent-ink);opacity:.8}
-.arrow{align-self:center;color:var(--muted);font-family:var(--mono)}
+.arrow{align-self:center;flex:0 0 22px;height:2px;font-size:0;position:relative;background:linear-gradient(90deg,var(--accent) 55%,transparent 0) 0 0/8px 2px;animation:dash .7s linear infinite}
+.arrow::after{content:"";position:absolute;right:-2px;top:-4px;border:5px solid transparent;border-left:6px solid var(--accent);border-right:0}
 .detail{align-content:start;align-self:start;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:16px 18px;display:grid;gap:10px}
 .detail .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 
@@ -186,7 +187,8 @@ td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-num
 .svc{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 9px;text-align:left;font-size:13px;font-weight:600;line-height:1.25}
 .svc small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
 .svc[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.lanearrow{align-self:center;color:var(--accent);font-family:var(--mono);flex:0 0 auto}
+.lanearrow{align-self:center;flex:0 0 20px;height:2px;font-size:0;position:relative;background:linear-gradient(90deg,var(--accent) 55%,transparent 0) 0 0/8px 2px;animation:dash .7s linear infinite}
+.lanearrow::after{content:"";position:absolute;right:-2px;top:-4px;border:5px solid transparent;border-left:6px solid var(--accent);border-right:0}
 /* stack diagram */
 .tier3{display:grid;gap:6px}
 .tierrow{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:stretch}
@@ -231,7 +233,47 @@ td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-num
   .bridge{writing-mode:horizontal-tb;height:auto;padding:6px;border:0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
   .azrow{grid-template-columns:1fr}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* motion */
+@keyframes dash{to{background-position:8px 0}}
+@keyframes flowdash{to{stroke-dashoffset:-24}}
+@keyframes rise{from{opacity:.3;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 0%,transparent)}}
+@keyframes gx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes gy{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fw{0%,14%{background:var(--accent-soft);border-color:var(--accent);transform:translateY(-3px)}22%,100%{background:var(--surface);border-color:var(--line);transform:none}}
+.page > *{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 45ms)}
+.card,.step,.svc,.orgnode,.level,.rung,.chip,.opt{transition:transform .18s,box-shadow .18s,border-color .18s,background .18s}
+.card:hover,.level:hover{transform:translateY(-2px);box-shadow:0 10px 24px -16px color-mix(in srgb,var(--ink) 55%,transparent)}
+.step:hover,.svc:hover,.orgnode:hover{transform:translateY(-2px)}
+.step[aria-pressed="true"],.svc[aria-pressed="true"],.rung[aria-pressed="true"]{animation:glow 1.8s ease-out infinite}
+.step.done{background:var(--accent-soft);border-color:transparent}
+.step.done .n::before{content:"✓ ";color:var(--accent)}
+.flowbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.playbtn{border:1px solid var(--accent);background:var(--surface);color:var(--accent);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:600}
+.playbtn:hover,.playbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.pipe{overflow-x:auto;padding:4px 0}
+.pipe svg{width:100%;height:auto;display:block}
+.pipe svg text{font-family:var(--body);font-size:12px}
+.pipe-flow{animation:flowdash .9s linear infinite}
+.pipe svg [tabindex]:focus{outline:none}
+.pipe g[data-pipe]:hover > circle,.pipe g[data-pipe]:hover > rect,.pipe g[data-pipe]:focus-visible > circle,.pipe g[data-pipe]:focus-visible > rect,.hub g:focus-visible > circle{stroke-width:5}
+.pipe g.on > circle,.pipe g.on > rect,.hub g[aria-pressed="true"] > circle{fill:var(--accent)}
+.pipe g.on > text.num,.hub g[aria-pressed="true"] > text.num{fill:var(--accent-ink)!important}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 24s linear infinite}
+.chart rect.gx,svg rect.gx{transform-box:fill-box;transform-origin:left center;animation:gx .9s cubic-bezier(.2,.8,.2,1) both}
+.chart rect.gy,svg rect.gy{transform-box:fill-box;transform-origin:center bottom;animation:gy .9s cubic-bezier(.2,.8,.2,1) both}
+.chart rect.gc,svg rect.gc{transform-box:fill-box;transform-origin:center;animation:gx .9s cubic-bezier(.2,.8,.2,1) both}
+path.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.4s ease forwards}
+.rung{transform-origin:bottom;animation:gy .7s cubic-bezier(.2,.8,.2,1) both}
+.rung:nth-child(2){animation-delay:.1s}.rung:nth-child(3){animation-delay:.2s}.rung:nth-child(4){animation-delay:.3s}
+.fw{animation:fw 7s infinite}
+.fw:nth-child(2){animation-delay:1.15s}.fw:nth-child(3){animation-delay:2.3s}.fw:nth-child(4){animation-delay:3.45s}.fw:nth-child(5){animation-delay:4.6s}.fw:nth-child(6){animation-delay:5.75s}
+.lane{transition:background .25s,box-shadow .25s}
+.lane.lit{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.bar > i,.kbar i{transition:width .6s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}path.draw{stroke-dasharray:none;stroke-dashoffset:0}}
 </style>
 
 <div class="shell">
@@ -305,8 +347,9 @@ function renderNav(active){
 /* Generic clickable flow: steps = [{t, d, sub?, do:[], check:[], tools:[]}] */
 function flow(id, steps, opts={}){
   const sel = 0;
-  const btns = steps.map((s,i)=>`${i?'<span class="arrow" aria-hidden="true">→</span>':''}<button type="button" class="step" data-flow="${id}" data-i="${i}" aria-pressed="${i===sel}"><span class="n">${opts.label||'Step'} ${i+1}</span><span class="t">${s.t}</span></button>`).join('');
-  return `<div class="flow" role="group">${btns}</div><div class="detail" id="fd-${id}">${flowDetail(steps[sel])}</div>`;
+  const btns = steps.map((s,i)=>`${i?'<span class="arrow" aria-hidden="true">\u2192</span>':''}<button type="button" class="step" data-flow="${id}" data-i="${i}" aria-pressed="${i===sel}"><span class="n">${opts.label||'Step'} ${i+1}</span><span class="t">${s.t}</span></button>`).join('');
+  const pipe = opts.pipe ? pipeSVG(id, steps.map(s=>s.t), opts.icon) : '';
+  return `${pipe}<div class="flowbar">${playBtn('data-play', id, '\u25B6 Play walkthrough')}<span class="small muted">${steps.length} ${(opts.label||'step').toLowerCase()}s · click any to explore</span></div><div class="flow" role="group">${btns}</div><div class="detail" id="fd-${id}">${flowDetail(steps[sel])}</div>`;
 }
 function flowDetail(s){
   const col = (title, arr) => arr && arr.length ? `<div><div class="eyebrow">${title}</div><ul class="clean">${arr.map(x=>`<li>${x}</li>`).join('')}</ul></div>` : '';
@@ -314,11 +357,11 @@ function flowDetail(s){
 }
 const FLOWS = {};
 document.addEventListener('click', e => {
-  const b = e.target.closest('[data-flow]');
+  const b = e.target.closest('[data-flow],[data-pipe]');
   if(!b) return;
-  const id = b.dataset.flow, i = +b.dataset.i;
-  document.querySelectorAll(`[data-flow="${id}"]`).forEach(x => x.setAttribute('aria-pressed', x===b));
-  $('#fd-'+id).innerHTML = flowDetail(FLOWS[id][i]);
+  stopPlay();
+  if(b.dataset.flow) selectFlow(b.dataset.flow, +b.dataset.i);
+  else { const [id,i] = b.dataset.pipe.split('|'); selectFlow(id, +i); }
 });
 
 /* ================= DATA ================= */
@@ -990,6 +1033,7 @@ V.start = () => {
       {t:'Everyone gets paid', d:'Customer pays your invoices; AWS earns consumption revenue; funding pays out; Marketplace disburses.', do:['You invoice in QuickBooks, chase AR, reconcile'], check:['Books tie to bank'], tools:['QuickBooks']},
       {t:'Proof fuels growth', d:'Launched deals and case studies raise your tier and Specializations, which bring more AWS referrals.', do:['You turn the win into a case-study video'], check:['Customer approval'], tools:['Video team, PMM']}
     ], {label:'Loop'})}
+    <div class="card">${orbitSVG('big', FLOWS.big.map(x=>x.t), ['The partner loop','click a stage'])}</div>
   </section>
 
   <section class="section">
@@ -1021,6 +1065,17 @@ V.cloud = () => `
     </div>
     <div class="detail" id="infraD"></div>
   </div></section>
+
+  <section class="section"><header><h2>Journey of a web request</h2><p class="muted">What happens in about a fifth of a second when someone opens a website hosted on AWS. Watch the requests travel, then click a stage.</p></header>
+  ${flow('req', FLOWS.req = [
+    {t:'User opens the site', d:'A customer types the address or clicks a link. The browser needs to find where the site lives.', do:['Browser asks DNS for the address'], check:['Business effect: every millisecond of delay costs conversions'], tools:['Browser']},
+    {t:'Route 53 (DNS)', d:'AWS’s DNS service answers with the nearest healthy endpoint, usually a CloudFront edge location.', do:['Can route by latency, geography or health'], check:['If a Region fails, DNS can fail over'], tools:['Amazon Route 53']},
+    {t:'CloudFront edge', d:'The closest edge location serves cached images, video and pages instantly. Dynamic requests continue to the Region. AWS WAF filters attacks here.', do:['Cache hit: answered in milliseconds','Cache miss: forwarded to origin'], check:['Lower load and lower cost on servers'], tools:['Amazon CloudFront, AWS WAF, Shield']},
+    {t:'Load balancer', d:'Inside the AWS Region, an Application Load Balancer spreads requests across servers in several Availability Zones.', do:['Health checks remove failing servers'], check:['One AZ failing doesn’t take the site down'], tools:['Elastic Load Balancing']},
+    {t:'App servers', d:'EC2 instances, containers or Lambda functions run the application code. Auto Scaling adds capacity when traffic rises.', do:['Scale out on busy days, in on quiet days'], check:['Pay for what’s used'], tools:['EC2 Auto Scaling, ECS, Lambda']},
+    {t:'Database & cache', d:'The app reads and writes data: a cache answers hot data in microseconds; the database (with a standby in another AZ) holds the records.', do:['Cache first, database second'], check:['Data is encrypted and backed up'], tools:['ElastiCache, RDS / Aurora Multi-AZ, DynamoDB']},
+    {t:'Response & monitoring', d:'The page goes back through the load balancer and edge to the user. Metrics and logs are recorded for alarms and troubleshooting.', do:['Dashboards show latency and errors'], check:['Alarms alert the ops team or MSP'], tools:['CloudWatch, CloudTrail']}
+  ], {label:'Stage', pipe:true})}</section>
 
   <section class="section"><header><h2>Shared responsibility</h2><p class="muted">AWS secures <i>the cloud</i>. The customer (often with a partner like you) secures what goes <i>in</i> the cloud. Pick a service model.</p></header>
   <div class="chips" id="srChips">${Object.keys(SR.models).map((m,i)=>`<button class="chip" type="button" data-sr="${m}" aria-pressed="${i===0}">${m}</button>`).join('')}</div>
@@ -1097,12 +1152,13 @@ V.portals = () => `
   <p class="lede">Partner work happens across a handful of portals. Learn which one does what, who uses it, and what comes out of it. Click a portal for its process, outcomes and lead potential.</p></header>
 
   <section class="section"><header><h2>The portal map</h2><p class="muted">Abbreviations you’ll hear: <b>APN</b> AWS Partner Network · <b>APC</b> AWS Partner Central · <b>APFP</b> AWS Partner Funding Portal · <b>AMMP</b> AWS Marketplace Management Portal · <b>PSF</b> Partner Solutions Finder.</p></header>
+  ${hubSVG()}
   <div class="grid g4" id="portalGrid">${PORTALS.map((p,i)=>`<button type="button" class="orgnode" data-portal="${i}" aria-pressed="${i===0}" style="padding:12px"><span class="tag ${p.lead?'s':'a'}" style="justify-self:start">${p.abbr}</span><b style="margin-top:4px">${p.name}</b><small>${p.short}</small></button>`).join('')}</div>
   <div class="detail" id="portalD"></div>
   <p class="small muted">Orange tags mark portals that directly produce leads or pipeline. AWS has been folding several tools (funding, marketing, analytics) into Partner Central, so names and menu locations may differ from what you see. The function stays the same.</p></section>
 
   <section class="section"><header><h2>A deal, portal by portal</h2><p class="muted">How one customer engagement moves through the tools.</p></header>
-  ${flow('journey', FLOWS.journey = JOURNEY, {label:'Step'})}</section>
+  ${flow('journey', FLOWS.journey = JOURNEY, {label:'Step', pipe:true})}</section>
 
   <section class="section"><header><h2>Where leads come from</h2><p class="muted">Ranked roughly by how warm the lead usually is.</p></header>
   <div class="tablewrap"><table><thead><tr><th>Source</th><th>Portal / channel</th><th>How it works</th><th>Who acts</th><th>Warmth</th></tr></thead><tbody>
@@ -1156,7 +1212,7 @@ V.gtm = () => `
   <p class="lede">GTM is how the company finds and wins customers. In the AWS world, the big lever is <b>co-selling</b>: sharing opportunities with AWS in ACE so AWS sellers help you win, and AWS sends you referrals.</p></header>
 
   <section class="section"><header><h2>The ACE pipeline</h2><p class="muted">Click each stage. These are the stages in Partner Central.</p></header>
-  ${flow('ace', FLOWS.ace = ACE, {label:'Stage'})}</section>
+  ${flow('ace', FLOWS.ace = ACE, {label:'Stage', pipe:true})}</section>
 
   <section class="section"><header><h2>Motions</h2></header>
   <div class="grid g2">
@@ -1171,7 +1227,7 @@ V.gtm = () => `
     {t:'Assess', d:'Understand what the customer has and build the business case (TCO, readiness).', do:['Migration Readiness Assessment (MRA)','Discovery of servers/apps','Business case'], check:['Assess funding approved before starting'], tools:['Migration Evaluator, MRA']},
     {t:'Mobilize', d:'Build the foundation and the plan: landing zone, security, pilot migrations, skills.', do:['Landing zone (Control Tower)','Wave plan','Pilot migrations'], check:['Mobilize funding/credits approved'], tools:['Control Tower, Migration Hub']},
     {t:'Migrate & Modernize', d:'Move workloads in waves and modernize where it makes sense.', do:['Tag migrated resources (map-migrated) so credits apply','Track migrated ARR'], check:['Tagging applied consistently'], tools:['Application Migration Service, DMS']}
-  ], {label:'Phase'})}</section>
+  ], {label:'Phase', pipe:true})}</section>
 
   <section class="section"><header><h2>Plays that work</h2></header>
   <div class="grid g3">
@@ -1183,7 +1239,7 @@ V.funding = () => `
   <header class="section"><span class="eyebrow">Chapter 07 · Intermediate</span><h1>Funding programs</h1>
   <p class="lede">AWS invests in partner deals so customers adopt AWS faster. For AdminOps this is real money: requested, tracked, proven and reconciled. Missed deadlines and weak proof are money left on the table.</p></header>
   <section class="section"><header><h2>Lifecycle of a funding request</h2></header>
-  ${flow('fund', FLOWS.fund = FUND_FLOW)}</section>
+  ${flow('fund', FLOWS.fund = FUND_FLOW, {pipe:true, icon:'$'})}</section>
   <section class="section"><header><h2>Program cheat sheet</h2><p class="muted">Names, eligibility and amounts change often. Use this as a map, then confirm in Partner Central.</p></header>
   <div class="tablewrap"><table><thead><tr><th>Program</th><th>Use it for</th><th>Paid as</th><th>Typical proof of execution</th></tr></thead><tbody>
   ${FUNDS.map(f=>`<tr><td><b>${f[0]}</b></td><td>${f[1]}</td><td>${f[2]}</td><td>${f[3]}</td></tr>`).join('')}</tbody></table></div></section>
@@ -1194,7 +1250,7 @@ V.funding = () => `
 V.revops = () => `
   <header class="section"><span class="eyebrow">Chapter 08 · Intermediate → Advanced</span><h1>RevOps</h1>
   <p class="lede">Revenue operations connects marketing, sales, delivery and finance so that leads turn into cash predictably and every number can be trusted.</p></header>
-  <section class="section"><header><h2>Lead-to-cash pipeline</h2></header>${flow('l2c', FLOWS.l2c = L2C, {label:'Stage'})}</section>
+  <section class="section"><header><h2>Lead-to-cash pipeline</h2></header>${flow('l2c', FLOWS.l2c = L2C, {label:'Stage', pipe:true, icon:'$'})}</section>
 
   <section class="section"><header><h2>Weighted pipeline calculator</h2><p class="muted">Edit the amounts. Probabilities are common defaults; set your own.</p></header>
   <div class="grid g2">
@@ -1236,7 +1292,7 @@ V.adminops = () => {
   <header class="section"><span class="eyebrow">Chapter 09 · Your daily work</span><h1>AdminOps & QuickBooks</h1>
   <p class="lede">Clean books are a growth tool. They prove funding claims, keep cash coming in, and give leaders numbers they can trust.</p></header>
 
-  <section class="section"><header><h2>Invoice lifecycle in QuickBooks</h2></header>${flow('inv', FLOWS.inv = INVOICE)}</section>
+  <section class="section"><header><h2>Invoice lifecycle in QuickBooks</h2></header>${flow('inv', FLOWS.inv = INVOICE, {pipe:true, icon:'$'})}</section>
 
   <section class="section"><header><h2>What you’ll invoice in an AWS partner</h2></header>
   <div class="tablewrap"><table><thead><tr><th>Revenue type</th><th>How it’s billed</th><th>Watch out for</th></tr></thead><tbody>
@@ -1290,7 +1346,7 @@ function calcDSO(){
 V.content = () => `
   <header class="section"><span class="eyebrow">Chapter 10 · Your craft</span><h1>Video & content</h1>
   <p class="lede">In a partner business, content does real work: it generates leads, serves as evidence for Specializations, gets featured by AWS, and justifies MDF. Treat each video as a pipeline asset with a goal and a number.</p></header>
-  <section class="section"><header><h2>Production pipeline</h2></header>${flow('vid', FLOWS.vid = VIDEO)}</section>
+  <section class="section"><header><h2>Production pipeline</h2></header>${flow('vid', FLOWS.vid = VIDEO, {pipe:true})}</section>
   <section class="section"><header><h2>What to make</h2></header>
   <div class="tablewrap"><table><thead><tr><th>Format</th><th>Why it matters</th><th>Shape</th></tr></thead><tbody>
   ${CONTENT_TYPES.map(c=>`<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td></tr>`).join('')}</tbody></table></div></section>
@@ -1322,7 +1378,7 @@ function revChart(){
   let g='';
   [0,30,60,90,120].forEach(t=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end">${t}</text>`; });
   REVENUE.forEach((r,i)=>{ const x=pl+i*bw+bw*.18, w=bw*.64, last=i===REVENUE.length-1;
-    g+=`<rect x="${x}" y="${y(r[1])}" width="${w}" height="${y(0)-y(r[1])}" rx="3" fill="${last?'var(--accent)':'var(--accent-soft)'}" stroke="var(--accent)" stroke-width="${last?0:1}"/><text x="${x+w/2}" y="${y(r[1])-6}" text-anchor="middle" style="fill:var(--ink)">${r[1]}</text><text x="${x+w/2}" y="${H-8}" text-anchor="middle">${r[0]}</text>`; });
+    g+=`<rect class="gy" style="animation-delay:${i*80}ms" x="${x}" y="${y(r[1])}" width="${w}" height="${y(0)-y(r[1])}" rx="3" fill="${last?'var(--accent)':'var(--accent-soft)'}" stroke="var(--accent)" stroke-width="${last?0:1}"/><text x="${x+w/2}" y="${y(r[1])-6}" text-anchor="middle" style="fill:var(--ink)">${r[1]}</text><text x="${x+w/2}" y="${H-8}" text-anchor="middle">${r[0]}</text>`; });
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="AWS revenue grew from 25.7 billion dollars in 2018 to 107.6 billion in 2024">${g}</svg>`;
 }
 
@@ -1394,14 +1450,15 @@ function renderUC(){ $('#ucGrid').innerHTML = USECASES.filter(u=>ucFilter==='All
 const ARCHS = {};
 function arch(id, lanes, note){
   ARCHS[id] = lanes;
-  const html = lanes.map((l,li)=>`${li?'<span class="lanearrow" aria-hidden="true">→</span>':''}<div class="lane"><span class="ln">${l.n}</span>${l.items.map((it,ii)=>`<button type="button" class="svc" data-arch="${id}|${li}|${ii}" aria-pressed="${li===0&&ii===0}">${it[0]}<small>${it[1]}</small></button>`).join('')}</div>`).join('');
+  const html = lanes.map((l,li)=>`${li?'<span class="lanearrow" aria-hidden="true">→</span>':''}<div class="lane" data-lane="${id}|${li}"><span class="ln">${l.n}</span>${l.items.map((it,ii)=>`<button type="button" class="svc" data-arch="${id}|${li}|${ii}" aria-pressed="${li===0&&ii===0}">${it[0]}<small>${it[1]}</small></button>`).join('')}</div>`).join('');
   const first = lanes[0].items[0];
-  return `<div class="arch">${html}</div><div class="detail" id="ad-${id}"><h4>${first[0]}</h4><p class="small">${first[2]}</p></div>${note?`<p class="small muted">${note}</p>`:''}`;
+  return `<div class="flowbar">${playBtn('data-trace', id, '\u25B6 Trace the flow')}<span class="small muted">${lanes.length} stages · click any box</span></div><div class="arch">${html}</div><div class="detail" id="ad-${id}"><h4>${first[0]}</h4><p class="small">${first[2]}</p></div>${note?`<p class="small muted">${note}</p>`:''}`;
 }
 function showArch(key){
   const [id,li,ii] = key.split('|'); const it = ARCHS[id][+li].items[+ii];
   $('#ad-'+id).innerHTML = `<h4>${it[0]}</h4><p class="small">${it[2]}</p>`;
   document.querySelectorAll(`[data-arch^="${id}|"]`).forEach(b=>b.setAttribute('aria-pressed', b.dataset.arch===key));
+  document.querySelectorAll(`[data-lane^="${id}|"]`).forEach(l=>l.classList.toggle('lit', l.dataset.lane===`${id}|${li}`));
 }
 
 /* Horizontal bar chart: rows = [[label, value]] */
@@ -1410,7 +1467,7 @@ function hbars(rows, opts={}){
   const W=560, lh=30, pl=opts.pl||190, pr=56, H=rows.length*lh+10;
   let g='';
   rows.forEach((r,i)=>{ const y=i*lh+6, w=(W-pl-pr)*r[1]/max;
-    g+=`<text x="${pl-8}" y="${y+15}" text-anchor="end" style="fill:var(--ink)">${r[0]}</text><rect x="${pl}" y="${y+3}" width="${W-pl-pr}" height="16" rx="3" fill="var(--sunk)"/><rect x="${pl}" y="${y+3}" width="${Math.max(w,2)}" height="16" rx="3" fill="${r[2]||'var(--accent)'}"/><text x="${pl+w+6}" y="${y+15}">${opts.fmt?opts.fmt(r[1]):r[1]}</text>`; });
+    g+=`<text x="${pl-8}" y="${y+15}" text-anchor="end" style="fill:var(--ink)">${r[0]}</text><rect x="${pl}" y="${y+3}" width="${W-pl-pr}" height="16" rx="3" fill="var(--sunk)"/><rect class="gx" style="animation-delay:${i*70}ms" x="${pl}" y="${y+3}" width="${Math.max(w,2)}" height="16" rx="3" fill="${r[2]||'var(--accent)'}"/><text x="${pl+w+6}" y="${y+15}">${opts.fmt?opts.fmt(r[1]):r[1]}</text>`; });
   return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.label||'Bar chart'}">${g}</svg></div>`;
 }
 
@@ -1586,7 +1643,7 @@ V.economics = () => `
     {t:'Inform', d:'Make costs visible and owned.', do:['Tag resources by team, project, customer','Cost Explorer and Cost and Usage Reports','Showback or chargeback per team'], check:['Every dollar has an owner'], tools:['Cost Explorer, CUR, Budgets']},
     {t:'Optimize', d:'Reduce waste and buy smarter.', do:['Right-size, schedule, clean up','Buy Savings Plans for steady usage'], check:['Commitment coverage and utilization tracked'], tools:['Compute Optimizer, Trusted Advisor']},
     {t:'Operate', d:'Keep it that way with processes and alerts.', do:['Budgets and anomaly alerts','Monthly cost review with engineering and finance'], check:['Unit cost (e.g. cost per customer) trending down'], tools:['AWS Budgets, Cost Anomaly Detection']}
-  ], {label:'Phase'})}</section>
+  ], {label:'Phase', pipe:true})}</section>
 
   <section class="section"><header><h2>How AWS bills, in plain terms</h2></header>
   <div class="grid g4">${[['Compute','Per second/hour or per request'],['Storage','Per GB per month, plus requests'],['Data transfer','Into AWS is free; out to the internet is charged per GB'],['Support','Paid plans charged as % of spend or a minimum'],['Marketplace','Third-party software appears on the same bill'],['Credits','Funding and promotional credits reduce the bill'],['Commitments','Savings Plans and Reserved Instances lower rates'],['Taxes','Added per country rules']].map(x=>`<div class="card"><b>${x[0]}</b><span class="small muted">${x[1]}</span></div>`).join('')}</div></section>
@@ -1605,7 +1662,7 @@ function calcTCO(){
   const clRun = v('tcC')*12*Y*(1-v('tcSP')/100), clStaff = v('tcF2')*v('tcSal')*Y, clMig = Math.max(v('tcMig')-v('tcFund'),0);
   const cl = clRun+clStaff+clMig, save = on-cl, inv = clMig;
   const W=520,H=210,pl=110,pr=20, max=Math.max(on,cl,1);
-  const seg = (y, parts) => { let x=pl, s=''; parts.forEach(p=>{ const w=(W-pl-pr)*p[0]/max; s+=`<rect x="${x}" y="${y}" width="${Math.max(w,0)}" height="34" fill="${p[1]}"><title>${p[2]}: ${money(p[0])}</title></rect>`; x+=w; }); return s; };
+  const seg = (y, parts) => { let x=pl, s=''; parts.forEach(p=>{ const w=(W-pl-pr)*p[0]/max; s+=`<rect class="${FIRST?'gx':''}" x="${x}" y="${y}" width="${Math.max(w,0)}" height="34" fill="${p[1]}"><title>${p[2]}: ${money(p[0])}</title></rect>`; x+=w; }); return s; };
   const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Three-year cost: on-premises ${money(on)}, AWS ${money(cl)}">
     <text x="${pl-8}" y="42" text-anchor="end" style="fill:var(--ink)">On-premises</text>${seg(20,[[onHw,'var(--signal)','Hardware'],[onDc,'color-mix(in srgb,var(--signal) 65%,var(--surface))','Data center'],[onMaint,'color-mix(in srgb,var(--signal) 40%,var(--surface))','Maintenance'],[onStaff,'var(--muted)','Staff']])}
     <text x="${pl-8}" y="102" text-anchor="end" style="fill:var(--ink)">AWS</text>${seg(80,[[clRun,'var(--accent)','AWS usage'],[clMig,'color-mix(in srgb,var(--accent) 50%,var(--surface))','Migration net of funding'],[clStaff,'var(--muted)','Staff']])}
@@ -1663,7 +1720,7 @@ V.ai = () => `
     {t:'Generate', d:'The foundation model writes the answer from that context.', do:['Model chosen for cost vs quality'], check:['Latency and cost per answer'], tools:['Claude, Amazon Nova or another model on Bedrock']},
     {t:'Guard', d:'Guardrails filter harmful content and sensitive data.', do:['Block topics, mask personal data'], check:['Policy compliance'], tools:['Bedrock Guardrails']},
     {t:'Answer + cite', d:'The user gets an answer with links to sources. Feedback improves the system.', do:['Thumbs up/down logged'], check:['Accuracy measured over time'], tools:['CloudWatch, evaluation']}
-  ], {label:'Step'})}</section>
+  ], {label:'Step', pipe:true})}</section>
 
   <section class="section"><header><h2>Picking AI use cases: value vs feasibility</h2><p class="muted">Click a dot. Top-right is where to start. Positions are typical, not fixed.</p></header>
   <div class="grid g2">
@@ -1855,7 +1912,7 @@ function pnlChart(){
     if(p[2]==='t'){ run=p[1]; top=y(p[1]); bot=y(0); col='var(--accent)'; }
     else { const nr=run+p[1]; top=y(Math.max(run,nr)); bot=y(Math.min(run,nr)); col=p[1]<0?'var(--signal)':'var(--good)'; run=nr; }
     const x=pl+i*bw+bw*.15, w=bw*.7;
-    g+=`<rect x="${x}" y="${top}" width="${w}" height="${Math.max(bot-top,1)}" rx="3" fill="${col}"/><text x="${x+w/2}" y="${top-5}" text-anchor="middle" style="fill:var(--ink)">${p[1]>0&&p[2]!=='t'?'+':''}${p[1]}</text>`;
+    g+=`<rect class="gy" style="animation-delay:${i*90}ms" x="${x}" y="${top}" width="${w}" height="${Math.max(bot-top,1)}" rx="3" fill="${col}"/><text x="${x+w/2}" y="${top-5}" text-anchor="middle" style="fill:var(--ink)">${p[1]>0&&p[2]!=='t'?'+':''}${p[1]}</text>`;
     const words=p[0].split(' '), half=Math.ceil(words.length/2);
     g+=`<text x="${x+w/2}" y="${H-pb+16}" text-anchor="middle">${words.slice(0,half).join(' ')}</text><text x="${x+w/2}" y="${H-pb+30}" text-anchor="middle">${words.slice(half).join(' ')}</text>`;
   });
@@ -2007,7 +2064,7 @@ V.kpis = () => `
     {t:'Set a SMART target', d:'Specific, Measurable, Achievable, Relevant, Time-bound: “Reduce DSO from 52 to 40 days by end of Q2.”', do:['Use the baseline','Stretch, but believable'], check:['Has a date'], tools:[]},
     {t:'Assign owner & cadence', d:'One owner per KPI, reviewed weekly or monthly.', do:['Put it on a dashboard','Add to weekly update'], check:['Owner named'], tools:['Dashboard, tracker below']},
     {t:'Review & act', d:'Each review: what moved, why, what we’ll do next. Retire KPIs that don’t drive decisions.', do:['Note actions next to numbers'], check:['Trend, not one point'], tools:['Monthly review']}
-  ], {label:'Step'})}</section>
+  ], {label:'Step', pipe:true})}</section>
 
   <section class="section"><header><h2>Leading vs lagging</h2></header>
   <div class="grid g2">
@@ -2170,7 +2227,7 @@ V.marketing = () => `
     {t:'Nurture', d:'Stay helpful until they’re ready to talk.', do:['Email sequences by persona','Retargeting','Invite to webinars'], check:['Unsubscribes stay low'], tools:['Email platform']},
     {t:'Hand off', d:'Pass qualified leads to sales fast.', do:['MQL definition met → assign to sales','Context note: what they consumed'], check:['Follow-up within 24 hours'], tools:['CRM workflow']},
     {t:'Measure & improve', d:'Report on pipeline, not just likes.', do:['Monthly dashboard','Kill weak formats, scale strong ones'], check:['Sourced and influenced pipeline tracked'], tools:['Dashboard, CRM reports']}
-  ], {label:'Step'})}</section>
+  ], {label:'Step', pipe:true})}</section>
 
   <section class="section"><header><h2>Who you’re talking to</h2><p class="muted">Including AWS sellers: an AWS account manager who remembers your offer can send you a deal.</p></header>
   <div class="tablewrap"><table><thead><tr><th>Persona</th><th>Cares about</th><th>Content that works</th><th>Where to reach them</th></tr></thead><tbody>${PERSONAS.map(p=>`<tr><td><b>${p[0]}</b></td><td>${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td></tr>`).join('')}</tbody></table></div></section>
@@ -2232,7 +2289,7 @@ function calcFunnel(){
   const rows=[['Visitors',vis],['Leads',leads],['MQLs',mql],['SQLs',sql],['Won deals',won]];
   const W=420,lh=34,H=rows.length*lh+4, mx=Math.max(vis,1);
   let g=''; rows.forEach((r,i)=>{ const w=Math.max((W-210)*Math.sqrt(r[1]/mx),3), x=150+((W-210)-w)/2;
-    g+=`<text x="10" y="${i*lh+22}" style="fill:var(--ink)">${r[0]}</text><rect x="${x}" y="${i*lh+6}" width="${w}" height="24" rx="4" fill="${i===rows.length-1?'var(--signal)':'var(--accent)'}" opacity="${1-i*0.12}"/><text x="${W-4}" y="${i*lh+22}" text-anchor="end" style="fill:var(--ink)">${r[1]<10?r[1].toFixed(1):Math.round(r[1]).toLocaleString()}</text>`; });
+    g+=`<text x="10" y="${i*lh+22}" style="fill:var(--ink)">${r[0]}</text><rect class="${FIRST?'gc':''}" style="animation-delay:${i*90}ms" x="${x}" y="${i*lh+6}" width="${w}" height="24" rx="4" fill="${i===rows.length-1?'var(--signal)':'var(--accent)'}" opacity="${1-i*0.12}"/><text x="${W-4}" y="${i*lh+22}" text-anchor="end" style="fill:var(--ink)">${r[1]<10?r[1].toFixed(1):Math.round(r[1]).toLocaleString()}</text>`; });
   $('#fnOut').innerHTML = `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly funnel">${g}</svg></div>
   <div class="kv"><dt>Revenue / month</dt><dd class="mono">${money(rev)}</dd><dt>Cost per lead</dt><dd class="mono">${money(cpl)}</dd><dt>Marketing cost per won deal</dt><dd class="mono">${money(cac)}</dd><dt>Marketing ROI</dt><dd class="mono">${roi.toFixed(0)}%</dd><dt>Visitors needed / month for target</dt><dd class="mono">${Math.ceil(needVis).toLocaleString()}</dd></div>
   <p class="small muted">Square-root scale so small stages stay visible. ROI here counts marketing spend only, not sales salaries. Improving any one conversion rate by a few points often beats buying more traffic.</p>`;
@@ -2314,10 +2371,10 @@ V.enablement = () => {
     {t:'Personalize', d:'Create tailored content.', do:['Personalized intro videos','Industry-specific case studies','Invite to roundtable or webinar'], check:['Message references their situation'], tools:['Video, email']},
     {t:'Orchestrate', d:'Coordinated touches across channels over 4–8 weeks.', do:['Ads to the account, emails, calls, AWS AM introduction'], check:['Touches logged in CRM'], tools:['CRM, ads']},
     {t:'Measure', d:'Track account engagement and pipeline, not just clicks.', do:['Accounts engaged, meetings, opportunities, pipeline $'], check:['Review every two weeks'], tools:['Dashboard']}
-  ], {label:'Step'})}</section>
+  ], {label:'Step', pipe:true})}</section>
 
   <section class="section"><header><h2>Customer success lifecycle</h2></header>
-  ${flow('cs', FLOWS.cs = CS_FLOW, {label:'Stage'})}</section>
+  ${flow('cs', FLOWS.cs = CS_FLOW, {label:'Stage', pipe:true})}</section>
 
   <section class="section"><header><h2>Customer health score</h2><p class="muted">Rate an account from 0–10 on each factor. Weights are a starting point; adjust them with your team.</p></header>
   <div class="grid g2">
@@ -2476,7 +2533,7 @@ V.recognition = () => `
   </div></section>
 
   <section class="section"><header><h2>7. From evidence to a raise or promotion</h2></header>
-  ${flow('raise', FLOWS.raise = RAISE, {label:'Step'})}
+  ${flow('raise', FLOWS.raise = RAISE, {label:'Step', pipe:true})}
   <div class="grid g2">
     <div class="card"><h4>One-page case: structure</h4><ol class="small" style="margin:0;padding-left:18px;display:grid;gap:4px"><li>Role today and how scope has grown</li><li>Top 5 results with numbers</li><li>What you own and its health</li><li>Skills and certifications gained</li><li>Feedback quotes</li><li>The ask (range, title or scope) and the plan for next year</li></ol></div>
     <div class="card"><h4>Phrases that work</h4><div style="display:grid;gap:6px">${SCRIPTS.map(s=>`<p class="small"><b>${s[0]}:</b> <span class="muted">${s[1]}</span></p>`).join('')}</div></div>
@@ -2649,7 +2706,7 @@ V.solutions = () => `
     {t:'Deploy', d:'Automated releases through a pipeline.', do:['CI/CD','Blue/green or canary'], check:['Rollback tested'], tools:['CodePipeline, GitHub Actions']},
     {t:'Operate', d:'Monitor, patch, back up, respond.', do:['Dashboards and alarms','Runbooks'], check:['On-call or MSP coverage'], tools:['CloudWatch, Systems Manager']},
     {t:'Optimize', d:'Review cost, performance and security regularly.', do:['Right-size, Savings Plans','Quarterly Well-Architected check'], check:['Cost per user trending down'], tools:['Cost Explorer, Trusted Advisor']}
-  ], {label:'Step'})}</section>
+  ], {label:'Step', pipe:true})}</section>
 
   <section class="section"><header><h2>Ways to deploy on AWS</h2></header>
   <div class="tablewrap"><table><thead><tr><th>Method</th><th>What it is</th><th>When to use</th></tr></thead><tbody>${DEPLOY_WAYS.map(d=>`<tr><td><b>${d[0]}</b></td><td>${d[1]}</td><td class="small">${d[2]}</td></tr>`).join('')}</tbody></table></div></section>
@@ -2735,7 +2792,7 @@ V.value = () => `
     {t:'Measure', d:'Collect “after” numbers at 30, 90 and 180 days.', do:['Same formulas and sources as the baseline','Note anything else that changed'], check:['Like-for-like comparison'], tools:['Cost Explorer, CloudWatch, CI/CD data']},
     {t:'Report', d:'Present realised value to the customer’s leadership.', do:['Executive value summary','Value section in every QBR'], check:['Customer confirms results'], tools:['Value report template below']},
     {t:'Expand & advocate', d:'Use proven value to grow the account and win new customers.', do:['Next workload proposal','Case study video, AWS reference, award nominations'], check:['Approval to use results publicly'], tools:['Video team, PMM, ACE']}
-  ], {label:'Stage'})}</section>
+  ], {label:'Stage', pipe:true})}</section>
 
   <section class="section"><header><h2>Value drivers and how to measure them</h2><p class="muted">Based on AWS’s Cloud Value Framework, plus revenue and customer experience.</p></header>
   <div class="grid g3">${VDRIVERS.map(d=>`<div class="card"><h4>${d[0]}</h4><p class="small">${d[1]}</p><div class="tags">${d[2].map(k=>`<span class="tag a">${k}</span>`).join('')}</div><p class="small muted"><b>Data from:</b> ${d[3]}</p></div>`).join('')}</div></section>
@@ -2833,10 +2890,10 @@ V.bvr = () => `
     {t:'Check the nomination prerequisites', d:'Before nominating, confirm the basics are in place.', do:['Customer is deploying an eligible AWS service','Active opportunity for the customer in Partner Central (ACE)','SOW signed or expected soon','Customer executive sponsor in place'], check:['All five prerequisites true'], tools:['ACE, SOW, sponsor confirmation']},
     {t:'Nominate & define KPIs', d:'Nominate customer → follow the wizard: engagement details, eligibility, customer KPIs. These KPIs form the Value Realization Plan (VRP).', do:['Pick 3–5 measurable KPIs with baselines','Agree thresholds with the customer sponsor'], check:['Nomination submitted'], tools:['Value scorecard, success plan']},
     {t:'PSS review', d:'The nomination goes to “In review”. If approved, the initiative moves to the first pit stop and its activities unlock. If not, you get specific feedback and can edit and resubmit.', do:['Respond to feedback quickly'], check:['Initiative at pit stop 1'], tools:['Partner Central notifications']}
-  ], {label:'Step'})}</section>
+  ], {label:'Step', pipe:true})}</section>
 
   <section class="section"><header><h2>The five pit stops in detail</h2><p class="muted">Click each stop. To advance: complete the required activities, have them approved by the PSS, and meet the KPI threshold in the VRP. Optional activities help adoption but don’t block progress. Activities for future stops are visible but locked.</p></header>
-  ${flow('pit', FLOWS.pit = BVR_STOPS, {label:'Pit stop'})}</section>
+  ${raceSVG()}${flow('pit', FLOWS.pit = BVR_STOPS, {label:'Pit stop'})}</section>
 
   <section class="section"><header><h2>Examples across the five stops</h2><p class="muted">Illustrative scenarios showing what each stop looks like in practice. Pick one.</p></header>
   <div class="chips">${BVR_CASES.map((c,i)=>`<button class="chip" type="button" data-bvrcase="${i}" aria-pressed="${i===bvrCase}">${c.n}</button>`).join('')}</div>
@@ -2859,7 +2916,7 @@ V.bvr = () => `
     {t:'PO generated', d:'A purchase order number is generated automatically; the disbursement status changes to “In progress”.', do:['Note the PO number in your funding tracker'], check:[], tools:['Disbursement summary section']},
     {t:'Invoice', d:'Submit an invoice through Amazon Payee Central using that PO number.', do:['Match amount and PO exactly','Keep a PDF copy'], check:['Invoice accepted'], tools:['Amazon Payee Central','QuickBooks (record the receivable)']},
     {t:'Paid', d:'Payment is processed after the invoice is submitted. Status shows “Paid”.', do:['Match the payment in QuickBooks','Close the line in the funding tracker'], check:['Amount received = amount expected'], tools:['QuickBooks bank feed']}
-  ], {label:'Step'})}</section>
+  ], {label:'Step', pipe:true, icon:'$'})}</section>
 
   <section class="section"><header><h2>How each team helps at the pit stops</h2></header>
   <div class="tablewrap"><table><thead><tr><th>Team</th><th>Activate & Adapt</th><th>Scaled adoption · Retain & attest</th><th>Recommend & expand</th></tr></thead><tbody>
@@ -2878,7 +2935,7 @@ function showBvrCase(i){ bvrCase=i; const c=BVR_CASES[i];
   const W=760,H=240,pl=50,pr=60,pt=16,pb=40, n=c.series.length, x=k=>pl+(W-pl-pr)*(k/(n-1)), y=v=>pt+(H-pt-pb)*(1-v/100);
   let g=''; [0,25,50,75,100].forEach(t=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end">${t}</text>`; });
   g+=`<path d="${c.series.map((v,k)=>(k?'L':'M')+x(k)+' '+y(v)).join(' ')} L${x(n-1)} ${y(0)} L${x(0)} ${y(0)} Z" fill="var(--accent-soft)"/>`;
-  g+=`<path d="${c.series.map((v,k)=>(k?'L':'M')+x(k)+' '+y(v)).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`;
+  g+=`<path class="draw" pathLength="1" d="${c.series.map((v,k)=>(k?'L':'M')+x(k)+' '+y(v)).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`;
   c.series.forEach((v,k)=>{ g+=`<circle cx="${x(k)}" cy="${y(v)}" r="5" fill="${k===n-1?'var(--signal)':'var(--accent)'}"/><text x="${x(k)}" y="${H-pb+18}" text-anchor="middle">${k+1}. ${BVR_STOPS[k].t.split(' ')[0]}</text>`; });
   $('#bvrCaseD').innerHTML = `<div class="card tint"><span class="eyebrow">${c.org}</span><h3>${c.n}</h3><p class="small"><b>Goal:</b> ${c.goal}</p><p class="small"><b>VRP KPIs:</b> ${c.kpis}</p></div>
   <div class="tablewrap"><table><thead><tr><th>Pit stop</th><th>What the partner did</th><th>KPI threshold</th><th>Result</th></tr></thead><tbody>${c.rows.map((r,k)=>`<tr><td><b>${k+1}. ${BVR_STOPS[k].t}</b></td><td>${r[1]}</td><td class="small">${r[2]}</td><td><span class="tag a">${r[3]}</span></td></tr>`).join('')}</tbody></table></div>
@@ -3017,6 +3074,7 @@ V.opps = () => `
   <header class="section"><span class="eyebrow">Chapter 00 · Intermediate → Advanced</span><h1>Opportunity lifecycle</h1>
   <p class="lede">How an opportunity is captured and executed, step by step, in seven common scenarios. Each swimlane shows who acts at each step: the customer, AWS, your company, or other parties such as ISVs, distributors and non-partner vendors. Click any step for what happens, which system is used, what it produces and who maintains it.</p></header>
   <div class="chips">${OPP_SCEN.map((s,i)=>`<button class="chip" type="button" data-opp="${i}" aria-pressed="${i===oppSel}">${s.n}</button>`).join('')}</div>
+  <div class="flowbar">${playBtn('data-oplay', 'opp', '\u25B6 Play timeline')}<span class="small muted">Steps light up in order across the swimlane</span></div>
   <div id="oppD" class="section"></div>
 
   <section class="section"><header><h2>Scenarios compared</h2></header>
@@ -3075,12 +3133,99 @@ function renderCh(){ const b=$('#chBody'); if(!b) return; const q=($('#chQ')?.va
   const rows=CHALLENGES.filter(c=>!q||c.join(' ').toLowerCase().includes(q));
   b.innerHTML = rows.length ? rows.map(c=>`<tr><td><b>${c[0]}</b></td><td class="small">${c[1]}</td><td class="small">${c[2].split(', ').map(x=>`<span class="tag a" style="margin:1px">${x}</span>`).join(' ')}</td><td class="small">${c[3]}</td><td class="small">${c[4]}</td></tr>`).join('') : '<tr><td colspan="5" class="muted">No match.</td></tr>'; }
 
+/* ================= MOTION & ANIMATED DIAGRAMS ================= */
+const RM = (()=>{ try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } })();
+let FIRST = true;   // true right after a chapter renders, so calculators animate once, not on every keystroke
+let PLAY = null;
+
+function selectFlow(id, i){
+  if(!FLOWS[id] || !FLOWS[id][i]) return;
+  document.querySelectorAll(`[data-flow="${id}"]`).forEach(x=>{ const k=+x.dataset.i; x.setAttribute('aria-pressed', k===i); x.classList.toggle('done', k<i); });
+  const d = $('#fd-'+id); if(d) d.innerHTML = flowDetail(FLOWS[id][i]);
+  document.querySelectorAll(`[data-pipe^="${id}|"]`).forEach(g=>g.classList.toggle('on', +g.dataset.pipe.split('|')[1]===i));
+}
+function stopPlay(){ if(!PLAY) return; clearInterval(PLAY.t); const b=PLAY.btn; b.textContent=b.dataset.label; b.setAttribute('aria-pressed','false'); PLAY=null; }
+function startPlay(btn, count, fn){ stopPlay(); let i=0; fn(0); btn.textContent='❚❚ Pause'; btn.setAttribute('aria-pressed','true');
+  PLAY = {btn, t:setInterval(()=>{ i++; if(i>=count || !document.body.contains(btn)){ stopPlay(); return; } fn(i); }, 2300)}; }
+const playBtn = (attr, id, label) => `<button class="playbtn" type="button" ${attr}="${id}" data-label="${label}" aria-pressed="false">${label}</button>`;
+
+/* key-time pulse: highlight at fraction f of a cycle */
+function pulse(attr, lo, hi, f, dur){ if(RM) return '';
+  let v, k; if(f<=0.04){ v=`${hi};${lo};${lo}`; k='0;0.08;1'; } else if(f>=0.96){ v=`${lo};${lo};${hi}`; k='0;0.92;1'; }
+  else { v=`${lo};${lo};${hi};${lo};${lo}`; k=`0;${(f-0.04).toFixed(3)};${f.toFixed(3)};${(f+0.04).toFixed(3)};1`; }
+  return `<animate attributeName="${attr}" values="${v}" keyTimes="${k}" dur="${dur}s" repeatCount="indefinite"/>`; }
+function wrap2(s, n=14){ const w=s.split(' '); let a='', b=''; w.forEach(x=>{ if((a+' '+x).trim().length<=n && !b) a=(a+' '+x).trim(); else b=(b+' '+x).trim(); }); if(b.length>n+4) b=b.slice(0,n+2)+'…'; return [a,b]; }
+
+/* Horizontal animated pipeline linked to a flow */
+function pipeSVG(id, labels, icon){
+  const n=labels.length, W=Math.max(560,(n-1)*128+120), H=132, y=44, x=i=>60+i*((W-120)/Math.max(n-1,1));
+  const path=`M${x(0)} ${y} L${x(n-1)} ${y}`, dur=+(n*0.95).toFixed(1);
+  let g=`<path d="${path}" stroke="var(--sunk)" stroke-width="14" stroke-linecap="round" fill="none"/><path class="pipe-flow" d="${path}" stroke="var(--accent)" stroke-width="3" stroke-dasharray="3 9" fill="none"/>`;
+  if(!RM) for(let p=0;p<3;p++) g+=`<g opacity="0"><circle r="8" fill="var(--signal)"/>${icon?`<text y="4" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:700">${icon}</text>`:''}<set attributeName="opacity" to="1" begin="${(p*dur/3).toFixed(2)}s"/><animateMotion dur="${dur}s" begin="${(p*dur/3).toFixed(2)}s" repeatCount="indefinite" path="${path}"/></g>`;
+  labels.forEach((l,i)=>{ const f=n>1?i/(n-1):0, [a,b]=wrap2(l);
+    g+=`<g data-pipe="${id}|${i}" class="${i===0?'on':''}" role="button" tabindex="0" aria-label="${l}" style="cursor:pointer"><path d="M${x(i)-56} ${y-26} h112 v92 h-112 Z" fill="transparent"/><circle cx="${x(i)}" cy="${y}" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5">${pulse('r',18,23,f,dur)}</circle><text class="num" x="${x(i)}" y="${y+4}" text-anchor="middle" style="font-weight:700;fill:var(--ink)">${i+1}</text><text x="${x(i)}" y="${y+40}" text-anchor="middle" style="fill:var(--ink);font-size:11.5px">${a}</text><text x="${x(i)}" y="${y+55}" text-anchor="middle" style="fill:var(--ink);font-size:11.5px">${b}</text></g>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W, n*118)}px;max-width:${n*200}px;margin:0 auto" role="img" aria-label="Animated pipeline: ${labels.join(', ')}">${g}</svg></div>`;
+}
+
+/* Circular orbit for loops */
+function orbitSVG(id, labels, center){
+  const W=600,H=400,cx=300,cy=200,R=135,n=labels.length, ang=i=>(-90+i*360/n)*Math.PI/180;
+  const circ=`M ${cx} ${cy-R} A ${R} ${R} 0 1 1 ${cx-0.01} ${cy-R}`, dur=n*1.4;
+  let g=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--sunk)" stroke-width="16"/><circle class="pipe-flow" cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="3 9"/>`;
+  g+=`<g class="spin"><circle cx="${cx}" cy="${cy}" r="62" fill="var(--accent-soft)" stroke="var(--accent)" stroke-dasharray="4 6"/></g><text x="${cx}" y="${cy-4}" text-anchor="middle" style="font-family:var(--display);font-weight:800;font-size:17px;fill:var(--ink)">${center[0]}</text><text x="${cx}" y="${cy+16}" text-anchor="middle" style="fill:var(--muted)">${center[1]}</text>`;
+  if(!RM) for(let p=0;p<2;p++) g+=`<circle r="8" fill="var(--signal)" opacity="0"><set attributeName="opacity" to="1" begin="${p*dur/2}s"/><animateMotion dur="${dur}s" begin="${p*dur/2}s" repeatCount="indefinite" path="${circ}"/></circle>`;
+  labels.forEach((l,i)=>{ const a=ang(i), nx=cx+R*Math.cos(a), ny=cy+R*Math.sin(a), lx=cx+(R+40)*Math.cos(a), ly=cy+(R+34)*Math.sin(a)-(Math.sin(a)<-0.9?16:0), anchor=Math.abs(Math.cos(a))<0.3?'middle':(Math.cos(a)>0?'start':'end'), [l1,l2]=wrap2(l,18);
+    g+=`<g data-pipe="${id}|${i}" class="${i===0?'on':''}" role="button" tabindex="0" aria-label="${l}" style="cursor:pointer"><path d="M${Math.min(nx,lx)-(anchor==='end'?150:30)} ${Math.min(ny,ly)-30} H${Math.max(nx,lx)+(anchor==='start'?150:30)} V${Math.max(ny,ly)+30} H${Math.min(nx,lx)-(anchor==='end'?150:30)} Z" fill="transparent"/><circle cx="${nx}" cy="${ny}" r="20" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5">${pulse('r',20,25,i/n,dur)}</circle><text class="num" x="${nx}" y="${ny+4}" text-anchor="middle" style="font-weight:700;fill:var(--ink)">${i+1}</text><text x="${lx}" y="${ly}" text-anchor="${anchor}" style="fill:var(--ink);font-size:12.5px;font-weight:600">${l1}</text><text x="${lx}" y="${ly+15}" text-anchor="${anchor}" style="fill:var(--ink);font-size:12.5px;font-weight:600">${l2}</text></g>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:420px" role="img" aria-label="Loop diagram: ${labels.join(', ')}">${g}</svg></div>`;
+}
+
+/* BVR racetrack */
+function raceSVG(){
+  const W=680,H=260, track='M 110 60 H 570 A 70 70 0 0 1 570 200 H 110 A 70 70 0 0 1 110 60 Z';
+  const pts=[[190,60,'above'],[340,60,'above'],[490,60,'above'],[440,200,'below'],[240,200,'below']];
+  let g=`<path d="${track}" fill="none" stroke="var(--sunk)" stroke-width="30"/><path class="pipe-flow" d="${track}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="10 10"/>`;
+  g+=`<text x="340" y="126" text-anchor="middle" style="font-family:var(--display);font-weight:800;font-size:18px;fill:var(--ink)">The value lap</text><text x="340" y="146" text-anchor="middle" style="fill:var(--muted)">Each stop: activities + KPI threshold → next stop</text>`;
+  pts.forEach((p,i)=>{ const [a,b]=wrap2(BVR_STOPS[i].t,12), ty=p[2]==='above'?p[1]-30-(b?15:0):p[1]+42;
+    g+=`<g data-pipe="pit|${i}" class="${i===0?'on':''}" role="button" tabindex="0" aria-label="${BVR_STOPS[i].t}" style="cursor:pointer"><path d="M${p[0]-55} ${Math.min(p[1]-20,ty-14)} H${p[0]+55} V${Math.max(p[1]+20,ty+20)} H${p[0]-55} Z" fill="transparent"/><rect x="${p[0]-17}" y="${p[1]-17}" width="34" height="34" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/><text class="num" x="${p[0]}" y="${p[1]+5}" text-anchor="middle" style="font-weight:700;fill:var(--ink)">${i+1}</text><text x="${p[0]}" y="${ty}" text-anchor="middle" style="font-weight:600;fill:var(--ink);font-size:12.5px">${a}</text><text x="${p[0]}" y="${ty+15}" text-anchor="middle" style="font-weight:600;fill:var(--ink);font-size:12.5px">${b}</text></g>`; });
+  if(!RM) g+=`<g><rect x="-13" y="-7" width="26" height="14" rx="4" fill="var(--signal)"/><circle cx="-7" cy="8" r="3" fill="var(--ink)"/><circle cx="7" cy="8" r="3" fill="var(--ink)"/><animateMotion dur="11s" repeatCount="indefinite" rotate="auto" path="${track}"/></g>`;
+  g+=`<g transform="translate(96 60)"><rect x="-4" y="-22" width="3" height="44" fill="var(--ink)"/><text x="4" y="-10" style="fill:var(--muted);font-size:10px">START</text></g>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:520px" role="img" aria-label="Racetrack showing the five BVR pit stops in order">${g}</svg></div>`;
+}
+
+/* Hub and spoke for portals */
+function hubSVG(){
+  const W=700,H=420,cx=350,cy=210,n=PORTALS.length;
+  let lines='', nodes='', dots='';
+  PORTALS.forEach((p,i)=>{ const a=(-90+i*360/n)*Math.PI/180, x=cx+275*Math.cos(a), y=cy+160*Math.sin(a), path=`M${cx} ${cy} L${x.toFixed(1)} ${y.toFixed(1)}`;
+    lines+=`<path d="${path}" stroke="${p.lead?'var(--signal)':'var(--line)'}" stroke-width="2" class="${p.lead?'pipe-flow':''}" stroke-dasharray="${p.lead?'3 7':'0'}" fill="none"/>`;
+    if(!RM) dots+=`<circle r="4" fill="${p.lead?'var(--signal)':'var(--accent)'}" opacity="0"><set attributeName="opacity" to="1" begin="${(i*0.23).toFixed(2)}s"/><animateMotion dur="2.6s" begin="${(i*0.23).toFixed(2)}s" repeatCount="indefinite" path="${path}"/></circle>`;
+    nodes+=`<g data-portal="${i}" role="button" tabindex="0" aria-label="${p.name}" aria-pressed="${i===0}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="27" fill="var(--surface)" stroke="${p.lead?'var(--signal)':'var(--accent)'}" stroke-width="2.5"/><text class="num" x="${x}" y="${y+4}" text-anchor="middle" style="font-family:var(--mono);font-weight:600;font-size:11px;fill:var(--ink)">${p.abbr}</text><text x="${x}" y="${y+(y>cy?44:-35)}" text-anchor="middle" style="fill:var(--muted);font-size:11px">${p.short}</text></g>`; });
+  const hub=`<circle cx="${cx}" cy="${cy}" r="56" fill="var(--accent)"/><g class="spin"><circle cx="${cx}" cy="${cy}" r="68" fill="none" stroke="var(--accent)" stroke-dasharray="4 6"/></g><text x="${cx}" y="${cy-3}" text-anchor="middle" style="fill:var(--accent-ink);font-family:var(--display);font-weight:800;font-size:15px">Your company</text><text x="${cx}" y="${cy+15}" text-anchor="middle" style="fill:var(--accent-ink);font-size:11px">partner team</text>`;
+  return `<div class="card"><div class="pipe hub"><svg viewBox="0 0 ${W} ${H}" style="min-width:560px" role="img" aria-label="Hub diagram of the partner portals">${lines}${dots}${hub}${nodes}</svg></div><p class="small muted">Orange spokes produce leads or pipeline. Click a portal to open its details below.</p></div>`;
+}
+
+/* Count numbers up when a chapter opens */
+function countUp(el){ if(RM || el.children.length) return; const txt=el.textContent, m=txt.match(/-?[\d,]*\.?\d+/); if(!m) return;
+  const raw=m[0], num=parseFloat(raw.replace(/,/g,'')); if(!isFinite(num) || num===0) return;
+  const dec=(raw.split('.')[1]||'').length, comma=raw.includes(','), pre=txt.slice(0,m.index), post=txt.slice(m.index+raw.length), t0=performance.now(), d=750;
+  const fmt=v=>comma? v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}) : v.toFixed(dec);
+  const step=now=>{ const p=Math.min((now-t0)/d,1), e=1-Math.pow(1-p,3); el.textContent=pre+fmt(num*e)+post; if(p<1) requestAnimationFrame(step); else el.textContent=txt; };
+  requestAnimationFrame(step); }
+
+/* Animate panels when their content changes */
+const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid']);
+try{ new MutationObserver(ms=>{ if(RM) return; const seen=new Set(); ms.forEach(m=>{ const t=m.target; if(t.nodeType!==1 || seen.has(t)) return;
+  if(t.classList.contains('detail') || DETAIL_IDS.has(t.id)){ seen.add(t); t.animate([{opacity:.35, transform:'translateY(6px)'},{opacity:1, transform:'none'}],{duration:320, easing:'cubic-bezier(.2,.8,.2,1)'}); } }); })
+  .observe(document.getElementById('view'), {childList:true, subtree:true}); }catch(e){}
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
   if(!V[id]) id = 'start';
+  stopPlay(); FIRST = true;
   renderNav(id);
   $('#view').innerHTML = V[id]();
+  Array.from($('#view').children).forEach((c,i)=>c.style.setProperty('--i', Math.min(i,10)));
   const eb = $('#view .eyebrow'), ch = CHAPTERS.find(c=>c.id===id);
   if(eb && /^Chapter \d+/.test(eb.textContent)) eb.textContent = eb.textContent.replace(/^Chapter \d+/, 'Chapter '+ch.n);
   window.scrollTo(0,0);
@@ -3108,12 +3253,20 @@ function route(){
   if(id==='business') calcCE();
   if(id==='roles') showRole(roleSel);
   if(id==='kpis'){ renderKpiLib(); renderKpis(); }
+  document.querySelectorAll('#view .out').forEach(countUp);
+  setTimeout(()=>{ FIRST = false; }, 900);
   try{ store.set('last', id); }catch(e){}
 }
 window.addEventListener('hashchange', route);
 
 document.addEventListener('click', e => {
   const t = e.target;
+  const pb = t.closest('[data-play],[data-trace],[data-oplay]');
+  if(pb){ if(PLAY && PLAY.btn===pb){ stopPlay(); return; }
+    if(pb.dataset.play){ const id=pb.dataset.play; return startPlay(pb, FLOWS[id].length, i=>selectFlow(id,i)); }
+    if(pb.dataset.trace){ const id=pb.dataset.trace; return startPlay(pb, ARCHS[id].length, li=>showArch(`${id}|${li}|0`)); }
+    return startPlay(pb, OPP_SCEN[oppSel].steps.length, k=>showOpp(oppSel,k)); }
+  if(t.closest('[data-arch],[data-ostep],[data-opp],[data-sol],[data-solcat],[data-bvrcase]')) stopPlay();
   const inf = t.closest('[data-infra]'); if(inf){ e.stopPropagation(); showInfra(inf.dataset.infra); return; }
   const sr = t.closest('[data-sr]'); if(sr) return showSR(sr.dataset.sr);
   const tier = t.closest('[data-tier]'); if(tier) return showTier(+tier.dataset.tier);
@@ -3202,7 +3355,8 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+  const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
 

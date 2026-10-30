@@ -38,6 +38,8 @@ Open `index.html` in any browser. No install or build step needed.
 | Career | Grow & contribute | 30-60-90 plan, use cases, rules, habits, impact metrics |
 | | Recognition & growth | Ownership register with health and review dates, maintenance standards, work log (brag document) with copyable review summary, impact calculators (time, cash from DSO, money recovered), performance factors, visibility habits, 8-step raise/promotion process with phrases, pay structure and compa-ratio, career paths, quarterly self-review |
 
+Every step-by-step flow has a “Play walkthrough” button, architecture diagrams have “Trace the flow”, and key processes have animated pipelines (orbit loop, BVR racetrack, portal hub, request journey). Motion turns off automatically for viewers who prefer reduced motion.
+
 Checklists, the KPI tracker, ownership register, work log and quiz scores are saved in your browser only.
 
 ## Editing
