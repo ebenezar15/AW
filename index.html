@@ -274,6 +274,7 @@ const CHAPTERS = [
   {id:'roles', t:'Partner vs AWS roles', g:'Partner business'},
   {id:'gtm', t:'GTM & co-sell', g:'Partner business'},
   {id:'sales', t:'Sales essentials', g:'Partner business'},
+  {id:'value', t:'Business value realisation', g:'Partner business'},
   {id:'funding', t:'Funding programs', g:'Partner business'},
   {id:'revops', t:'RevOps', g:'Your job'},
   {id:'kpis', t:'KPIs & tracking', g:'Your job'},
@@ -736,6 +737,14 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Business value realisation','Defining, measuring and proving the business outcomes a customer actually gets.'],
+  ['Baseline','The “before” measurement that results are compared against.'],
+  ['Value hypothesis','The expected business value, estimated before the sale.'],
+  ['Success plan','Agreed KPIs, targets, owners and review dates for a customer engagement.'],
+  ['Value driver','A category of business benefit, such as cost savings or agility.'],
+  ['Payback period','Time until the benefits repay the one-time investment.'],
+  ['ROI','Return on investment: (value − cost) ÷ cost.'],
+  ['MTTR','Mean time to recover from an incident.'],
   ['Brag document','A running log of your wins, with results and evidence, used for reviews.'],
   ['Compa-ratio','Your salary ÷ the midpoint of your pay band.'],
   ['Pay band','The salary range (minimum to maximum) for a role level.'],
@@ -873,6 +882,7 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['What is the most commonly skipped step that makes value impossible to prove later?',['Writing the SOW','Capturing the baseline','Sending the invoice','Booking the kickoff'],1,'Without “before” numbers there is nothing to compare results against.'],
   ['What’s the simplest, cheapest way to host a static marketing website on AWS?',['EC2 with a database','S3 + CloudFront (or Amplify Hosting)','SAP on EC2','WorkSpaces'],1,'Static sites need no servers: S3 for files, CloudFront for global delivery.'],
   ['A hospital in the US wants to store patient data on AWS. What must happen first?',['Nothing','Sign the AWS Business Associate Addendum and use HIPAA-eligible services','Buy Spot Instances','List on Marketplace'],1,'HIPAA workloads require the BAA and eligible services.'],
   ['Which metric best shows marketing’s impact on revenue?',['Followers','Impressions','Marketing-sourced pipeline','Likes'],2,'Pipeline ties marketing to revenue; followers and likes are early signals.'],
@@ -2658,6 +2668,120 @@ function calcHost(){ const [what, traffic, skills, prio] = hostAns; let r;
   $('#hostOut').innerHTML = `<div class="eyebrow">Recommended starting point</div><h3>${r[0]}</h3><p class="small">${r[1]}</p><div class="tags">${r[2].map(x=>`<span class="tag a">${x}</span>`).join('')}</div>${extra}<p class="small muted">A starting point only; validate with an architect and a Pricing Calculator estimate.</p>`;
   document.querySelectorAll('[data-hq]').forEach(b=>{ const [q,o]=b.dataset.hq.split('|').map(Number); b.setAttribute('aria-pressed', hostAns[q]===o); }); }
 
+/* ================= BUSINESS VALUE REALISATION ================= */
+const VDRIVERS = [
+  ['Cost savings','Lower infrastructure, licensing and facilities cost.',['Infrastructure cost per month','Cost per customer / transaction','Licences retired'],'Cost Explorer, invoices, finance ledger'],
+  ['Staff productivity','People spend less time on routine IT work and more on valuable work.',['Admin hours per month','Servers or VMs managed per engineer','Time to provision an environment'],'Time tracking, ticket system, surveys'],
+  ['Operational resilience','Fewer and shorter outages, stronger security.',['Downtime hours per year','Mean time to recover (MTTR)','Security incidents','Uptime %'],'CloudWatch, incident tool, Security Hub'],
+  ['Business agility','Faster delivery of new products and changes.',['Releases per month','Lead time for changes','Time to market for new features'],'CI/CD pipeline, project tracker'],
+  ['Revenue & customer experience','New revenue, better conversion and satisfaction.',['Conversion rate','New digital revenue','Page load time','CSAT / NPS'],'Analytics, CRM, surveys'],
+  ['Sustainability','Lower carbon footprint from more efficient infrastructure.',['Estimated carbon emissions','Utilization of resources'],'AWS Customer Carbon Footprint Tool']
+];
+const VAL_DEFAULT = [
+  {n:'Infrastructure cost ($ per month)', b:42000, t:30000, c:31500, v:12, ex:true},
+  {n:'Unplanned downtime (hours per year)', b:40, t:8, c:12, v:10000, ex:true},
+  {n:'IT admin effort (hours per month)', b:320, t:160, c:200, v:540, ex:true},
+  {n:'Releases per month', b:2, t:8, c:6, v:0, ex:true}
+];
+const BVR_PITFALLS = [
+  ['No baseline','Without “before” numbers, nobody can prove “after”. Capture the baseline during discovery.'],
+  ['Measuring too early','Most value shows 3–6 months after launch, once usage settles and optimization happens.'],
+  ['Vanity metrics','“Migrated 200 servers” is activity, not value. Translate into cost, time, risk or revenue.'],
+  ['Claiming everything','Be honest about what came from the project versus other changes. Credibility is the asset.'],
+  ['Finance not involved','Agree value formulas with the customer’s finance team early so results are accepted.'],
+  ['No owner','Someone at the partner and at the customer must own tracking after go-live.']
+];
+const BVR_ROLES = [
+  ['Partner sales / pre-sales','Builds the value hypothesis and business case; captures baseline in discovery.'],
+  ['Partner delivery','Delivers the solution and the adoption needed for value; collects technical metrics.'],
+  ['Partner customer success','Owns the success plan, tracks KPIs, runs value reviews and QBRs.'],
+  ['Customer executive sponsor','Agrees target outcomes and signs off results.'],
+  ['Customer finance','Validates cost and value formulas.'],
+  ['AWS account team','Supports with Cloud Value Framework, Cost Explorer data, and wants proof of customer success.'],
+  ['You (video, AdminOps, RevOps)','Turn value reports into case study videos; track funding value; connect value to renewals and NRR in reports.']
+];
+V.value = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate → Advanced</span><h1>Business value realisation</h1>
+  <p class="lede">Selling a solution promises value; delivering it doesn’t guarantee it. Business value realisation is the discipline of defining, measuring and proving the business outcomes a customer actually gets after go-live. It is what earns renewals, expansions, references and AWS’s trust.</p></header>
+
+  <section class="section"><header><h2>Promised value vs realised value</h2></header>
+  <div class="grid g3">
+    <div class="card"><span class="eyebrow">Before the sale</span><h4>Value hypothesis</h4><p class="small muted">“Moving to AWS should cut your infrastructure cost by about 25% and reduce downtime.” Based on discovery and a business case.</p></div>
+    <div class="card"><span class="eyebrow">At signature</span><h4>Success plan</h4><p class="small muted">Agreed KPIs, baselines, targets, owners and review dates, ideally referenced in the SOW.</p></div>
+    <div class="card tint"><span class="eyebrow">After go-live</span><h4>Realised value</h4><p class="small muted">Measured results against the baseline, reported to the customer’s leadership and reused as proof.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>The value realisation lifecycle</h2></header>
+  ${flow('bvr', FLOWS.bvr = [
+    {t:'Discover', d:'Understand the business problem and what it costs today.', do:['Ask about pain in money, time and risk','Identify the executive who owns the outcome'], check:['Pain quantified'], tools:['Discovery questions (Sales essentials chapter)']},
+    {t:'Baseline', d:'Record the “before” numbers. This is the step most often skipped.', do:['Current cost per month, downtime, effort hours, release speed','Source and date for each number'], check:['Customer agrees the baseline is accurate'], tools:['Cost reports, incident logs, surveys']},
+    {t:'Value hypothesis', d:'Estimate the expected improvement and its business value.', do:['Business case / TCO','Pick 3–5 value KPIs'], check:['Assumptions written down'], tools:['TCO calculator, Cloud Value Framework']},
+    {t:'Success plan', d:'Agree targets, owners, data sources and review dates with the customer.', do:['Put KPIs and review cadence into the SOW or a success plan'], check:['Signed off by the sponsor'], tools:['Success plan template']},
+    {t:'Deliver & adopt', d:'Value only appears when the solution is used and optimized.', do:['Training and change management','Track adoption metrics'], check:['Users actually using it'], tools:['Adoption dashboards']},
+    {t:'Measure', d:'Collect “after” numbers at 30, 90 and 180 days.', do:['Same formulas and sources as the baseline','Note anything else that changed'], check:['Like-for-like comparison'], tools:['Cost Explorer, CloudWatch, CI/CD data']},
+    {t:'Report', d:'Present realised value to the customer’s leadership.', do:['Executive value summary','Value section in every QBR'], check:['Customer confirms results'], tools:['Value report template below']},
+    {t:'Expand & advocate', d:'Use proven value to grow the account and win new customers.', do:['Next workload proposal','Case study video, AWS reference, award nominations'], check:['Approval to use results publicly'], tools:['Video team, PMM, ACE']}
+  ], {label:'Stage'})}</section>
+
+  <section class="section"><header><h2>Value drivers and how to measure them</h2><p class="muted">Based on AWS’s Cloud Value Framework, plus revenue and customer experience.</p></header>
+  <div class="grid g3">${VDRIVERS.map(d=>`<div class="card"><h4>${d[0]}</h4><p class="small">${d[1]}</p><div class="tags">${d[2].map(k=>`<span class="tag a">${k}</span>`).join('')}</div><p class="small muted"><b>Data from:</b> ${d[3]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Value tree</h2><p class="muted">How a business objective breaks down into measurable KPIs and the AWS levers that move them. Click any box.</p></header>
+  ${arch('vtree', [
+    {n:'Business objective', items:[['Grow profitably','CEO / CFO goal','The top-level outcome leadership cares about.']]},
+    {n:'Value drivers', items:[['Lower IT cost','Cost savings','Money freed for growth.'],['Fewer outages','Resilience','Revenue protected, reputation kept.'],['Faster releases','Agility','Features reach customers sooner.']]},
+    {n:'KPIs', items:[['Infra $ / month','Cost KPI','Measured in Cost Explorer against the pre-migration bill.'],['Downtime hrs / year','Resilience KPI','Measured from incident records.'],['Releases / month','Agility KPI','Measured from the deployment pipeline.']]},
+    {n:'AWS levers', items:[['Right-sizing, Savings Plans','Cost levers','Commit to steady usage and remove waste.'],['Multi-AZ, Backup, DR','Resilience levers','Architect for failure.'],['CI/CD, containers, serverless','Agility levers','Automate releases and reduce operations work.']]}
+  ])}</section>
+
+  <section class="section"><header><h2>Value scorecard</h2><p class="muted">Track realised value against the promise. “$ value per unit per year” turns each improvement into money: for a monthly cost KPI, use 12; for downtime, the cost of one hour of downtime; for monthly hours saved, hourly cost × 12. Use 0 for KPIs you track but don’t price. Saved in this browser; rows marked “example” are samples.</p></header>
+  <div class="card">
+    <div class="tablewrap"><table><thead><tr><th>KPI</th><th>Baseline</th><th>Target</th><th>Current</th><th>$ / unit / yr</th><th>Progress</th><th>Realised $ / yr</th><th></th></tr></thead><tbody id="valBody"></tbody></table></div>
+    <div class="grid g2" style="align-items:end"><label class="field">Project cost (one-time, net of AWS funding) $<input type="number" id="valCost" value="${store.get('valcost',180000)}" min="0" step="1000"></label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="valAdd">Add KPI</button><button class="btn ghost" type="button" id="valReset">Reset to examples</button></div></div>
+    <div class="grid g4" id="valOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>Worked example: retail company migration</h2><p class="muted">Illustrative numbers showing how a value report reads.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>KPI</th><th>Before</th><th>After 6 months</th><th>Change</th><th>Business meaning</th></tr></thead><tbody>
+    <tr><td>Infrastructure cost / month</td><td class="num">$42,000</td><td class="num">$31,500</td><td class="num">−25%</td><td>$126,000 a year freed for marketing</td></tr>
+    <tr><td>Unplanned downtime / year</td><td class="num">40 hrs</td><td class="num">12 hrs</td><td class="num">−70%</td><td>Fewer lost sales during outages</td></tr>
+    <tr><td>Releases / month</td><td class="num">2</td><td class="num">6</td><td class="num">3×</td><td>Promotions launched in days, not weeks</td></tr>
+    <tr><td>Peak-day page load</td><td class="num">4.1 s</td><td class="num">1.6 s</td><td class="num">−61%</td><td>Higher conversion on sale days</td></tr>
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Reporting value</h2></header>
+  <div class="grid g3">
+    <div class="card"><h4>Executive value summary (1 page)</h4><ol class="small" style="margin:0;padding-left:18px;display:grid;gap:4px"><li>Objective agreed at the start</li><li>Baseline vs today for 3–5 KPIs</li><li>Annual value realised in $ and ROI</li><li>Customer quote</li><li>What’s next (next workload, optimization)</li></ol></div>
+    <div class="card"><h4>Cadence</h4><ul class="clean small"><li>30 days: adoption and early wins</li><li>90 days: first value report</li><li>180 days: full value review, case study candidate</li><li>Every quarter after: value section in the QBR</li></ul></div>
+    <div class="card"><h4>Turn it into proof</h4><ul class="clean small"><li>Case study video with the before/after numbers</li><li>Evidence for Specializations and tier references</li><li>Share with AWS PDM and account manager</li><li>Award nominations and AWS event talks</li></ul></div>
+  </div></section>
+
+  <section class="section"><header><h2>Who does what</h2></header>
+  <div class="tablewrap"><table><tbody>${BVR_ROLES.map(r=>`<tr><td style="width:30%"><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Common pitfalls</h2></header>
+  <div class="grid g3">${BVR_PITFALLS.map(p=>`<div class="card warnc"><h4>${p[0]}</h4><p class="small">${p[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Why it matters to the business</h2></header>
+  <div class="flywheel">${[['Proven value','Measured results'],['Trust','Customer and AWS believe you'],['Renewals & expansion','Next workloads, managed services'],['References','Case studies, Specializations'],['New customers','Proof wins deals']].map(x=>`<div class="fw"><b>${x[0]}</b><span class="muted">${x[1]}</span></div>`).join('')}</div></section>
+`;
+function valLoad(){ return store.get('value', null) || VAL_DEFAULT.map(v=>({...v})); }
+function valCalc(r){ const b=+r.b, t=+r.t, c=+r.c, v=+r.v;
+  const promised = Math.abs(t-b), down = t < b;
+  const achieved = down ? b-c : c-b;
+  const prog = promised ? achieved/promised : 0;
+  return {prog, realised: Math.max(achieved,0)*v, target: promised*v}; }
+function renderVal(){ const body=$('#valBody'); if(!body) return; const l=valLoad();
+  const inp=(i,f,val,lab,w)=>`<input type="${f==='n'?'text':'number'}" id="val${f}${i}" data-vf="${f}" data-vi="${i}" value="${esc(val)}" aria-label="${lab}" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 7px;width:${w}">`;
+  body.innerHTML = l.map((r,i)=>{ const k=valCalc(r), col = k.prog>=1?'var(--good)':k.prog>=0.6?'var(--warn)':'var(--bad)';
+    return `<tr><td style="min-width:240px">${inp(i,'n',r.n,'KPI','100%')}${r.ex?' <span class="tag">example</span>':''}</td><td>${inp(i,'b',r.b,'Baseline','90px')}</td><td>${inp(i,'t',r.t,'Target','90px')}</td><td>${inp(i,'c',r.c,'Current','90px')}</td><td>${inp(i,'v',r.v,'Value per unit','90px')}</td>
+    <td style="min-width:110px"><span class="mono small" style="color:${col}">${Math.round(k.prog*100)}%</span><div class="kbar"><i style="width:${Math.min(Math.max(k.prog,0),1)*100}%;background:${col}"></i></div></td><td class="num" id="valR${i}">${money(k.realised)}</td><td><button class="xbtn" type="button" data-vdel="${i}" aria-label="Remove KPI">×</button></td></tr>`; }).join('');
+  valSummary(); }
+function valSummary(){ const l=valLoad(); let real=0, tgt=0; l.forEach(r=>{ const k=valCalc(r); real+=k.realised; tgt+=k.target; });
+  const cost=+($('#valCost')?.value||0), roi = cost ? (real-cost)/cost*100 : 0, payback = real ? cost/(real/12) : 0;
+  $('#valOut').innerHTML = `<div class="card tint"><div class="eyebrow">Promised value / yr</div><div class="out mono">${money(tgt)}</div></div><div class="card tint"><div class="eyebrow">Realised value / yr</div><div class="out mono" style="color:${real>=tgt?'var(--good)':'var(--ink)'}">${money(real)}</div><span class="small muted">${tgt?Math.round(real/tgt*100):0}% of promise</span></div><div class="card tint"><div class="eyebrow">First-year ROI</div><div class="out mono">${roi.toFixed(0)}%</div></div><div class="card tint"><div class="eyebrow">Payback period</div><div class="out mono">${real?payback.toFixed(1)+' mo':'–'}</div></div>`; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -2678,6 +2802,7 @@ function route(){
   if(id==='quiz'){ qi=0; qscore=0; renderQuiz(); }
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
+  if(id==='value') renderVal();
   if(id==='solutions'){ renderSolList(); calcHost(); }
   if(id==='marketing'){ showStage(mkStage); renderIdeas('All'); calcFunnel(); calcUTM(); }
   if(id==='enablement') calcHS();
@@ -2730,6 +2855,9 @@ document.addEventListener('click', e => {
   const sc = t.closest('[data-solcat]'); if(sc){ solCat = sc.dataset.solcat; return renderSolList(); }
   const so = t.closest('[data-sol]'); if(so) return showSol(+so.dataset.sol, !so.classList.contains('chip'));
   const hq = t.closest('[data-hq]'); if(hq){ const [q,o]=hq.dataset.hq.split('|').map(Number); hostAns[q]=o; return calcHost(); }
+  const vdel = t.closest('[data-vdel]'); if(vdel){ const l=valLoad(); l.splice(+vdel.dataset.vdel,1); store.set('value', l); return renderVal(); }
+  if(t.id==='valAdd'){ const l=valLoad(); l.push({n:'New value KPI', b:0, t:0, c:0, v:0}); store.set('value', l); return renderVal(); }
+  if(t.id==='valReset'){ store.set('value', VAL_DEFAULT.map(v=>({...v}))); return renderVal(); }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -2767,11 +2895,13 @@ document.addEventListener('input', e => {
   if(id.startsWith('utm')) calcUTM();
   if(id.startsWith('hs')) calcHS();
   if(id.startsWith('im') || id.startsWith('cr')) calcImpact();
+  if(id==='valCost'){ store.set('valcost', +e.target.value||0); valSummary(); }
+  if(e.target.dataset.vf){ const l=valLoad(), i=+e.target.dataset.vi; l[i][e.target.dataset.vf]=e.target.value; store.set('value', l); const c=$('#valR'+i); if(c) c.textContent=money(valCalc(l[i]).realised); valSummary(); }
   if(id.startsWith('ai')) calcAI();
   if(id.startsWith('ce')) calcCE();
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
-document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); });
+document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
 document.addEventListener('keydown', e => { const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }

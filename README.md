@@ -24,6 +24,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Partner vs AWS roles | Side-by-side counterparts by function, what each is measured on, joint deal handoffs |
 | | GTM & co-sell | ACE stages, motions, MAP phases, plays |
 | | Sales essentials | Why change/now/AWS/us, MEDDICC, discovery questions, objection handling, content per deal stage, pricing models |
+| | Business value realisation | Promised vs realised value, 8-stage value lifecycle, value drivers with KPIs and data sources, value tree, editable value scorecard with promised/realised value, ROI and payback, worked example, reporting templates and cadence, roles, pitfalls |
 | | Funding programs | Request-to-payout flow, program table, rejection reasons |
 | Your job | RevOps | Lead-to-cash, weighted pipeline calculator, metrics, systems map |
 | | KPIs & tracking | How to set KPIs, leading vs lagging, KPI tree, 27-KPI library, editable KPI tracker with status and copyable update |
@@ -31,7 +32,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Video & content | Production pipeline, formats, brand rules, measurement |
 | | Digital marketing | Success factors, 8-step process, personas (incl. AWS sellers), platform priorities, content by funnel stage, weekly rhythm, funnel/ROI calculator, metrics, attribution, UTM link builder, 90-day plan, 18 creative ideas |
 | | Sales & success enablement | How video/AdminOps/RevOps help sales, enablement kit, closing checklist, deal accelerators and stallers, ABM, customer success lifecycle, health score, QBR agenda, advocacy ladder |
-| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 23 questions |
+| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 24 questions |
 | Career | Grow & contribute | 30-60-90 plan, use cases, rules, habits, impact metrics |
 | | Recognition & growth | Ownership register with health and review dates, maintenance standards, work log (brag document) with copyable review summary, impact calculators (time, cash from DSO, money recovered), performance factors, visibility habits, 8-step raise/promotion process with phrases, pay structure and compa-ratio, career paths, quarterly self-review |
 
