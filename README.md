@@ -18,6 +18,8 @@ Open `index.html` in any browser. No install or build step needed.
 | | How businesses use AWS | Nine industries with workloads, services, outcomes and buying criteria; common workloads; buying triggers; how customers choose |
 | | Cloud Practitioner prep | Exam facts and domain weights (also AI Practitioner), flashcards, 7 Rs, support plans, cost tools, 4-week plan |
 | Partner business | How the business runs | Revenue streams, illustrative P&L waterfall, partner flywheel, consultant economics calculator, operating rhythm |
+| | Partner services catalog | Customer journey orbit across services, 18 partner services (advise, build, protect, run, grow) each with flow, deliverables, AWS services, pricing, duration, KPIs, proof of expertise and a use case; common engagement backbone; pricing models; packaged offers |
+| | Cloud migration | Why migrate, MAP phases, 7 Rs effort/benefit chart, 7R decision helper, migration factory, wave plan Gantt, workload types, roles, risks, 4 use cases with before/after, success metrics, what comes next |
 | | Partner Network | Partner Paths, tier ladder, programs |
 | | Portals & programs | Partner Central, ACE, APFP, AMMP, PSF and more; deal journey; lead sources; certifications |
 | | Who's who & RACI | AWS, partner and customer roles; RACI matrix |
@@ -34,7 +36,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Video & content | Production pipeline, formats, brand rules, measurement |
 | | Digital marketing | Success factors, 8-step process, personas (incl. AWS sellers), platform priorities, content by funnel stage, weekly rhythm, funnel/ROI calculator, metrics, attribution, UTM link builder, 90-day plan, 18 creative ideas |
 | | Sales & success enablement | How video/AdminOps/RevOps help sales, enablement kit, closing checklist, deal accelerators and stallers, ABM, customer success lifecycle, health score, QBR agenda, advocacy ladder |
-| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 28 questions |
+| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 30 questions |
 | Career | Grow & contribute | 30-60-90 plan, use cases, rules, habits, impact metrics |
 | | Recognition & growth | Ownership register with health and review dates, maintenance standards, work log (brag document) with copyable review summary, impact calculators (time, cash from DSO, money recovered), performance factors, visibility habits, 8-step raise/promotion process with phrases, pay structure and compa-ratio, career paths, quarterly self-review |
 

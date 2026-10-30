@@ -310,6 +310,8 @@ const CHAPTERS = [
   {id:'industries', t:'How businesses use AWS', g:'Learn AWS'},
   {id:'ccp', t:'Cloud Practitioner prep', g:'Learn AWS'},
   {id:'business', t:'How the business runs', g:'Partner business'},
+  {id:'catalog', t:'Partner services catalog', g:'Partner business'},
+  {id:'migration', t:'Cloud migration', g:'Partner business'},
   {id:'partner', t:'Partner Network', g:'Partner business'},
   {id:'portals', t:'Portals & programs', g:'Partner business'},
   {id:'people', t:'Who\u2019s who & RACI', g:'Partner business'},
@@ -782,6 +784,14 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Migration factory','A repeatable pipeline that moves workloads wave after wave: discover, replicate, test, cut over, hypercare.'],
+  ['Wave','A group of applications migrated together.'],
+  ['Cutover','The moment traffic switches from the old system to the new one on AWS.'],
+  ['Hypercare','A short period of extra support right after cutover.'],
+  ['Landing zone','A secure, multi-account AWS foundation set up before workloads arrive.'],
+  ['CAF','AWS Cloud Adoption Framework: guidance on business, people, governance, platform, security and operations readiness.'],
+  ['Productized service','A fixed-scope, fixed-price service package that’s easy to sell and deliver repeatedly.'],
+  ['RAID log','Tracker of risks, assumptions, issues and dependencies on a project.'],
   ['BVR motion','AWS Partner Central motion that funds partners for guiding customers to measurable outcomes through pit stops.'],
   ['Pit stop','A stage in the BVR motion (Activate, Adapt, Scaled adoption, Retain & attest, Recommend & expand) with required activities and a KPI threshold; some carry a funding milestone.'],
   ['VRP','Value Realization Plan: the KPIs and thresholds defined when nominating a customer to BVR.'],
@@ -933,6 +943,8 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['Which migration strategy moves servers as-is to EC2, fastest?',['Refactor','Rehost','Repurchase','Retire'],1,'Rehost is “lift and shift”: quickest, least change.'],
+  ['Which MAP phase builds the landing zone and wave plan?',['Assess','Mobilize','Migrate & modernize','Retire'],1,'Mobilize prepares the foundation and plan, including pilots.'],
   ['An AWS Referral arrives in ACE. What matters most first?',['Ignore it until next month','Accept or reject quickly, then contact the customer','Invoice the customer','Create a Marketplace listing'],1,'Response time is tracked and affects future referrals.'],
   ['What connects the CRM deal, funding request, invoices and case study for one customer?',['The customer’s logo','The ACE opportunity ID','The AWS Region','The video file name'],1,'Carry one ACE ID across systems so every dollar can be traced.'],
   ['In the BVR motion, what moves an initiative to the next pit stop?',['Paying a fee','Required activities approved by the PSS and the VRP KPI threshold met','Publishing a blog post','Closing the ACE opportunity'],1,'Both conditions are needed; then the initiative advances automatically.'],
@@ -3213,10 +3225,231 @@ function countUp(el){ if(RM || el.children.length) return; const txt=el.textCont
   requestAnimationFrame(step); }
 
 /* Animate panels when their content changes */
-const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid']);
+const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox']);
 try{ new MutationObserver(ms=>{ if(RM) return; const seen=new Set(); ms.forEach(m=>{ const t=m.target; if(t.nodeType!==1 || seen.has(t)) return;
   if(t.classList.contains('detail') || DETAIL_IDS.has(t.id)){ seen.add(t); t.animate([{opacity:.35, transform:'translateY(6px)'},{opacity:1, transform:'none'}],{duration:320, easing:'cubic-bezier(.2,.8,.2,1)'}); } }); })
   .observe(document.getElementById('view'), {childList:true, subtree:true}); }catch(e){}
+
+/* ================= CLOUD MIGRATION ================= */
+const MIG_WHY = [
+  ['Data center exit','Lease ending or facility closing; hard deadline.'],
+  ['Hardware refresh','Servers reach end of life; avoid a big capital purchase.'],
+  ['Cost reduction','Lower infrastructure, licensing and staffing costs.'],
+  ['Agility','Faster environments and releases.'],
+  ['Resilience & security','Better backup, DR and security tooling.'],
+  ['Data & AI','Get data into a platform where analytics and GenAI are possible.'],
+  ['M&A / divestiture','Merge or separate IT quickly.'],
+  ['Licensing change','A vendor’s new licensing makes staying expensive.']
+];
+const SEVEN_R_DETAIL = [
+  {r:'Retire', e:1, b:2.6, d:'Turn off applications nobody needs. Often 10–20% of a portfolio.', svc:'—', ex:'An old reporting server last used two years ago is archived and switched off.'},
+  {r:'Retain', e:2, b:1, d:'Keep on-premises for now: recent investment, compliance, latency or a planned replacement.', svc:'Outposts or hybrid networking if needed', ex:'A factory-floor control system stays on site due to latency.'},
+  {r:'Rehost', e:4.5, b:5.5, d:'“Lift and shift” servers as they are to EC2. Fastest way to move many workloads.', svc:'Application Migration Service, EC2', ex:'300 Windows and Linux VMs moved in waves over 4 months.'},
+  {r:'Relocate', e:2.6, b:4.2, d:'Move VMware workloads at the hypervisor level with minimal change.', svc:'VMware-based options on AWS, Application Migration Service', ex:'A VMware estate moved in weeks to meet a lease deadline.'},
+  {r:'Repurchase', e:6, b:3.6, d:'Replace with a SaaS product, e.g. an on-prem CRM replaced with a SaaS CRM.', svc:'AWS Marketplace SaaS', ex:'An old helpdesk tool replaced with a SaaS service bought via Marketplace.'},
+  {r:'Replatform', e:6.8, b:7.2, d:'“Lift, tinker and shift”: small changes for big gains, e.g. moving a database to Amazon RDS.', svc:'RDS, Aurora, Elastic Beanstalk, DMS', ex:'SQL Server moved from a VM to Amazon RDS; patching and backups now managed.'},
+  {r:'Refactor', e:9, b:9, d:'Re-architect to cloud-native: containers, serverless, managed services. Highest effort, highest long-term benefit.', svc:'ECS/EKS, Lambda, DynamoDB, Aurora, Q Developer for code transformation', ex:'A monolithic e-commerce app split into services on containers to scale for peak.'}
+];
+const RQ = [
+  ['Is the application still needed by the business?', 'no', 0],
+  ['Must it stay on-premises for now (compliance, latency, recent investment)?', 'yes', 1],
+  ['Is there a SaaS product that would meet the need?', 'yes', 4],
+  ['Is it running on VMware and needs to move very quickly with minimal change?', 'yes', 3],
+  ['Is the deadline tight or the change budget small?', 'yes', 2],
+  ['Would small changes (managed database, managed runtime) give clear benefits?', 'yes', 5]
+];
+const MIG_TYPES = [
+  ['Servers (Windows/Linux VMs)','Application Migration Service','Rehost, then right-size'],
+  ['Databases','Database Migration Service (+ Schema Conversion)','Replatform to RDS/Aurora, or convert engines'],
+  ['VMware estates','VMware-compatible options, Application Migration Service','Relocate or rehost'],
+  ['Files & storage','DataSync, Storage Gateway, Snowball (offline)','Move to S3, FSx, EFS'],
+  ['SAP','Launch Wizard for SAP, AWS Backint','Rehost or convert to S/4HANA'],
+  ['Windows & .NET','Application Migration Service, Q Developer transformation','Rehost, then modernize to .NET on Linux/containers'],
+  ['Mainframe','AWS Mainframe Modernization (with partners)','Replatform or refactor; long programs'],
+  ['Data warehouses','DMS, Schema Conversion Tool, Redshift','Replatform to Redshift or a data lake'],
+  ['Active Directory & identity','AWS Managed Microsoft AD, IAM Identity Center','Extend or migrate identity']
+];
+const WAVES = [
+  ['Wave 0 · pilot',0,4,'2 low-risk apps; prove the runbook'],
+  ['Wave 1',3,8,'25 servers: dev/test and internal tools'],
+  ['Wave 2',7,13,'60 servers: line-of-business apps'],
+  ['Wave 3',12,18,'40 servers + 6 databases: customer-facing apps'],
+  ['Wave 4',17,22,'ERP and remaining critical systems'],
+  ['Optimize',20,26,'Right-size, Savings Plans, decommission old hardware']
+];
+const MIG_RISKS = [
+  ['Unknown dependencies','Apps break when a hidden dependency is left behind.','Discovery tools + application owner interviews; move dependent apps in the same wave.'],
+  ['Downtime overruns','Cutover takes longer than the agreed window.','Rehearse cutover; continuous replication so final sync is short; rollback plan.'],
+  ['Licensing surprises','Windows/SQL/Oracle licence costs differ in the cloud.','Licence review in Assess; consider license-included vs bring-your-own.'],
+  ['Cost overrun after move','Lift-and-shift servers kept at on-prem sizes.','Right-size during and after migration; Savings Plans for steady workloads.'],
+  ['Skills gap','Customer team can’t operate the new environment.','Training plan, runbooks, managed services.'],
+  ['Security gaps','Rushed moves skip controls.','Landing zone with guardrails first; Security Hub checks per wave.'],
+  ['Missing MAP credits','Resources not tagged, so credits aren’t applied.','Tag every migrated resource (map-migrated) as part of the runbook.']
+];
+const MIG_CASES = [
+  {n:'Regional bank: data center exit', t:'18 months', a:['420 servers, 35 databases','Assess → Mobilize → 6 waves','Rehost 70%, replatform 20%, retire 10%'], m:[['Infra cost / yr','$4.1M','$2.9M'],['Provisioning time','3 weeks','20 minutes'],['DR recovery time','24 hours','2 hours']]},
+  {n:'Retailer: e-commerce modernization', t:'9 months', a:['Monolith on 12 servers','Replatform database to Aurora; refactor checkout into containers','Peak testing before holiday season'], m:[['Peak-day errors','3.2%','0.2%'],['Releases / month','2','12'],['Page load at peak','4.1 s','1.5 s']]},
+  {n:'Hospital group: clinical systems', t:'12 months', a:['EHR and imaging on aging hardware','HIPAA-eligible landing zone; BAA signed','Warm-standby DR in a second Region'], m:[['Unplanned downtime / yr','30 hrs','3 hrs'],['Backup restore test','Never tested','Quarterly, passed'],['Storage cost per TB','$420','$95']]},
+  {n:'Software company: VMware relocation', t:'10 weeks', a:['180 VMs, lease ending in 3 months','Relocate first, modernize later','Then move databases to RDS'], m:[['Time to exit DC','12 months (planned)','10 weeks'],['Ops staff on hardware','3 FTE','0.5 FTE'],['Annual infra cost','$1.2M','$0.95M']]}
+];
+let rqi = 0;
+V.migration = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate → Advanced</span><h1>Cloud migration</h1>
+  <p class="lede">Migration means moving applications, data and infrastructure from a company’s own data center (or another cloud) to AWS. It is the largest and most common partner engagement, usually funded through the Migration Acceleration Program (MAP), and it opens the door to modernization, data, AI and managed services.</p></header>
+
+  <section class="section"><header><h2>Why customers migrate</h2></header>
+  <div class="grid g4">${MIG_WHY.map(w=>`<div class="card"><h4>${w[0]}</h4><p class="small muted">${w[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>The migration journey (MAP phases)</h2><p class="muted">Press play to walk through the whole program.</p></header>
+  ${flow('migj', FLOWS.migj = [
+    {t:'Assess', d:'Build the business case and understand readiness. Typically 2–8 weeks.', do:['Discover servers, apps and dependencies','TCO and business case (Migration Evaluator)','Migration Readiness Assessment (people, process, technology)','Request MAP Assess funding first'], check:['Executive sponsor approves the business case'], tools:['Migration Evaluator, discovery tools, MAP funding']},
+    {t:'Mobilize', d:'Prepare the foundation and plan. Typically 2–4 months.', do:['Landing zone: accounts, network, identity, security guardrails','Portfolio analysis and 7R decision per application','Wave plan and migration runbooks','Pilot migrations to prove the process','Train customer teams'], check:['Landing zone passes security review','Pilot apps migrated successfully'], tools:['Control Tower, Migration Hub, Application Migration Service']},
+    {t:'Migrate & modernize', d:'Move workloads in waves, then modernize. Typically 6–18 months.', do:['Run waves through the migration factory','Tag resources map-migrated for credits','Hypercare after each cutover','Modernize priority apps (containers, managed databases)'], check:['Each wave meets downtime and test criteria'], tools:['Application Migration Service, DMS, DataSync']},
+    {t:'Operate & optimize', d:'Run efficiently and keep improving.', do:['Right-size, Savings Plans','Decommission old hardware','Managed services contract','Measure value against the business case'], check:['Value realised vs business case'], tools:['Cost Explorer, Compute Optimizer, CloudWatch']}
+  ], {label:'Phase', pipe:true})}</section>
+
+  <section class="section"><header><h2>The 7 Rs: effort vs benefit</h2><p class="muted">Every application gets one of these strategies. Click a bubble. Positions are typical, not fixed.</p></header>
+  <div class="grid g2">
+    <div class="card chart">${rMatrix()}</div>
+    <div class="detail" id="rD"><p class="small muted">Select a strategy on the chart.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>Which R fits this application?</h2><p class="muted">Answer up to six yes/no questions for a starting recommendation.</p></header>
+  <div class="card" id="rqBox" style="max-width:720px"></div></section>
+
+  <section class="section"><header><h2>The migration factory</h2><p class="muted">Once the process is proven, every wave runs through the same repeatable pipeline.</p></header>
+  ${flow('factory', FLOWS.factory = [
+    {t:'Discover', d:'Confirm servers, dependencies, owners and downtime windows for this wave.', do:['Dependency map','Owner sign-off'], check:['No unknown dependencies'], tools:['Discovery tools, interviews']},
+    {t:'Plan wave', d:'Group apps that must move together; choose cutover windows.', do:['Wave schedule','Communications plan'], check:['Business approves dates'], tools:['Migration Hub']},
+    {t:'Replicate', d:'Continuous block-level replication of servers to AWS starts days before cutover.', do:['Install replication agents','Monitor lag'], check:['Replication healthy'], tools:['Application Migration Service, DMS']},
+    {t:'Test', d:'Launch test instances in AWS and check the app works.', do:['Functional and performance tests','Security checks'], check:['App owner sign-off'], tools:['Test environment']},
+    {t:'Cutover', d:'Final sync, switch DNS/traffic to AWS, decommission source later.', do:['Freeze changes','Final sync and launch','Smoke tests'], check:['Within downtime window','Rollback plan ready'], tools:['Runbook, Route 53']},
+    {t:'Hypercare', d:'Extra support for 1–2 weeks after cutover.', do:['Monitor closely','Fix issues fast'], check:['Stable for agreed period'], tools:['CloudWatch, ticketing']},
+    {t:'Optimize & close', d:'Right-size, tag, back up, hand over to operations.', do:['Tag map-migrated','Backups and monitoring on','Wave report'], check:['Wave closed'], tools:['Compute Optimizer, AWS Backup']}
+  ], {label:'Stage', pipe:true})}</section>
+
+  <section class="section"><header><h2>A sample wave plan</h2><p class="muted">Weeks from the end of Mobilize. Waves overlap so the factory stays busy.</p></header>
+  <div class="card chart">${waveGantt()}</div></section>
+
+  <section class="section"><header><h2>What gets migrated, and how</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Workload</th><th>AWS tools</th><th>Typical approach</th></tr></thead><tbody>${MIG_TYPES.map(m=>`<tr><td><b>${m[0]}</b></td><td>${m[1]}</td><td>${m[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Who does what in a migration</h2></header>
+  ${arch('migroles', [
+    {n:'Customer', items:[['Executive sponsor','Owns business case','Approves budget, removes blockers, signs off results.'],['App owners','Know each app','Confirm dependencies, test and approve cutovers.'],['IT operations','Run today’s systems','Provide access, learn to operate the new environment.']]},
+    {n:'Partner', items:[['Migration architect','Designs the program','Assessment, 7R decisions, landing zone, wave plan.'],['Migration engineers','Run the factory','Replication, testing, cutover, hypercare.'],['Project manager','Keeps it on track','Schedule, risks, communications, status reports.'],['AdminOps (you)','Money side','MAP funding requests, POE, milestone invoices, credit tracking.']]},
+    {n:'AWS', items:[['Account manager','Commercial lead','MAP agreement, executive alignment.'],['Migration specialist / SA','Technical guidance','Reviews plans, unblocks service issues.'],['PDM','Partner support','Funding and program support for the partner.']]}
+  ])}</section>
+
+  <section class="section"><header><h2>Risks and how to handle them</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Risk</th><th>What happens</th><th>Mitigation</th></tr></thead><tbody>${MIG_RISKS.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Use cases</h2><p class="muted">Illustrative examples of typical migration outcomes.</p></header>
+  <div class="grid g2">${MIG_CASES.map(c=>`<div class="card"><span class="tag a" style="justify-self:start">${c.t}</span><h3>${c.n}</h3><ul class="clean small">${c.a.map(x=>`<li>${x}</li>`).join('')}</ul><div class="tablewrap"><table><thead><tr><th>KPI</th><th>Before</th><th>After</th></tr></thead><tbody>${c.m.map(m=>`<tr><td>${m[0]}</td><td class="num">${m[1]}</td><td class="num"><b>${m[2]}</b></td></tr>`).join('')}</tbody></table></div></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>How success is measured</h2></header>
+  <div class="grid g4">${[['Servers / apps migrated','Against the wave plan'],['Cutover downtime','Within agreed windows'],['Run cost vs business case','Monthly AWS bill vs projection'],['Incidents after cutover','Should drop after hypercare'],['Decommissioned hardware','Old servers actually turned off'],['MAP credits applied','Tagged spend recognised'],['Time to provision','Days → minutes'],['Customer satisfaction','Sponsor and app owners']].map(x=>`<div class="card"><b>${x[0]}</b><span class="small muted">${x[1]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>After migration: what comes next</h2></header>
+  <div class="flywheel">${[['Optimize','Right-size, Savings Plans'],['Modernize','Containers, managed DBs'],['Data platform','Analytics on migrated data'],['GenAI','Use cases on top of data'],['Managed services','Ongoing operations'],['Next migration','The rest of the portfolio']].map(x=>`<div class="fw"><b>${x[0]}</b><span class="muted">${x[1]}</span></div>`).join('')}</div></section>
+`;
+function rMatrix(){
+  const W=420,H=340,p=40, sx=v=>p+(W-p-16)*(v/10), sy=v=>H-p-(H-p-16)*(v/10);
+  let g=`<line x1="${p}" y1="${sy(0)}" x2="${W-16}" y2="${sy(0)}" stroke="var(--line)"/><line x1="${p}" y1="${sy(0)}" x2="${p}" y2="16" stroke="var(--line)"/><text x="${(W+p)/2}" y="${H-8}" text-anchor="middle">Effort & cost →</text><text transform="translate(14 ${(H-p)/2}) rotate(-90)" text-anchor="middle">Long-term benefit →</text>`;
+  SEVEN_R_DETAIL.forEach((r,i)=>{ const x=sx(r.e), y=sy(r.b), rad=14+r.e*1.2;
+    g+=`<g data-rr="${i}" role="button" tabindex="0" aria-label="${r.r}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="${rad}" fill="var(--accent)" fill-opacity=".18" stroke="var(--accent)" stroke-width="2">${RM?'':`<animate attributeName="r" values="${rad};${rad+3};${rad}" dur="${2.4+i*0.3}s" repeatCount="indefinite"/>`}</circle><text x="${x}" y="${y+4}" text-anchor="middle" style="fill:var(--ink);font-weight:600;font-size:11.5px">${r.r}</text></g>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="The 7 Rs plotted by effort and benefit">${g}</svg>`;
+}
+function showR(i){ const r=SEVEN_R_DETAIL[i]; $('#rD').innerHTML = `<h3>${r.r}</h3><p>${r.d}</p><div class="kv small"><dt>Effort</dt><dd>${'●'.repeat(Math.ceil(r.e/2))}${'○'.repeat(5-Math.ceil(r.e/2))}</dd><dt>Benefit</dt><dd>${'●'.repeat(Math.ceil(r.b/2))}${'○'.repeat(5-Math.ceil(r.b/2))}</dd><dt>AWS tools</dt><dd>${r.svc}</dd><dt>Example</dt><dd>${r.ex}</dd></div>`; }
+function renderRQ(){ const box=$('#rqBox'); if(!box) return;
+  if(rqi >= RQ.length || typeof rqi === 'string'){ const r = SEVEN_R_DETAIL[typeof rqi==='string' ? +rqi : 6];
+    box.innerHTML = `<span class="eyebrow">Recommended starting strategy</span><div class="out">${r.r}</div><p>${r.d}</p><p class="small muted"><b>Example:</b> ${r.ex}</p><p class="small muted">Validate with the app owner and an architect. Many apps are rehosted first and modernized later.</p><div><button class="btn ghost" type="button" id="rqReset">Start again</button></div>`; return; }
+  const q=RQ[rqi];
+  box.innerHTML = `<span class="eyebrow">Question ${rqi+1} of ${RQ.length}</span><div class="bar"><i style="width:${rqi/RQ.length*100}%"></i></div><h3>${q[0]}</h3><div style="display:flex;gap:8px"><button class="btn" type="button" data-rq="yes">Yes</button><button class="btn ghost" type="button" data-rq="no">No</button></div>`; }
+function waveGantt(){
+  const W=760, lh=36, pl=150, pr=20, H=WAVES.length*lh+40, max=26, x=v=>pl+(W-pl-pr)*v/max;
+  let g=''; for(let wk=0; wk<=max; wk+=2){ g+=`<line x1="${x(wk)}" x2="${x(wk)}" y1="10" y2="${H-24}" stroke="var(--line)" stroke-dasharray="${wk%4?'2 4':'0'}"/><text x="${x(wk)}" y="${H-8}" text-anchor="middle">${wk}</text>`; }
+  WAVES.forEach((w,i)=>{ const y=i*lh+14; g+=`<text x="${pl-8}" y="${y+16}" text-anchor="end" style="fill:var(--ink);font-weight:600">${w[0]}</text><rect class="gx" style="animation-delay:${i*160}ms" x="${x(w[1])}" y="${y}" width="${x(w[2])-x(w[1])}" height="22" rx="5" fill="${i===WAVES.length-1?'var(--signal)':'var(--accent)'}" opacity="${0.55+i*0.08}"><title>${w[3]}</title></rect>${w[2]>20?`<text x="${x(w[1])-6}" y="${y+15}" text-anchor="end" style="font-size:10.5px">${w[3]}</text>`:`<text x="${x(w[2])+6}" y="${y+15}" style="font-size:10.5px">${w[3]}</text>`}`; });
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W+190} ${H}" style="min-width:720px" role="img" aria-label="Sample migration wave plan over 26 weeks">${g}</svg></div>`; }
+
+/* ================= PARTNER SERVICES CATALOG ================= */
+const PSERVICES = [
+  {n:'Cloud strategy & assessment', cat:'Advise', what:'Helps leadership decide what to move, why, in what order, and what it will cost.', del:['Cloud strategy roadmap','TCO / business case','Cloud Adoption Framework (CAF) readiness review','Portfolio analysis'], svc:'Migration Evaluator, Pricing Calculator, AWS CAF', price:'Fixed fee; often MAP Assess-funded', dur:'2–8 weeks', kpi:'Approved business case; decision speed', spec:'Migration Specialization', uc:'A retailer’s CFO wants to know if moving 200 servers saves money; the assessment shows 28% savings and a 3-wave plan.', steps:['Kickoff & data collection','Discovery','Analysis & TCO','Roadmap','Executive readout']},
+  {n:'Well-Architected review & remediation', cat:'Advise', what:'Reviews a workload against the six pillars and fixes the highest risks.', del:['WAFR report','Prioritized risk list','Remediation sprint'], svc:'Well-Architected Tool, Trusted Advisor, Security Hub', price:'Review often low/no cost; remediation fixed fee, sometimes AWS-credit funded', dur:'1–6 weeks', kpi:'High-risk issues closed', spec:'Well-Architected Partner Program', uc:'A SaaS company has 14 high risks; partner fixes backups, IAM and scaling in a 4-week sprint.', steps:['Workload selection','Review sessions','Report','Remediation plan','Fix & re-review']},
+  {n:'Migration', cat:'Build', what:'Moves servers, databases and data to AWS through a repeatable migration factory.', del:['Landing zone','Wave plan & runbooks','Migrated workloads','Hypercare'], svc:'Application Migration Service, DMS, DataSync, Control Tower', price:'Fixed per wave or per server; MAP-funded', dur:'3–18 months', kpi:'Servers migrated; downtime; run cost vs case', spec:'Migration Specialization; MAP', uc:'A bank exits its data center: 420 servers in 6 waves; infra cost down 29%.', steps:['Assess','Mobilize','Pilot','Waves','Optimize']},
+  {n:'Application modernization', cat:'Build', what:'Re-architects applications to containers, serverless and managed databases for speed and scale.', del:['Target architecture','Modernized services','CI/CD pipeline','Runbooks'], svc:'ECS, EKS, Lambda, Aurora, API Gateway, Q Developer', price:'Fixed fee or time & materials', dur:'2–9 months', kpi:'Release frequency; cost per transaction; uptime', spec:'Application modernization-related Specializations', uc:'A retailer splits checkout from its monolith; releases go from 2 to 12 a month.', steps:['App assessment','Target design','Build iteratively','Migrate traffic','Hand over']},
+  {n:'Database modernization', cat:'Build', what:'Moves commercial databases to managed or open-source engines to cut licences and admin work.', del:['Schema conversion','Data migration','Performance tuning'], svc:'DMS, Schema Conversion Tool, Aurora, RDS', price:'Fixed fee', dur:'1–4 months', kpi:'Licence savings; DBA hours', spec:'Database-related Specializations', uc:'Oracle to Aurora PostgreSQL saves $300k/yr in licences.', steps:['Assess schema','Convert','Migrate data','Test & tune','Cut over']},
+  {n:'Data & analytics platform', cat:'Build', what:'Builds a governed data lake or warehouse and dashboards so leaders get trusted numbers.', del:['Data lake / warehouse','Pipelines','Dashboards','Governance model'], svc:'S3, Glue, Lake Formation, Redshift, Athena, QuickSight', price:'Fixed fee per phase; retainer for enhancements', dur:'2–6 months', kpi:'Time to insight; dashboard adoption', spec:'Data & Analytics Specialization', uc:'A manufacturer unifies ERP and IoT data; weekly reports become live dashboards.', steps:['Use-case workshop','Ingest','Model','Visualize','Govern & train']},
+  {n:'Generative AI & machine learning', cat:'Build', what:'Delivers GenAI assistants, agents and ML models from use-case selection to production.', del:['Use-case workshop','POC','Production app with guardrails','Evaluation & monitoring'], svc:'Bedrock, Amazon Q, SageMaker AI, OpenSearch', price:'Funded POC, then fixed fee; managed AI ops retainer', dur:'4 weeks (POC) to 4 months', kpi:'Adoption; time saved; accuracy; cost per request', spec:'Generative AI Specialization', uc:'A university launches a student-services assistant; 40% of questions answered without staff.', steps:['Use-case workshop','Data readiness','POC','Production','Operate & improve']},
+  {n:'Security & compliance', cat:'Protect', what:'Builds secure foundations and helps meet regulations and audits.', del:['Secure landing zone','Security baseline & monitoring','Compliance mapping','Incident response runbooks'], svc:'Control Tower, IAM Identity Center, GuardDuty, Security Hub, KMS, Config', price:'Fixed fee + managed security retainer', dur:'3–12 weeks', kpi:'Findings closed; audit passed', spec:'Security Specialization', uc:'A fintech passes its SOC 2 audit after a 6-week controls program.', steps:['Assess controls','Design','Implement','Validate','Monitor']},
+  {n:'Backup & disaster recovery', cat:'Protect', what:'Protects data and keeps systems recoverable after failures or ransomware.', del:['RPO/RTO design','Backup policies','DR environment','Recovery drills'], svc:'AWS Backup, Elastic Disaster Recovery, S3 Object Lock', price:'Setup fee + monthly service', dur:'2–8 weeks', kpi:'RPO/RTO met in tests', spec:'Resilience-related Specializations', uc:'A school district recovers its student system in 2 hours during a drill (was 3 days).', steps:['Impact analysis','Design','Implement','Test','Operate']},
+  {n:'DevOps & platform engineering', cat:'Build', what:'Automates infrastructure and releases so teams ship faster and safer.', del:['Infrastructure as code','CI/CD pipelines','Internal developer platform','Observability'], svc:'CDK, CloudFormation, CodePipeline, EKS, CloudWatch', price:'Fixed fee or retainer', dur:'1–4 months', kpi:'Deploy frequency; change failure rate', spec:'DevOps Specialization', uc:'Deploys go from monthly to daily with automated rollbacks.', steps:['Assess pipeline','Design','Automate','Enable teams','Improve']},
+  {n:'Managed services (MSP)', cat:'Run', what:'Runs customer environments day to day: monitoring, patching, backups, incidents and cost.', del:['24/7 monitoring','Patch & backup management','Incident response','Monthly reports'], svc:'CloudWatch, Systems Manager, AWS Backup, Security Hub', price:'Monthly fee (per account, per resource or % of spend)', dur:'Ongoing (12–36 month terms)', kpi:'SLA attainment; incidents; MRR', spec:'AWS MSP Partner Program', uc:'After migration, the partner runs the bank’s 400 servers with a 99.9% SLA.', steps:['Onboard','Baseline','Monitor','Report','Optimize']},
+  {n:'FinOps & cost optimization', cat:'Run', what:'Finds and keeps savings on AWS bills.', del:['Cost review','Savings Plan strategy','Tagging & showback','Monthly cost governance'], svc:'Cost Explorer, Compute Optimizer, Budgets, CUR', price:'Fixed review fee; retainer; or % of savings', dur:'2–4 weeks + ongoing', kpi:'Savings %; commitment coverage', spec:'Cloud operations-related', uc:'A SaaS firm cuts its bill 31% with right-sizing and Savings Plans.', steps:['Analyze bill','Quick wins','Commitments','Governance','Monthly review']},
+  {n:'AWS resale & billing', cat:'Run', what:'Partner owns AWS billing for the customer, adding support and consolidated invoicing.', del:['Consolidated invoices','Cost reports','Support bundle'], svc:'Organizations, Billing Conductor, CUR', price:'Margin on AWS usage', dur:'Ongoing', kpi:'Margin; billing accuracy', spec:'Solution Provider / distribution', uc:'A mid-size company gets one monthly invoice with support included.', steps:['Agreement','Account transfer','Monthly billing','Reports','Reviews']},
+  {n:'Marketplace & ISV enablement', cat:'Grow', what:'Helps software companies run on AWS and sell through AWS Marketplace and co-sell.', del:['SaaS architecture review','Marketplace listing','Private offer setup','Co-sell readiness'], svc:'AWS Marketplace, SaaS Factory guidance, ISV Accelerate', price:'Fixed fee', dur:'4–12 weeks', kpi:'Listing live; Marketplace revenue', spec:'ISV-related programs', uc:'An ISV closes its first $250k private offer 6 weeks after listing.', steps:['Readiness','Architecture','Listing','Offers','Co-sell']},
+  {n:'Contact center & customer experience', cat:'Build', what:'Moves call centers to Amazon Connect with AI self-service and agent assist.', del:['Contact flows','Bots','CRM integration','Analytics'], svc:'Amazon Connect, Lex, Contact Lens, Q in Connect', price:'Fixed fee + managed service', dur:'6–16 weeks', kpi:'Wait time; containment; CSAT', spec:'Contact center-related', uc:'A retailer contains 31% of contacts in self-service and lifts CSAT by 7 points.', steps:['Design','Build flows','Integrate','Train agents','Optimize']},
+  {n:'End-user computing', cat:'Build', what:'Delivers secure virtual desktops and app streaming.', del:['Desktop images','Identity integration','Rollout'], svc:'WorkSpaces, AppStream 2.0, IAM Identity Center', price:'Fixed fee + managed service', dur:'3–8 weeks', kpi:'Provisioning time; tickets', spec:'EUC-related', uc:'A university streams engineering software to 3,000 student laptops.', steps:['Requirements','Images','Pilot','Rollout','Support']},
+  {n:'IoT & edge', cat:'Build', what:'Connects devices and machines to AWS for monitoring and prediction.', del:['Device connectivity','Data pipeline','Dashboards','Predictive models'], svc:'IoT Core, IoT SiteWise, Greengrass, SageMaker AI', price:'Fixed fee per phase', dur:'2–6 months', kpi:'Downtime avoided; data coverage', spec:'IoT Specialization', uc:'A plant predicts motor failures 2 weeks ahead, cutting downtime 35%.', steps:['Use case','Connect','Ingest','Analyze','Act']},
+  {n:'Training & enablement', cat:'Grow', what:'Upskills customer teams so they can run and build on AWS.', del:['Workshops','Immersion days','Certification bootcamps'], svc:'Skill Builder, AWS Training partners', price:'Per seat or per workshop', dur:'Days to weeks', kpi:'Certifications earned; satisfaction', spec:'Training Path', uc:'A bank’s ops team earns 20 certifications before taking over operations.', steps:['Skills gap','Plan','Deliver','Assess','Certify']}
+];
+const PCATS = ['All','Advise','Build','Protect','Run','Grow'];
+let psCat='All', psSel=0;
+V.catalog = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate</span><h1>Partner services catalog</h1>
+  <p class="lede">Everything an AWS services partner typically sells, how each engagement runs, what the customer receives, how it’s priced and funded, and how it’s measured. Pick a service to see its flow and a use case.</p></header>
+
+  <section class="section"><header><h2>The customer journey across services</h2><p class="muted">Services connect. One engagement leads to the next, and managed services keep the relationship going.</p></header>
+  <div class="card">${orbitSVG('svcjourney', ['Advise','Migrate','Modernize','Data platform','AI & ML','Run & optimize'], ['Customer lifetime','one service leads to the next'])}</div>
+  ${flow('svcjourney', FLOWS.svcjourney = [
+    {t:'Advise', d:'Strategy, assessment, Well-Architected review. Low risk, builds trust.', do:['Business case','Roadmap'], check:['Sponsor engaged'], tools:['Assessment, WAFR']},
+    {t:'Migrate', d:'Move workloads to AWS, usually MAP-funded.', do:['Landing zone','Waves'], check:['Business case on track'], tools:['Migration factory']},
+    {t:'Modernize', d:'Re-architect priority apps and databases.', do:['Containers, serverless, managed DBs'], check:['Agility KPIs'], tools:['ECS/EKS, Lambda, Aurora']},
+    {t:'Data platform', d:'Bring data together for analytics.', do:['Data lake, dashboards'], check:['Adoption by business'], tools:['S3, Glue, Redshift, QuickSight']},
+    {t:'AI & ML', d:'GenAI and ML on the customer’s data.', do:['Use cases to production'], check:['Measured value (BVR)'], tools:['Bedrock, Amazon Q, SageMaker AI']},
+    {t:'Run & optimize', d:'Managed services, FinOps, security operations. Recurring revenue and the next opportunity.', do:['SLA, cost reviews, QBRs'], check:['Renewal and expansion'], tools:['MSP tools, Cost Explorer']}
+  ], {label:'Stage'})}
+
+  <section class="section"><header><h2>Service catalog</h2></header>
+  <div class="chips">${PCATS.map(c=>`<button class="chip" type="button" data-pscat="${c}" aria-pressed="${c===psCat}">${c}</button>`).join('')}</div>
+  <div class="chips" id="psList"></div>
+  <div id="psD" class="section"></div></section>
+
+  <section class="section"><header><h2>How every engagement runs</h2><p class="muted">The same delivery backbone sits under every service.</p></header>
+  ${flow('engage', FLOWS.engage = [
+    {t:'Discovery', d:'Understand the problem, stakeholders, constraints and success metrics.', do:['Discovery call(s)','Baseline KPIs'], check:['Qualified in CRM and ACE'], tools:['CRM, ACE']},
+    {t:'Solution & estimate', d:'Design the approach and estimate effort and AWS cost.', do:['Architecture','Effort estimate','Pricing Calculator'], check:['Internal review of scope and margin'], tools:['Pricing Calculator, estimate template']},
+    {t:'Proposal & SOW', d:'Scope, deliverables, milestones, price, assumptions and acceptance criteria.', do:['SOW from template','Funding attached'], check:['AdminOps checks billing terms'], tools:['SOW template, Partner Central funding']},
+    {t:'Kickoff', d:'Align teams, plan, access, communications and RAID log (risks, assumptions, issues, dependencies).', do:['Kickoff deck','Project plan'], check:['Customer PO and billing contact confirmed'], tools:['PM tool, QuickBooks']},
+    {t:'Deliver in sprints', d:'Build iteratively with weekly status and demos.', do:['Weekly status report','Demos'], check:['Milestone sign-offs saved (also funding POE)'], tools:['PM tool']},
+    {t:'Acceptance & handover', d:'Customer accepts deliverables; documentation and training handed over.', do:['Acceptance certificate','Runbooks','Training videos'], check:['Final invoice sent'], tools:['Docs, video']},
+    {t:'Hypercare & support', d:'Short period of extra support, then managed services or close.', do:['Issue tracking'], check:['Stable'], tools:['Ticketing']},
+    {t:'Value review & next step', d:'Measure outcomes, capture case study, propose the next engagement.', do:['Value report','Case study request'], check:['ACE launched; next opportunity open'], tools:['Value scorecard, ACE']}
+  ], {label:'Step', pipe:true})}</section>
+
+  <section class="section"><header><h2>Pricing models</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Model</th><th>How it works</th><th>Best for</th><th>AdminOps note</th></tr></thead><tbody>
+    <tr><td><b>Fixed price</b></td><td>Set price per milestone or deliverable</td><td>Assessments, defined projects</td><td>Invoice on milestone sign-off</td></tr>
+    <tr><td><b>Time & materials</b></td><td>Hourly/daily rates for actual time</td><td>Uncertain scope, staff augmentation</td><td>Attach approved timesheets</td></tr>
+    <tr><td><b>Monthly retainer / managed service</b></td><td>Fixed monthly fee for a defined service</td><td>MSP, FinOps, advisory hours</td><td>Recurring invoices; renewals 90 days out</td></tr>
+    <tr><td><b>Outcome-based</b></td><td>Fee tied to results, e.g. % of savings</td><td>Cost optimization</td><td>Agree measurement method in the SOW</td></tr>
+    <tr><td><b>Resale margin</b></td><td>AWS usage re-billed with a margin</td><td>Customers who want one invoice</td><td>Bill after the AWS invoice arrives</td></tr>
+    <tr><td><b>Marketplace private offer</b></td><td>Customer buys the service on its AWS bill</td><td>Customers with AWS commitments</td><td>Reconcile disbursements, net of fee</td></tr>
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Packaged offers that sell well</h2><p class="muted">Fixed-scope, fixed-price “productized” services are easier to market, sell and invoice. Illustrative examples.</p></header>
+  <div class="grid g3">${[['Migration Readiness Sprint','4 weeks · business case, landing zone design, wave 0 plan'],['GenAI Launchpad','6 weeks · use-case workshop, funded POC, production plan'],['Cost Optimization Health Check','2 weeks · savings report with prioritized actions'],['Well-Architected Review + Fix','3 weeks · WAFR and remediation of top 5 risks'],['Security Baseline in a Box','4 weeks · landing zone, guardrails, monitoring'],['Data Quick Start','6 weeks · first data lake use case and 3 dashboards']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p><p class="small">Great subject for a 60-second explainer video and a one-pager.</p></div>`).join('')}</div></section>
+`;
+function renderPSList(){ const list=PSERVICES.map((s,i)=>[s,i]).filter(([s])=>psCat==='All'||s.cat===psCat); if(!list.some(([,i])=>i===psSel)) psSel=list[0][1];
+  $('#psList').innerHTML = list.map(([s,i])=>`<button class="chip" type="button" data-ps="${i}" aria-pressed="${i===psSel}">${s.n}</button>`).join('');
+  document.querySelectorAll('[data-pscat]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.pscat===psCat)); showPS(psSel); }
+function showPS(i){ psSel=i; const s=PSERVICES[i];
+  FLOWS.psflow = s.steps.map((t,k)=>({t, d:`Step ${k+1} of the ${s.n.toLowerCase()} engagement.`, do:[], check:[], tools:[]}));
+  $('#psD').innerHTML = `<div class="card tint"><span class="eyebrow">${s.cat}</span><h2>${s.n}</h2><p>${s.what}</p><div class="tags"><span class="tag" style="white-space:normal">Duration: ${s.dur}</span><span class="tag" style="white-space:normal">Pricing: ${s.price}</span></div></div>
+  ${pipeSVG('psflow', s.steps)}
+  <div class="grid g3"><div class="card"><h4>Deliverables</h4><ul class="clean small">${s.del.map(d=>`<li>${d}</li>`).join('')}</ul></div><div class="card"><h4>Key AWS services</h4><div class="tags">${s.svc.split(', ').map(x=>`<span class="tag a">${x}</span>`).join('')}</div></div><div class="card"><h4>Measured by</h4><p class="small">${s.kpi}</p><p class="small muted"><b>Proof of expertise:</b> ${s.spec}</p></div></div>
+  <div class="card warnc"><h4>Use case</h4><p class="small">${s.uc}</p></div>`;
+  document.querySelectorAll('[data-ps]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.ps===i)); }
 
 /* ================= ROUTER & EVENTS ================= */
 function route(){
@@ -3241,6 +3474,8 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='migration'){ showR(2); rqi=0; renderRQ(); }
+  if(id==='catalog') renderPSList();
   if(id==='bvr') showBvrCase(bvrCase);
   if(id==='solutions'){ renderSolList(); calcHost(); renderCh(); }
   if(id==='opps'){ showOpp(oppSel, 0); renderPeople('All'); }
@@ -3310,6 +3545,11 @@ document.addEventListener('click', e => {
   const op = t.closest('[data-opp]'); if(op) return showOpp(+op.dataset.opp, 0);
   const os = t.closest('[data-ostep]'); if(os) return showOpp(oppSel, +os.dataset.ostep);
   const pp = t.closest('[data-pparty]'); if(pp) return renderPeople(pp.dataset.pparty);
+  const rr = t.closest('[data-rr]'); if(rr) return showR(+rr.dataset.rr);
+  const rq = t.closest('[data-rq]'); if(rq){ const q=RQ[rqi]; rqi = rq.dataset.rq===q[1] ? String(q[2]) : rqi+1; return renderRQ(); }
+  if(t.id==='rqReset'){ rqi=0; return renderRQ(); }
+  const psc = t.closest('[data-pscat]'); if(psc){ psCat=psc.dataset.pscat; return renderPSList(); }
+  const ps = t.closest('[data-ps]'); if(ps) return showPS(+ps.dataset.ps);
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -3355,7 +3595,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
