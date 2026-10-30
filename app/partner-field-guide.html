@@ -266,6 +266,7 @@ const CHAPTERS = [
   {id:'people', t:'Who\u2019s who & RACI', g:'Partner business'},
   {id:'roles', t:'Partner vs AWS roles', g:'Partner business'},
   {id:'gtm', t:'GTM & co-sell', g:'Partner business'},
+  {id:'opps', t:'Opportunity lifecycle', g:'Partner business'},
   {id:'sales', t:'Sales essentials', g:'Partner business'},
   {id:'value', t:'Business value realisation', g:'Partner business'},
   {id:'bvr', t:'BVR pit stops', g:'Partner business'},
@@ -882,6 +883,8 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['An AWS Referral arrives in ACE. What matters most first?',['Ignore it until next month','Accept or reject quickly, then contact the customer','Invoice the customer','Create a Marketplace listing'],1,'Response time is tracked and affects future referrals.'],
+  ['What connects the CRM deal, funding request, invoices and case study for one customer?',['The customer’s logo','The ACE opportunity ID','The AWS Region','The video file name'],1,'Carry one ACE ID across systems so every dollar can be traced.'],
   ['In the BVR motion, what moves an initiative to the next pit stop?',['Paying a fee','Required activities approved by the PSS and the VRP KPI threshold met','Publishing a blog post','Closing the ACE opportunity'],1,'Both conditions are needed; then the initiative advances automatically.'],
   ['A BVR pit stop with a funding milestone is complete and a PO appears. What does AdminOps do?',['Nothing, money arrives automatically','Submit an invoice in Amazon Payee Central with that PO number','Email the PSS for a check','Create a Marketplace listing'],1,'Payment is processed after the invoice is submitted against the PO.'],
   ['What is the most commonly skipped step that makes value impossible to prove later?',['Writing the SOW','Capturing the baseline','Sending the invoice','Booking the kickoff'],1,'Without “before” numbers there is nothing to compare results against.'],
@@ -2617,6 +2620,8 @@ V.solutions = () => `
   <div class="chips" id="solList"></div>
   <div id="solD" class="section"></div>
 
+  ${challengeMap()}
+
   <section class="section"><header><h2>Hosting chooser</h2><p class="muted">Answer four questions for a starting recommendation.</p></header>
   <div class="grid g2">
     <div class="card">${HOSTQ.map((q,qi)=>`<div style="display:grid;gap:6px"><b class="small">${q[0]}</b><div class="chips">${q[1].map((o,oi)=>`<button class="chip" type="button" data-hq="${qi}|${oi}" aria-pressed="${hostAns[qi]===oi}">${o}</button>`).join('')}</div></div>`).join('')}</div>
@@ -2873,6 +2878,196 @@ function showBvrCase(i){ bvrCase=i; const c=BVR_CASES[i];
   <div class="card chart"><div class="eyebrow">${c.unit} across the stops (illustrative)</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${c.unit} rising across five pit stops">${g}</svg></div>`;
   document.querySelectorAll('[data-bvrcase]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.bvrcase===i)); }
 
+/* ================= OPPORTUNITY LIFECYCLE ================= */
+const ACTORS = {C:'Customer', A:'AWS', P:'Partner (us)', N:'Other parties'};
+/* step: [title, primary actor, other actors, what happens, system, output, maintained by, when] */
+const OPP_SCEN = [
+  {n:'Partner-originated co-sell', short:'We find the deal and bring AWS in', time:'2–6 months to launch',
+   who:'Partner AE, alliance lead, partner SA; AWS account manager (AM), AWS SA, PDM; customer IT lead and sponsor',
+   steps:[
+    ['Lead captured','P','C','A prospect responds to a video, webinar, referral or outbound email. Marketing records the source.','CRM','Lead with source','Marketing / RevOps','Week 0'],
+    ['Qualify','P','C','Partner AE runs discovery: pain, budget, decision process, AWS footprint.','CRM','Qualified opportunity','Partner AE','Week 1–2'],
+    ['Register in ACE','P','A','Partner shares the opportunity with AWS (Partner Referral). AWS validates it and may assign an AWS AM.','ACE (Partner Central) + CRM sync','ACE opportunity ID','Partner AE + RevOps','Week 2'],
+    ['Joint account planning','A','P','AWS AM and partner align on the customer, stakeholders, and how AWS can help (funding, SA support, executive meetings).','Meetings, ACE notes','Joint plan','Alliance lead + AWS AM','Week 2–3'],
+    ['Technical validation','P','A,C','Partner SA designs the solution and Pricing Calculator estimate; AWS SA reviews if needed.','Pricing Calculator, diagrams','Architecture + estimate','Partner SA','Week 3–6'],
+    ['Funding request','P','A','Alliance lead/AdminOps request POC or MAP funding linked to the ACE ID, before work starts.','Partner Central Funding','Approved funding','AdminOps / alliance lead','Week 5–7'],
+    ['Proposal & contract','P','C','SOW and pricing sent; customer legal, security and procurement review; PO issued.','Docs, e-signature, QuickBooks','Signed SOW + PO','Partner AE; AdminOps sets up customer','Week 6–10'],
+    ['Deliver','P','C','Project delivered in milestones; proof of execution captured; customer consumes AWS in its own account.','PM tool, customer AWS account','Milestone sign-offs','Delivery PM','Month 3–5'],
+    ['Launch & bill','P','A,C','ACE marked Launched with AWS account ID; milestones invoiced; funding claimed with POE.','ACE, QuickBooks, Partner Central','Launch, invoices, claim','RevOps + AdminOps','Month 4–6'],
+    ['Value & expand','P','C,A','Value review, case study, BVR nomination if eligible, next workload opened in ACE.','CRM, ACE, BVR','Reference + next opportunity','Customer success + marketing','Month 6+']]},
+  {n:'AWS-originated referral', short:'AWS sends us a customer need', time:'1–4 months to launch',
+   who:'AWS AM or PSM sends it; partner alliance lead and AE accept; customer engages',
+   steps:[
+    ['Need spotted','A','C','The AWS AM hears a need (e.g. migration, GenAI) the AWS team won’t deliver itself.','AWS internal tools','Customer need','AWS AM','Day 0'],
+    ['Partner selected','A','P','AWS chooses partners by Specializations, references, location and past ACE responsiveness.','Partner Solutions Finder, ACE history','Partner choice','AWS AM / PSM','Day 0–3'],
+    ['Referral sent','A','P','An AWS Referral appears in ACE with customer details.','ACE','Referral in our queue','AWS','Day 3'],
+    ['Accept fast','P','A','Alliance lead or AE accepts (or rejects with a reason) quickly; response time is tracked.','ACE + CRM','Accepted opportunity','Alliance lead','Within 1–2 days'],
+    ['Joint discovery call','P','A,C','Partner AE and SA meet the customer with the AWS AM.','Meetings','Scope & next steps','Partner AE','Week 1–2'],
+    ['Validate & fund','P','A','Architecture and estimate; funding requested if applicable.','Pricing Calculator, Partner Central','Proposal-ready scope','Partner SA + AdminOps','Week 2–4'],
+    ['Contract','C','P','Customer signs SOW/PO, or buys through a Marketplace private offer.','Docs or AWS Marketplace','Signed deal','Partner AE','Week 4–8'],
+    ['Deliver & update AWS','P','A,C','Delivery runs; ACE stages updated so the AWS AM sees progress.','ACE, PM tool','Status visible to AWS','Partner PM + RevOps','Month 2–4'],
+    ['Launched & thanked','P','A','ACE Launched; share the outcome with the AWS AM who referred you. This earns more referrals.','ACE, email','Launch + goodwill','Alliance lead','Month 3–4']]},
+  {n:'Migration with MAP', short:'Data center exit funded by AWS', time:'6–24 months',
+   who:'Customer CIO, infrastructure and app owners, finance; AWS AM, migration specialists, SA, PDM; partner alliance lead, migration architects, delivery team, AdminOps',
+   steps:[
+    ['Trigger','C','A,P','Hardware refresh or data center lease ending; leadership wants cost savings.','—','Migration initiative','Customer CIO','Month 0'],
+    ['Opportunity in ACE','P','A','Registered (or referred) with migration details and expected AWS spend.','ACE','MAP-eligible opportunity','Partner AE + alliance lead','Month 0'],
+    ['Assess','P','C,A','Discovery, TCO business case, Migration Readiness Assessment. Assess funding requested first.','Migration Evaluator, Partner Central Funding','Business case','Partner architects; AdminOps tracks funding','Month 0–2'],
+    ['Decision','C','P,A','Executives approve the business case and MAP agreement terms.','Contracts','Approved program','Customer sponsor','Month 2–3'],
+    ['Mobilize','P','C,A','Landing zone, security baseline, wave plan, pilot migrations. Mobilize funding/credits.','Control Tower, Migration Hub','Foundation + plan','Partner delivery lead','Month 3–6'],
+    ['Migrate & modernize','P','C','Workloads moved in waves; migrated resources tagged map-migrated so credits apply.','Application Migration Service, DMS','Migrated workloads','Partner delivery + customer app owners','Month 6–18'],
+    ['Credits & claims','A','P','AWS applies credits based on tagged spend; partner claims cash funding with POE.','Partner Central, customer bill','Funding received','AdminOps','Ongoing'],
+    ['Optimize & operate','P','C','Right-sizing, Savings Plans, managed services contract.','Cost Explorer, MSP tools','Lower run cost, recurring revenue','Partner MSP team','Month 12+']]},
+  {n:'AWS Marketplace purchase', short:'Customer buys via a private offer', time:'Days–weeks to transact',
+   who:'Customer procurement and finance; ISV (software vendor); channel partner (reseller, us); AWS Marketplace operations',
+   steps:[
+    ['Buyer interest','C','P,N','Customer wants a product or service and prefers buying on its AWS bill, often to use an AWS spend commitment.','—','Procurement path chosen','Customer procurement','Day 0'],
+    ['Terms agreed','P','C,N','Price and terms negotiated. For resale, the ISV authorizes the reseller (CPPO).','Email, AMMP','Agreed terms','Partner sales ops / ISV','Day 1–10'],
+    ['Private offer created','P','N','Partner (or ISV) creates a private offer in the Marketplace Management Portal.','AMMP','Offer link','Sales ops','Day 10'],
+    ['Customer accepts','C','A','Customer accepts in their AWS account.','AWS Marketplace','Agreement','Customer procurement','Day 10–20'],
+    ['AWS bills customer','A','C','Charges appear on the customer’s AWS invoice.','AWS billing','Invoice to customer','AWS','Monthly / upfront'],
+    ['Disbursement','A','P,N','AWS pays the seller net of the listing fee; ISV and reseller shares split per the offer.','AMMP reports, bank','Cash received','AdminOps reconciles','Per disbursement schedule'],
+    ['Record & report','P','—','Match disbursement to the offer, record revenue and fees per accountant guidance, update CRM.','QuickBooks, CRM','Clean books','AdminOps + RevOps','Monthly']]},
+  {n:'Customer works with a non-partner vendor', short:'An IT firm or freelancer not in the APN', time:'Varies',
+   who:'Customer IT; a local IT consultant, freelancer or MSP that isn’t an AWS Partner; AWS AM (may not know about the work)',
+   steps:[
+    ['Customer hires a vendor','C','N','Customer engages a trusted local IT firm or freelancer who knows some AWS.','Vendor contract','Engagement','Customer IT','Week 0'],
+    ['Customer buys AWS directly','C','A','Customer opens its own AWS account and pays AWS by card or invoice.','AWS account & billing','AWS consumption','Customer','Week 0'],
+    ['Work without co-sell','N','C','Vendor builds the solution. No ACE opportunity, no AWS funding, no Specialization validation.','Vendor tools','Delivered solution','Vendor','Weeks–months'],
+    ['Gaps appear','C','N','Common gaps: missed funding/credits, no Well-Architected review, limited support or scale.','—','Risk or extra cost','Customer','Later'],
+    ['AWS gets involved','A','C,P','As spend grows, the AWS AM may suggest a validated partner for a review, MAP, or managed services.','ACE (AWS Referral)','Referral to a partner','AWS AM','When spend or risk grows'],
+    ['Partner adds value','P','C,N','Partner runs a Well-Architected review or MAP assessment, possibly working alongside the vendor.','Well-Architected Tool, ACE','Funded improvements','Partner SA','After referral'],
+    ['Or vendor joins APN','N','A','The vendor registers in Partner Central to access ACE, funding and training.','Partner Central','New partner','Vendor','Any time']]},
+  {n:'Resale & managed services', short:'We bill AWS usage and run it', time:'Ongoing, monthly',
+   who:'Customer finance and IT; partner alliance lead, cloud ops (MSP), AdminOps; AWS (via Solution Provider or distributor)',
+   steps:[
+    ['Agreement','C','P','Customer signs a resale + managed services agreement; partner becomes billing owner of the AWS accounts.','Contract','Signed MSA','Partner AE','Month 0'],
+    ['Account setup','P','A,N','Accounts moved under the partner’s organization (directly or via a distributor).','AWS Organizations, Billing Conductor','Accounts under management','Partner cloud ops','Month 0–1'],
+    ['Run & monitor','P','C','24/7 monitoring, patching, backups, cost optimization.','CloudWatch, MSP tools','SLA performance','MSP team','Daily'],
+    ['AWS bills partner','A','P','AWS (or distributor) invoices the partner for all managed accounts.','AWS billing','Partner AWS invoice','AdminOps','Monthly'],
+    ['Partner bills customer','P','C','Partner re-bills usage with margin plus the managed services fee.','Cost & Usage Report, QuickBooks','Customer invoice','AdminOps','Monthly, after AWS bill'],
+    ['Collect & reconcile','P','C','Payments collected; credits and refunds passed through correctly.','QuickBooks','Reconciled margin','AdminOps','Monthly'],
+    ['Review','P','C','Monthly or quarterly service and cost review; renewal and expansion.','QBR deck','Renewal, expansion','Customer success','Quarterly']]},
+  {n:'Expansion through BVR', short:'Proven value leads to the next deal', time:'3–12 months',
+   who:'Partner customer success, delivery, AdminOps; AWS Partner Success Specialist (PSS); customer sponsor and champions',
+   steps:[
+    ['Nominate','P','A','Eligible customer nominated in the BVR motion with VRP KPIs.','Partner Central BVR','Approved initiative','Customer success','Month 0'],
+    ['Activate','P','C','First users live, baseline recorded.','BVR, telemetry','Pit stop 1 complete','Delivery','Month 0–1'],
+    ['Adapt','P','C','Fit to workflows, train users, fix blockers using the adoption report.','Adoption report','Pit stop 2 complete','Customer success','Month 1–2'],
+    ['Scaled adoption','C','P','Usage spreads across teams and features.','Adoption report','Pit stop 3 complete','Customer champions + partner','Month 2–4'],
+    ['Retain & attest','C','P,A','Usage holds; outcomes measured; customer attests.','BVR attestation','Pit stop 4 complete','Customer sponsor','Month 4–6'],
+    ['Recommend & expand','C','P,A','Reference, case study, next use case registered in ACE.','ACE, CRM','New opportunity','Partner AE + marketing','Month 6+'],
+    ['Get paid','A','P','POs generated at funded pit stops; invoice in Amazon Payee Central.','Payee Central, QuickBooks','Funding received','AdminOps','At each funded stop']]}
+];
+const PEOPLE_ALL = [
+  ['Customer','Executive sponsor (CIO/CTO/CFO)','Owns the business outcome and budget; signs off results.'],
+  ['Customer','IT lead / cloud architect','Technical decisions; works with partner engineers.'],
+  ['Customer','Procurement & legal','Contracts, vendor onboarding, Marketplace purchases.'],
+  ['Customer','Finance / accounts payable','Pays invoices; needs correct PO and entity.'],
+  ['Customer','End users & champions','Adopt the solution; champions drive usage.'],
+  ['AWS','Account Manager (AM)','Owns the customer for AWS; refers and co-sells.'],
+  ['AWS','Solutions Architect (SA)','Customer’s technical advisor; validates designs.'],
+  ['AWS','Partner Development Manager (PDM)','Our main business contact; programs and funding.'],
+  ['AWS','Partner Sales Manager (PSM) / ISV Success','Connects partners with AWS sellers.'],
+  ['AWS','Partner Solutions Architect (PSA)','Our technical contact; Specialization audits.'],
+  ['AWS','Partner Marketing Manager (PMM)','Joint marketing and MDF.'],
+  ['AWS','Partner Success Specialist (PSS)','Reviews BVR pit stop submissions.'],
+  ['AWS','Professional Services (ProServe)','AWS’s own delivery team; sometimes works with partners.'],
+  ['AWS','Technical Account Manager (TAM)','Enterprise Support guidance for the customer.'],
+  ['AWS','Funding & Marketplace operations','Approve funding, process claims, Marketplace billing.'],
+  ['Partner (us)','Account Executive (AE)','Owns the deal and ACE record.'],
+  ['Partner (us)','Alliance lead','Owns the AWS relationship, tier, funding strategy.'],
+  ['Partner (us)','Solutions Architect / pre-sales','Designs solutions, estimates, POCs.'],
+  ['Partner (us)','Delivery PM & engineers','Build and launch; capture proof of execution.'],
+  ['Partner (us)','Cloud ops / MSP team','Run customer environments day to day.'],
+  ['Partner (us)','Customer success','Adoption, value reviews, BVR, renewals.'],
+  ['Partner (us)','AdminOps / finance (you)','Invoices, funding claims, Marketplace and BVR payouts, reconciliation.'],
+  ['Partner (us)','RevOps (you)','CRM/ACE hygiene, pipeline and KPI reporting.'],
+  ['Partner (us)','Marketing & video (you)','Demand generation, case studies, enablement content.'],
+  ['Other parties','ISV (software vendor)','Sells software used in the solution, often via Marketplace.'],
+  ['Other parties','Distributor','Supplies AWS and Marketplace products to resellers.'],
+  ['Other parties','Non-partner IT vendor / freelancer','Does AWS work without APN access to ACE or funding.'],
+  ['Other parties','Auditors & assessors','Validate Specializations, MSP, compliance.'],
+  ['Other parties','Competing partners & clouds','Alternatives the customer may evaluate.']
+];
+const MAINTAIN = [
+  ['Opportunity','CRM + ACE (synced)','Partner AE; RevOps checks hygiene','Weekly'],
+  ['AWS Referral response','ACE','Alliance lead','Daily'],
+  ['Customer contract, SOW, PO','Document repository; QuickBooks customer record','Partner AE; AdminOps','At signature and changes'],
+  ['Funding requests & claims','Partner Central Funding + funding tracker','AdminOps / alliance lead','Weekly'],
+  ['Marketplace offers & disbursements','AWS Marketplace Management Portal','Sales ops; AdminOps reconciles','Per offer; monthly'],
+  ['BVR initiative & POs','Partner Central BVR; Amazon Payee Central','Customer success; AdminOps for invoices','Weekly during pit stops'],
+  ['Invoices & payments','QuickBooks','AdminOps','Weekly; monthly close'],
+  ['Customer AWS accounts & billing','Customer’s AWS account (or partner’s for resale)','Customer IT, or partner cloud ops for resale','Monthly'],
+  ['Architecture & runbooks','Docs/wiki, IaC repository','Partner SA and delivery','Per change'],
+  ['Operations (monitoring, backups)','CloudWatch, AWS Backup, MSP tools','Partner MSP team','Daily'],
+  ['Value KPIs & reports','Value scorecard, BVR, QBR decks','Customer success','Monthly / quarterly'],
+  ['Case studies & videos','Content library, Partner Solutions Finder','Marketing & video','Per launch'],
+  ['Certifications & tier status','Partner Central','Alliance lead','Monthly']
+];
+let oppSel = 0, oppStep = 0;
+V.opps = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate → Advanced</span><h1>Opportunity lifecycle</h1>
+  <p class="lede">How an opportunity is captured and executed, step by step, in seven common scenarios. Each swimlane shows who acts at each step: the customer, AWS, your company, or other parties such as ISVs, distributors and non-partner vendors. Click any step for what happens, which system is used, what it produces and who maintains it.</p></header>
+  <div class="chips">${OPP_SCEN.map((s,i)=>`<button class="chip" type="button" data-opp="${i}" aria-pressed="${i===oppSel}">${s.n}</button>`).join('')}</div>
+  <div id="oppD" class="section"></div>
+
+  <section class="section"><header><h2>Scenarios compared</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Scenario</th><th>In short</th><th>Typical timeline</th><th>Steps</th></tr></thead><tbody>${OPP_SCEN.map((s,i)=>`<tr><td><b>${s.n}</b></td><td>${s.short}</td><td>${s.time}</td><td class="num">${s.steps.length}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Everyone involved</h2><p class="muted">Filter by party.</p></header>
+  <div class="chips">${['All',...Object.values(ACTORS)].map(c=>`<button class="chip" type="button" data-pparty="${c}" aria-pressed="${c==='All'}">${c}</button>`).join('')}</div>
+  <div class="grid g3" id="pplGrid"></div></section>
+
+  <section class="section"><header><h2>Who maintains what</h2><p class="muted">Every record has one system of truth and one owner.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Record</th><th>System</th><th>Owner</th><th>Cadence</th></tr></thead><tbody>${MAINTAIN.map(m=>`<tr><td><b>${m[0]}</b></td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td></tr>`).join('')}</tbody></table></div>
+  <div class="card tint small"><b>Golden thread:</b> one ACE opportunity ID connects the CRM deal, the funding request, the SOW, the QuickBooks invoices, the BVR initiative and the case study. If you can trace any dollar back through that ID, the process is well maintained.</div></section>
+`;
+function showOpp(i, step){ oppSel=i; oppStep = step ?? 0; const s=OPP_SCEN[i], keys=['C','A','P','N'];
+  const cols = s.steps.length;
+  let grid = `<div style="display:grid;grid-template-columns:120px repeat(${cols}, minmax(96px,1fr));gap:4px;min-width:${120+cols*100}px">`;
+  grid += `<div></div>` + s.steps.map((st,k)=>`<div class="mono small muted" style="text-align:center;padding:2px">${k+1}<br>${st[7]}</div>`).join('');
+  keys.forEach(a=>{ grid += `<div class="small" style="font-weight:600;display:flex;align-items:center;padding:6px;background:var(--sunk);border-radius:6px;position:sticky;left:0;z-index:1;box-shadow:4px 0 0 var(--surface)">${ACTORS[a]}</div>`;
+    s.steps.forEach((st,k)=>{ const prim = st[1]===a, sec = st[2].split(',').includes(a);
+      grid += prim ? `<button type="button" class="step" data-ostep="${k}" aria-pressed="${k===oppStep}" style="min-width:0;padding:6px 8px"><span class="t" style="font-size:12.5px">${st[0]}</span></button>`
+        : sec ? `<button type="button" data-ostep="${k}" style="border:1px dashed var(--accent);background:transparent;border-radius:8px;font-size:11.5px;color:var(--accent);padding:4px">involved</button>`
+        : `<div style="border-bottom:1px dashed var(--line);height:50%"></div>`; }); });
+  grid += `</div>`;
+  const st = s.steps[oppStep];
+  $('#oppD').innerHTML = `<div class="card tint"><h2>${s.n}</h2><p class="small">${s.short}. <b>Typical timeline:</b> ${s.time}.</p><p class="small"><b>People involved:</b> ${s.who}</p></div>
+  <div class="tablewrap" style="padding:10px">${grid}</div>
+  <p class="small muted">Solid box = the party leading that step. Dashed = also involved. Read left to right as a timeline; scroll sideways on small screens.</p>
+  <div class="detail"><span class="eyebrow">Step ${oppStep+1} of ${s.steps.length} · ${st[7]}</span><h3>${st[0]}</h3><p>${st[3]}</p>
+  <div class="kv"><dt>Led by</dt><dd>${ACTORS[st[1]]}</dd><dt>Also involved</dt><dd>${st[2]==='—'?'—':st[2].split(',').map(x=>ACTORS[x]).join(', ')}</dd><dt>System</dt><dd>${st[4]}</dd><dt>Output</dt><dd>${st[5]}</dd><dt>Maintained by</dt><dd>${st[6]}</dd></div>
+  <div style="display:flex;gap:8px"><button class="btn ghost" type="button" data-ostep="${Math.max(oppStep-1,0)}">Previous step</button><button class="btn" type="button" data-ostep="${Math.min(oppStep+1,s.steps.length-1)}">Next step</button></div></div>`;
+  document.querySelectorAll('[data-opp]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.opp===i)); }
+function renderPeople(f){ $('#pplGrid').innerHTML = PEOPLE_ALL.filter(p=>f==='All'||p[0]===f).map(p=>`<div class="card"><span class="tag ${p[0]==='Partner (us)'?'s':'a'}" style="justify-self:start">${p[0]}</span><h4>${p[1]}</h4><p class="small muted">${p[2]}</p></div>`).join('');
+  document.querySelectorAll('[data-pparty]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.pparty===f)); }
+
+/* Challenge → solution map (shown in Solution finder) */
+const CHALLENGES = [
+  ['IT costs too high','Large hardware bills, idle servers, expensive licences','EC2 right-sizing, Savings Plans, Spot, Graviton, S3 lifecycle, Cost Explorer, Compute Optimizer','Cost optimization review; migration with MAP','Infra cost per month, cost per customer'],
+  ['Outages and slow recovery','Downtime, single data center, manual recovery','Multi-AZ, Auto Scaling, Elastic Load Balancing, AWS Backup, Elastic Disaster Recovery, Route 53 failover','Resilience review; DR implementation','Uptime %, RTO/RPO, MTTR'],
+  ['Slow releases','Manual deployments, months to ship features','CI/CD (CodePipeline), containers (ECS/EKS), Lambda, infrastructure as code (CDK, CloudFormation)','DevOps and app modernization','Releases per month, lead time'],
+  ['Can’t handle peaks','Sites crash on sale days or enrollment periods','Auto Scaling, CloudFront, DynamoDB, ElastiCache, SQS','Peak-readiness and scaling project','Error rate at peak, page load time'],
+  ['Data in silos','Reports disagree, no single view','S3 data lake, Glue, Lake Formation, Athena, Redshift, QuickSight','Data platform and dashboards','Time to insight, report accuracy'],
+  ['Security & compliance pressure','Audit findings, ransomware fears, regulations','IAM Identity Center, KMS, GuardDuty, Security Hub, CloudTrail, AWS Config, Backup vault lock, AWS Artifact','Security landing zone; Well-Architected security review','Findings closed, audit pass, incidents'],
+  ['Legacy applications','Old code, end-of-support OS or database','Application Migration Service, DMS, Aurora, containers, Q Developer for code upgrades','Replatform/refactor program','Support costs, change velocity'],
+  ['Manual, repetitive work','Staff re-keying data, processing documents','Step Functions, Lambda, Textract, Bedrock agents, EventBridge','Process automation','Hours saved, error rate'],
+  ['Knowledge hard to find','Employees can’t find policies or answers','Amazon Q Business, Bedrock Knowledge Bases, OpenSearch','GenAI assistant (often BVR-eligible)','Time saved, weekly active users'],
+  ['Customer support overloaded','Long waits, high cost per contact','Amazon Connect, Lex, Contact Lens, Q in Connect','Contact center modernization','Wait time, containment, CSAT'],
+  ['Global expansion','New countries, latency, data residency','AWS Regions, CloudFront, Route 53 latency routing, Global Accelerator','Multi-region architecture','Latency, launch time per market'],
+  ['Remote workforce & labs','Secure access from any device','WorkSpaces, AppStream 2.0, IAM Identity Center, Verified Access','Virtual desktop rollout','Provisioning time, support tickets'],
+  ['Video delivery at scale','Buffering, storage costs, captioning effort','S3, MediaConvert, CloudFront, Transcribe, Rekognition','Media pipeline','Start time, cost per stream, caption turnaround'],
+  ['Want to sell software on AWS','Long procurement cycles for customers','AWS Marketplace (SaaS listing, private offers), ISV Accelerate','Marketplace listing and co-sell','Time to close, Marketplace revenue']
+];
+function challengeMap(){ return `<section class="section"><header><h2>Business challenge → AWS solution</h2><p class="muted">Common problems customers bring, the AWS features and services used, the typical project, and how success is measured.</p></header>
+  <input type="search" id="chQ" placeholder="Filter, e.g. cost, security, AI" aria-label="Filter challenges">
+  <div class="tablewrap"><table><thead><tr><th>Challenge</th><th>Symptoms</th><th>Key AWS services & features</th><th>Typical project</th><th>Measured by</th></tr></thead><tbody id="chBody"></tbody></table></div></section>`; }
+function renderCh(){ const b=$('#chBody'); if(!b) return; const q=($('#chQ')?.value||'').toLowerCase();
+  const rows=CHALLENGES.filter(c=>!q||c.join(' ').toLowerCase().includes(q));
+  b.innerHTML = rows.length ? rows.map(c=>`<tr><td><b>${c[0]}</b></td><td class="small">${c[1]}</td><td class="small">${c[2].split(', ').map(x=>`<span class="tag a" style="margin:1px">${x}</span>`).join(' ')}</td><td class="small">${c[3]}</td><td class="small">${c[4]}</td></tr>`).join('') : '<tr><td colspan="5" class="muted">No match.</td></tr>'; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -2895,7 +3090,8 @@ function route(){
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
   if(id==='bvr') showBvrCase(bvrCase);
-  if(id==='solutions'){ renderSolList(); calcHost(); }
+  if(id==='solutions'){ renderSolList(); calcHost(); renderCh(); }
+  if(id==='opps'){ showOpp(oppSel, 0); renderPeople('All'); }
   if(id==='marketing'){ showStage(mkStage); renderIdeas('All'); calcFunnel(); calcUTM(); }
   if(id==='enablement') calcHS();
   if(id==='recognition'){ renderOwn(); renderLog(); calcImpact(); }
@@ -2951,6 +3147,9 @@ document.addEventListener('click', e => {
   if(t.id==='valAdd'){ const l=valLoad(); l.push({n:'New value KPI', b:0, t:0, c:0, v:0}); store.set('value', l); return renderVal(); }
   if(t.id==='valReset'){ store.set('value', VAL_DEFAULT.map(v=>({...v}))); return renderVal(); }
   const bc = t.closest('[data-bvrcase]'); if(bc) return showBvrCase(+bc.dataset.bvrcase);
+  const op = t.closest('[data-opp]'); if(op) return showOpp(+op.dataset.opp, 0);
+  const os = t.closest('[data-ostep]'); if(os) return showOpp(oppSel, +os.dataset.ostep);
+  const pp = t.closest('[data-pparty]'); if(pp) return renderPeople(pp.dataset.pparty);
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -2980,6 +3179,7 @@ document.addEventListener('input', e => {
   const id = e.target.id||'';
   if(id==='svcQ') renderSvc();
   if(id==='glQ') renderGl();
+  if(id==='chQ') renderCh();
   if(id.startsWith('wp')) calcWP();
   if(id.startsWith('mp')) calcMP();
   if(id.startsWith('ds')) calcDSO();
