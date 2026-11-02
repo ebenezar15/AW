@@ -243,6 +243,8 @@ td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-num
 @keyframes gy{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+svg circle.gc{transform-box:fill-box;transform-origin:center;animation:pop .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes fw{0%,14%{background:var(--accent-soft);border-color:var(--accent);transform:translateY(-3px)}22%,100%{background:var(--surface);border-color:var(--line);transform:none}}
 .page > *{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 45ms)}
 .card,.step,.svc,.orgnode,.level,.rung,.chip,.opt{transition:transform .18s,box-shadow .18s,border-color .18s,background .18s}
@@ -312,6 +314,7 @@ const CHAPTERS = [
   {id:'ccp', t:'Cloud Practitioner prep', g:'Learn AWS'},
   {id:'business', t:'How the business runs', g:'Partner business'},
   {id:'catalog', t:'Partner services catalog', g:'Partner business'},
+  {id:'lifecycle', t:'Service lifecycle', g:'Partner business'},
   {id:'migration', t:'Cloud migration', g:'Partner business'},
   {id:'partner', t:'Partner Network', g:'Partner business'},
   {id:'portals', t:'Portals & programs', g:'Partner business'},
@@ -357,7 +360,8 @@ function flow(id, steps, opts={}){
 }
 function flowDetail(s){
   const col = (title, arr) => arr && arr.length ? `<div><div class="eyebrow">${title}</div><ul class="clean">${arr.map(x=>`<li>${x}</li>`).join('')}</ul></div>` : '';
-  return `<h3>${s.t}</h3><p>${s.d}</p><div class="cols">${col('What happens / what to do', s.do)}${col('Checks before moving on', s.check)}${col('Tools & owners', s.tools)}</div>`;
+  const cols = s.cols ? s.cols.map(c=>col(c[0], c[1])).join('') : `${col('What happens / what to do', s.do)}${col('Checks before moving on', s.check)}${col('Tools & owners', s.tools)}`;
+  return `<h3>${s.t}</h3><p>${s.d}</p><div class="cols">${cols}</div>`;
 }
 const FLOWS = {};
 document.addEventListener('click', e => {
@@ -786,6 +790,12 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['UAT','User acceptance testing: the client confirms the solution does what they need before go-live.'],
+  ['Go-live','The moment a solution starts serving real users.'],
+  ['Day-2 operations','Everything needed to keep a service running after launch: monitoring, patching, backups, security, cost.'],
+  ['CCoE','Cloud Center of Excellence: a central team that sets cloud standards and platforms in larger companies.'],
+  ['Infrastructure Event Management','AWS Enterprise Support help for planning big launches or events.'],
+  ['Sequence diagram','A diagram showing messages between parties in time order.'],
   ['Zero Trust','Security model that verifies every request using identity, device and context instead of trusting network location.'],
   ['Device posture','Health and management status of a device (encrypted, patched, managed) used in access decisions.'],
   ['AWS Verified Access','Gives secure access to internal apps without a VPN, checking identity and device on every request.'],
@@ -967,6 +977,8 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['Which phase comes right after “Test & harden” in the service lifecycle?',['Plan & contract','Launch (go-live)','Foundation','Discover & assess'],1,'Test & harden proves it works; then the launch.'],
+  ['Who operates and secures the underlying cloud infrastructure once a service is live?',['The client only','AWS, under the shared responsibility model','Nobody','The video team'],1,'AWS secures the cloud; client and partner secure what runs in it.'],
   ['In Zero Trust, what replaces “being on the company network” as the main reason to trust a request?',['Nothing, trust everyone','Verified identity, device and context on every request','The office Wi-Fi password','A longer VPN session'],1,'Never trust, always verify: identity is the new perimeter.'],
   ['What is the recommended way for employees to sign in to many AWS accounts?',['Share the root user','Create IAM users in every account','IAM Identity Center with the company identity provider','Email access keys'],2,'Identity Center gives one sign-in, group-based access and short-term credentials.'],
   ['A colleague who owned a root password leaves. What should happen?',['Nothing','Rotate the root password and MFA, and move ownership to a group alias','Delete the AWS account','Post the password in chat'],1,'Root credentials must never depend on one person.'],
@@ -3253,7 +3265,7 @@ function countUp(el){ if(RM || el.children.length) return; const txt=el.textCont
   requestAnimationFrame(step); }
 
 /* Animate panels when their content changes */
-const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox']);
+const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD']);
 try{ new MutationObserver(ms=>{ if(RM) return; const seen=new Set(); ms.forEach(m=>{ const t=m.target; if(t.nodeType!==1 || seen.has(t)) return;
   if(t.classList.contains('detail') || DETAIL_IDS.has(t.id)){ seen.add(t); t.animate([{opacity:.35, transform:'translateY(6px)'},{opacity:1, transform:'none'}],{duration:320, easing:'cubic-bezier(.2,.8,.2,1)'}); } }); })
   .observe(document.getElementById('view'), {childList:true, subtree:true}); }catch(e){}
@@ -3787,6 +3799,146 @@ function renderJML(){ const box=$('#jmlBox'); if(!box) return; const done=store.
   box.innerHTML = `<h3>${jmlSel} checklist</h3><div class="bar"><i style="width:${done.length/JML[jmlSel].length*100}%"></i></div><div style="display:grid;gap:2px">${JML[jmlSel].map((t,i)=>`<label class="check ${done.includes(i)?'done':''}"><input type="checkbox" id="jml${i}" data-jmlck="${i}" ${done.includes(i)?'checked':''}><span>${t}</span></label>`).join('')}</div>`;
   document.querySelectorAll('[data-jml]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.jml===jmlSel)); }
 
+/* ================= SERVICE LIFECYCLE: START → RUN ================= */
+const LC = (t,d,c,p,a,g) => ({t, d, cols:[['Client does',c],['Partner does',p],['AWS does',a],['Gate to move on',g]]});
+const LIFE = [
+  LC('Idea & business case','A business need becomes a funded initiative: a new portal, an app, a migration, an AI assistant.',['Define the problem and desired outcome','Name an executive sponsor and budget','Share constraints (deadline, compliance)'],['Discovery workshop','Value hypothesis and rough cost','Check funding and program fit'],['Account team shares relevant programs and funding eligibility','Introduces specialist SAs if needed'],['Sponsor agrees the problem is worth solving']),
+  LC('Discover & assess','Understand current systems, data, users and requirements in detail.',['Give access to people, systems and data','Prioritize requirements'],['Requirements and current-state assessment','Architecture options','Pricing Calculator estimate','Register opportunity in ACE'],['Solutions Architect input','MAP Assess or POC funding where eligible'],['Requirements and estimate accepted']),
+  LC('Plan & contract','Turn the plan into an agreement everyone can sign.',['Procurement, legal and security review','Choose buying route (direct PO or Marketplace)','Issue PO'],['SOW with scope, milestones, price, acceptance criteria','Project plan and team','Funding request before work starts'],['Funding approval','Marketplace private offer if chosen'],['Signed SOW + PO; funding approved']),
+  LC('Foundation','Set up the secure base before building anything.',['Grant access; connect identity provider','Approve security baseline'],['Landing zone: accounts, network, IAM Identity Center, logging, guardrails','CI/CD and infrastructure-as-code repositories'],['Runs the underlying services; Control Tower and security services available','Service quota increases on request'],['Foundation passes security checklist']),
+  LC('Build & integrate','Build the solution in short sprints with regular demos.',['Product owner makes decisions quickly','Provide test data and integration access'],['Build with IaC and CI/CD','Integrate with client systems','Weekly status and demos'],['Answers support cases; SA reviews on request'],['Features complete for testing']),
+  LC('Test & harden','Prove it works, is secure and can recover.',['User acceptance testing (UAT)','Security and compliance sign-off'],['Performance, security and DR tests','Well-Architected review and fixes','Runbooks and training material'],['Well-Architected guidance','Shield/WAF and support for load tests'],['UAT signed; no open critical risks']),
+  LC('Launch (go-live)','Switch on for real users.',['Business go/no-go decision','Communicate to users; train staff'],['Cutover runbook','Hypercare for 1–2 weeks','Mark Launched in ACE'],['For big launches with Enterprise Support: Infrastructure Event Management','Monitors service health'],['Stable in production; hypercare closed']),
+  LC('Operate (day 2)','Keep it running safely, cheaply and reliably every day.',['Own business processes and users','Pay invoices; raise requests'],['Managed services: monitoring, patching, backups, incidents, cost optimization','Monthly reports'],['Operates and secures the cloud infrastructure (shared responsibility)','Health Dashboard notifications; Support'],['SLAs met month after month']),
+  LC('Improve & scale','Grow the service, add features, expand to new teams or regions.',['New requirements; value reviews','Approve next phase'],['Optimization, new features, BVR, QBRs','Next opportunity in ACE'],['New services and features','Funding for the next phase; co-sell expansion'],['Value proven → next initiative'])
+];
+const SEQ_ACT = ['Client','Partner','AWS'];
+const SEQ = [
+  [0,1,'“We need a new customer portal.”','The client reaches out with a business need, often after seeing a case study or through an AWS referral.'],
+  [1,0,'Discovery workshop & questions','The partner explores goals, users, data, systems, budget and timeline.'],
+  [1,2,'Register opportunity in ACE','The partner shares the deal with AWS and asks for SA input if helpful.'],
+  [2,1,'Validated · funding eligible','AWS validates the opportunity and confirms which programs could help (e.g. POC funding).'],
+  [1,0,'Proposal, SOW & cost estimate','Scope, milestones, price and the estimated monthly AWS cost.'],
+  [0,1,'Signed SOW + purchase order','Client signs; AdminOps sets the client up in QuickBooks.'],
+  [1,2,'Funding request (before work starts)','Linked to the ACE ID; amounts match the SOW.'],
+  [2,1,'Funding approved','Approval with amount, type and claim deadline: log it in the tracker.'],
+  [0,2,'Creates or links AWS account','Client owns the AWS account (or the partner bills it through resale).'],
+  [1,2,'Build: landing zone, services, IaC','Partner engineers deploy into the client’s accounts using Identity Center access.'],
+  [2,1,'Resources running · support answers','AWS runs the infrastructure; support cases and quota increases handled.'],
+  [1,0,'Demos & user acceptance testing','Client tests and gives feedback each sprint.'],
+  [0,1,'Sign-off · go-live approval','Acceptance certificate: also proof of execution for funding.'],
+  [1,2,'ACE Launched · funding claim with POE','Partner records the launch and claims funding.'],
+  [2,0,'Monthly AWS bill','AWS bills the client directly (or the partner, for resale).'],
+  [1,0,'Invoices · monthly ops report','Milestone or monthly invoices; managed-services report.'],
+  [0,1,'Feedback & new requirements','The relationship continues: improvements, new features, new workloads.'],
+  [2,1,'Funding payout · new referral','Successful delivery builds trust and brings the next deal.']
+];
+const STAGES_BIZ = [
+  {n:'Startup / micro business', size:'1–20 people', team:'Founder, a developer or freelancer', accts:'1–2 accounts', spend:'$0–2k / month', support:'Basic or Developer', buy:'Credit card; AWS Activate credits for eligible startups',
+   svc:['Amplify','Lightsail','Lambda','DynamoDB / RDS','S3','CloudFront','Cognito','AWS Budgets'], sec:['Root MFA','Identity Center even for a few people','Budget alerts'],
+   partner:['Website or app build','Cost guardrails','Credits and startup programs','Light managed support'], pain:'No ops skills; surprise bills; moving fast', next:'Paying customers and first security questionnaires',
+   lanes:[{n:'Users',items:[['Web & mobile','Customers','Early customers.']]},{n:'App',items:[['Amplify / Lightsail','Simple hosting','Deploys from Git or a fixed-price server.']]},{n:'Logic',items:[['Lambda','Serverless','Pay only when used.']]},{n:'Data',items:[['DynamoDB or RDS','Database','Managed, small.'],['S3','Files','Uploads and backups.']]}]},
+  {n:'Small business', size:'20–100 people', team:'One IT generalist, outside help', accts:'2–5 accounts with Organizations', spend:'$2k–20k / month', support:'Business', buy:'Invoice; sometimes via a partner (resale)',
+   svc:['EC2 / Lightsail','RDS','S3 + FSx file shares','AWS Backup','WorkSpaces','GuardDuty','IAM Identity Center','CloudFront'], sec:['SSO with MFA','Backups with tested restores','Threat detection'],
+   partner:['Move the server closet to AWS','Backup & DR','Security baseline','Managed services (MSP)'], pain:'Small IT team; ransomware fear; remote staff', next:'Growth, more apps, compliance demands from bigger customers',
+   lanes:[{n:'Staff',items:[['Office & remote','Laptops','Sign in with SSO.']]},{n:'Identity',items:[['Identity Center','SSO + MFA','One login.']]},{n:'Apps',items:[['EC2 / Lightsail','Business apps','Accounting, line-of-business.'],['FSx / S3','File shares','Replaces the file server.']]},{n:'Protect',items:[['AWS Backup','Backups','Daily, immutable.'],['GuardDuty','Threats','Alerts.']]}]},
+  {n:'Mid-market', size:'100–1,000 people', team:'Small IT and dev teams', accts:'5–30 accounts, Control Tower landing zone', spend:'$20k–200k / month', support:'Business or Enterprise On-Ramp', buy:'Invoice, Savings Plans, Marketplace purchases',
+   svc:['ECS / EKS','Aurora','CloudFront + WAF','S3 data lake, Athena, QuickSight','CodePipeline','Security Hub','Site-to-Site VPN / Direct Connect','Bedrock'], sec:['Landing zone guardrails','Central logging','Security Hub standards'],
+   partner:['MAP-funded migration','App modernization','Data platform','GenAI POC','MSP + FinOps'], pain:'Legacy apps; scaling; data silos; skills gaps', next:'Multiple business units, audits, global customers',
+   lanes:[{n:'Users',items:[['Customers & staff','Many channels','Web, mobile, internal apps.']]},{n:'Edge',items:[['CloudFront + WAF','Fast & protected','Global delivery.']]},{n:'Apps',items:[['ECS / EKS','Containers','Modern apps.']]},{n:'Data',items:[['Aurora','Transactions','Managed DB.'],['Data lake','Analytics','Athena, QuickSight.']]},{n:'Govern',items:[['Control Tower','Landing zone','Guardrails across accounts.']]}]},
+  {n:'Enterprise', size:'1,000–10,000 people', team:'Cloud Center of Excellence (CCoE), platform team', accts:'30–500 accounts', spend:'$200k–2M / month', support:'Enterprise (with TAM)', buy:'Enterprise commitment (EDP/PPA), Marketplace private offers',
+   svc:['Multi-account landing zone','Transit Gateway, Direct Connect','EKS platform','SAP on AWS','Redshift, Lake Formation','SageMaker AI, Bedrock','Organizations SCPs','Security Hub, GuardDuty org-wide'], sec:['SCP guardrails','Delegated security admin','Zero Trust access'],
+   partner:['Large MAP programs','SAP migration','Platform engineering','Security & compliance','GenAI at scale + BVR'], pain:'Complexity, governance, cost control across many teams', next:'Global regulation, sovereignty, mission-critical resilience',
+   lanes:[{n:'Business units',items:[['Many teams','Self-service','Request accounts from the platform team.']]},{n:'Platform',items:[['Account vending','Landing zone','Standard, guarded accounts in minutes.'],['EKS platform','Shared runtime','Internal developer platform.']]},{n:'Network',items:[['Transit Gateway','Hub network','Connects hundreds of VPCs and offices.']]},{n:'Data & AI',items:[['Lake + Redshift','Enterprise data','Governed analytics.'],['Bedrock / SageMaker','AI','At scale.']]},{n:'Govern',items:[['SCPs + Security Hub','Org-wide','Central security and compliance.']]}]},
+  {n:'Global / regulated enterprise', size:'10,000+ people', team:'Multiple CCoEs, security operations center, global partners', accts:'500+ accounts, many Regions', spend:'$2M+ / month', support:'Enterprise, Infrastructure Event Management', buy:'Large multi-year commitments',
+   svc:['Multi-Region active-active','Sovereignty and regulated Regions','Mainframe modernization','Resilience Hub','Advanced data governance','Org-wide automation'], sec:['Continuous compliance','Dedicated SOC','Strict data residency'],
+   partner:['Global systems integrators','Mainframe and core-system modernization','Resilience programs','Managed security operations','Industry solutions'], pain:'Regulation, resilience, scale, many vendors', next:'Continuous transformation',
+   lanes:[{n:'Global users',items:[['Millions','Every Region','Customers worldwide.']]},{n:'Edge',items:[['Global routing','Route 53, Global Accelerator','Nearest healthy Region.']]},{n:'Regions',items:[['Region A','Active','Full stack.'],['Region B','Active','Full stack.']]},{n:'Data',items:[['Replicated data','Sovereign rules','Data stays where law requires.']]},{n:'Operate',items:[['SOC + automation','24/7','Detect and respond.']]}]}
+];
+const HEAT = [['Number of AWS accounts',[1,2,3,4,5]],['Governance & guardrails',[1,2,3,5,5]],['Security operations',[1,2,3,4,5]],['Automation (IaC, CI/CD)',[2,2,3,4,5]],['Data & AI maturity',[1,1,3,4,5]],['Compliance requirements',[1,2,3,4,5]],['Support level',[1,3,3,5,5]],['Partner services needed',[2,3,4,5,5]]];
+const GOLIVE = ['Business sponsor approved go-live','User acceptance testing signed off','Security review passed; no critical findings','Backups configured and a restore tested','Monitoring dashboards and alarms routed to on-call','Disaster recovery plan documented (RPO/RTO)','Runbooks and support contacts handed over','Cost budget and anomaly alerts set','Rollback plan rehearsed','Users trained; communications sent','Access reviewed (least privilege; no shared logins)','ACE opportunity ready to mark Launched','Final milestone invoice prepared','Hypercare schedule agreed'];
+let bizStage = 0;
+V.lifecycle = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Beginner → Advanced</span><h1>Service lifecycle: start to run</h1>
+  <p class="lede">What it takes to start, build, launch and keep running a program or service on AWS, and who does what between the client, the partner and AWS at every step. Then see how the same journey changes from a small business to a global enterprise.</p></header>
+
+  <section class="section"><header><h2>The end-to-end lifecycle</h2><p class="muted">Nine phases. Press play, or click a phase to see what the client, partner and AWS each do, and the gate to the next phase.</p></header>
+  ${flow('life', FLOWS.life = LIFE, {label:'Phase', pipe:true})}</section>
+
+  <section class="section"><header><h2>Back and forth: who talks to whom</h2><p class="muted">A sequence diagram of a typical engagement, top to bottom in time. Watch the messages travel, press play, or click a message.</p></header>
+  <div class="flowbar">${playBtn('data-seqplay','1','▶ Play conversation')}<span class="small muted">${SEQ.length} messages</span></div>
+  <div class="card">${seqSVG()}</div>
+  <div class="detail" id="seqD"></div></section>
+
+  <section class="section"><header><h2>From small business to enterprise</h2><p class="muted">Click a step on the staircase. Each stage needs different services, governance and partner help.</p></header>
+  <div class="card">${stairSVG()}</div>
+  <div id="bizD" class="section"></div></section>
+
+  <section class="section"><header><h2>How needs grow with size</h2><p class="muted">Bigger circle = more of it. Read across a row to see how a capability grows.</p></header>
+  <div class="card chart">${heatSVG()}</div></section>
+
+  <section class="section"><header><h2>Go-live readiness checklist</h2><p class="muted">Before any launch. Ticks are saved in this browser.</p></header>
+  <div class="card"><div class="bar"><i id="glBar" style="width:0"></i></div><div id="glList" style="display:grid;gap:2px"></div><div><button class="btn ghost" type="button" id="glReset">Clear for the next launch</button></div></div></section>
+
+  <section class="section"><header><h2>Keeping it running (day 2)</h2><p class="muted">Launch is the start, not the end. Operations run in a loop forever.</p></header>
+  ${flow('day2', FLOWS.day2 = [
+    {t:'Monitor', d:'Dashboards and alarms watch availability, latency, errors and capacity around the clock.', do:['On-call rota or MSP NOC'], check:['Alerts reach a human 24/7'], tools:['CloudWatch, Health Dashboard']},
+    {t:'Patch & update', d:'Operating systems, runtimes and dependencies are patched on a schedule.', do:['Maintenance windows','Automated patching'], check:['Critical patches within days'], tools:['Systems Manager Patch Manager']},
+    {t:'Back up & test restores', d:'Backups run automatically; restores are tested so recovery is proven.', do:['Monthly or quarterly restore test'], check:['RPO/RTO met in tests'], tools:['AWS Backup, Elastic Disaster Recovery']},
+    {t:'Secure & review access', d:'Findings are triaged; access is reviewed; keys and secrets rotated.', do:['Weekly findings review','Quarterly access review'], check:['No critical open findings'], tools:['Security Hub, GuardDuty, Identity Center']},
+    {t:'Optimize cost', d:'Right-size, schedule non-production, buy commitments, clean up waste.', do:['Monthly cost review'], check:['Cost per user trending down'], tools:['Cost Explorer, Compute Optimizer']},
+    {t:'Report & improve', d:'Monthly service report and quarterly review: incidents, SLAs, cost, roadmap.', do:['QBR with the client'], check:['Action items owned'], tools:['Ops report, QBR deck']}
+  ], {label:'Activity'})}
+  <div class="card">${orbitSVG('day2', ['Monitor','Patch & update','Back up & test','Secure & review','Optimize cost','Report & improve'], ['Day-2 operations','continuous loop'])}</div>
+  <div class="tablewrap"><table><thead><tr><th>Cadence</th><th>Client</th><th>Partner (MSP)</th><th>AWS</th></tr></thead><tbody>
+    <tr><td><b>Daily</b></td><td>Uses the service; reports issues</td><td>Monitoring, incident response, backups checked</td><td>Runs infrastructure; posts service health events</td></tr>
+    <tr><td><b>Weekly</b></td><td>Prioritizes requests</td><td>Security findings triage; change window</td><td>Support cases</td></tr>
+    <tr><td><b>Monthly</b></td><td>Pays invoices; reviews report</td><td>Patching, cost review, service report, invoices</td><td>Bill; new feature releases</td></tr>
+    <tr><td><b>Quarterly</b></td><td>QBR; approves roadmap</td><td>Access review, DR test, Well-Architected check, QBR</td><td>Account team business review</td></tr>
+    <tr><td><b>Yearly</b></td><td>Budget & renewal</td><td>Contract renewal, architecture refresh</td><td>Commitment renewals (Savings Plans, EDP)</td></tr>
+  </tbody></table></div></section>
+`;
+function seqSVG(){
+  const W=780, top=50, rh=34, n=SEQ.length, H=top+n*rh+20, xs=[130,390,650], T=n*0.9;
+  let g=SEQ_ACT.map((a,i)=>`<rect x="${xs[i]-60}" y="6" width="120" height="30" rx="8" fill="${i===1?'var(--accent)':'var(--surface)'}" stroke="var(--accent)" stroke-width="2"/><text x="${xs[i]}" y="26" text-anchor="middle" style="font-weight:700;fill:${i===1?'var(--accent-ink)':'var(--ink)'}">${a}</text><line x1="${xs[i]}" x2="${xs[i]}" y1="36" y2="${H-6}" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"/>`).join('');
+  g+=`<defs><marker id="seqArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs>`;
+  SEQ.forEach((m,i)=>{ const y=top+i*rh+10, x1=xs[m[0]], x2=xs[m[1]], dir=x2>x1?1:-1, path=`M${x1+dir*4} ${y} L${x2-dir*6} ${y}`, mid=(x1+x2)/2, f0=(i/n).toFixed(3), f1=((i+1)/n).toFixed(3);
+    g+=`<g data-seq="${i}" role="button" tabindex="0" aria-label="${m[2]}" style="cursor:pointer"><rect x="${Math.min(x1,x2)}" y="${y-22}" width="${Math.abs(x2-x1)}" height="30" fill="transparent"/><path class="draw" pathLength="1" style="animation-delay:${i*90}ms" d="${path}" stroke="var(--accent)" stroke-width="2" fill="none" marker-end="url(#seqArrow)"/><text x="${mid}" y="${y-6}" text-anchor="middle" style="fill:var(--ink);font-size:11.5px">${i+1}. ${m[2]}</text></g>`;
+    if(!RM) g+=`<circle r="5" fill="var(--signal)" opacity="0"><animateMotion dur="${T}s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;${f0};${f1};1" calcMode="linear" path="${path}"/><animate attributeName="opacity" dur="${T}s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;${f0};${f0};${f1};${f1};1"/></circle>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:680px" role="img" aria-label="Sequence diagram of messages between client, partner and AWS">${g}</svg></div>`;
+}
+function showSeq(i){ const m=SEQ[i];
+  $('#seqD').innerHTML = `<span class="eyebrow">Message ${i+1} of ${SEQ.length}</span><h3>${SEQ_ACT[m[0]]} → ${SEQ_ACT[m[1]]}: ${m[2]}</h3><p>${m[3]}</p><div style="display:flex;gap:8px"><button class="btn ghost" type="button" data-seq="${Math.max(i-1,0)}">Previous</button><button class="btn" type="button" data-seq="${Math.min(i+1,SEQ.length-1)}">Next</button></div>`;
+  document.querySelectorAll('svg [data-seq]').forEach(g=>{ const on=+g.dataset.seq===i; g.querySelector('text').style.fontWeight=on?'700':''; g.querySelector('path').setAttribute('stroke-width', on?4:2); }); }
+function stairSVG(){
+  const W=760,H=260, n=STAGES_BIZ.length, sw=(W-80)/n;
+  let g='';
+  STAGES_BIZ.forEach((s,i)=>{ const x=40+i*sw, h=40+i*36, y=H-30-h, [a,b]=wrap2(s.n,16);
+    g+=`<g data-biz="${i}" role="button" tabindex="0" aria-label="${s.n}" style="cursor:pointer"><rect class="gy" style="animation-delay:${i*120}ms" x="${x}" y="${y}" width="${sw-6}" height="${h}" rx="6" fill="var(--accent)" fill-opacity="${0.25+i*0.15}" stroke="var(--accent)" stroke-width="2"/><text x="${x+(sw-6)/2}" y="${y+20}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:12px">${a}</text><text x="${x+(sw-6)/2}" y="${y+35}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:12px">${b}</text><text x="${x+(sw-6)/2}" y="${H-12}" text-anchor="middle" style="fill:var(--muted);font-size:11px">${s.size}</text></g>`; });
+  g+=`<g id="stairMarker" style="transition:transform .6s cubic-bezier(.2,.8,.2,1)"><circle r="11" fill="var(--signal)" stroke="var(--surface)" stroke-width="3"/><text y="4" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:700">You</text></g>`;
+  g+=`<text x="${W-30}" y="22" text-anchor="end" style="fill:var(--muted);font-size:11px">more scale, governance, services →</text>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:600px" role="img" aria-label="Growth staircase from startup to global enterprise">${g}</svg></div>`;
+}
+function showBiz(i){ bizStage=i; const s=STAGES_BIZ[i], n=STAGES_BIZ.length, sw=(760-80)/n, x=40+i*sw+(sw-6)/2, y=260-30-(40+i*36)-16;
+  const mk=$('#stairMarker'); if(mk) mk.setAttribute('transform', `translate(${x} ${y})`);
+  document.querySelectorAll('svg [data-biz] rect').forEach((r,k)=>r.setAttribute('stroke-width', k===i?4:2));
+  const li=a=>`<ul class="clean small">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  $('#bizD').innerHTML = `<div class="card tint"><span class="eyebrow">Stage ${i+1} of ${n} · ${s.size}</span><h2>${s.n}</h2>
+    <div class="kv small"><dt>Team</dt><dd>${s.team}</dd><dt>AWS footprint</dt><dd>${s.accts}</dd><dt>Typical spend</dt><dd>${s.spend}</dd><dt>Support plan</dt><dd>${s.support}</dd><dt>How they buy</dt><dd>${s.buy}</dd><dt>Main pains</dt><dd>${s.pain}</dd><dt>What pushes them to the next stage</dt><dd>${s.next}</dd></div></div>
+    <h3>Typical architecture</h3>${arch('bizarch', s.lanes)}
+    <div class="grid g3"><div class="card"><h4>Services they deploy</h4><div class="tags">${s.svc.map(x=>`<span class="tag a">${x}</span>`).join('')}</div></div><div class="card"><h4>Security & governance</h4>${li(s.sec)}</div><div class="card"><h4>Partner services they need</h4>${li(s.partner)}</div></div>
+    <p class="small muted">Spend ranges and sizes are rough illustrations; real companies vary widely.</p>`; }
+function heatSVG(){
+  const W=760, pl=200, rh=34, H=40+HEAT.length*rh, cw=(W-pl-20)/STAGES_BIZ.length;
+  let g=STAGES_BIZ.map((s,i)=>{ const [a,b]=wrap2(s.n,14); return `<text x="${pl+i*cw+cw/2}" y="14" text-anchor="middle" style="fill:var(--muted);font-size:10.5px">${a}</text><text x="${pl+i*cw+cw/2}" y="27" text-anchor="middle" style="fill:var(--muted);font-size:10.5px">${b}</text>`; }).join('');
+  HEAT.forEach((h,r)=>{ const y=44+r*rh; g+=`<text x="${pl-10}" y="${y+4}" text-anchor="end" style="fill:var(--ink)">${h[0]}</text><line x1="${pl}" x2="${W-20}" y1="${y}" y2="${y}" stroke="var(--line)"/>`;
+    h[1].forEach((v,c)=>{ g+=`<circle class="gc" style="animation-delay:${(r*5+c)*30}ms;transform-box:fill-box;transform-origin:center" cx="${pl+c*cw+cw/2}" cy="${y}" r="${3+v*2.6}" fill="var(--accent)" fill-opacity="${0.2+v*0.15}" stroke="var(--accent)"/>`; }); });
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="min-width:620px;width:100%" role="img" aria-label="Heatmap of how needs grow from startup to global enterprise">${g}</svg></div>`;
+}
+function renderGL(){ const box=$('#glList'); if(!box) return; const d=store.get('golive', []);
+  box.innerHTML = GOLIVE.map((c,i)=>`<label class="check ${d.includes(i)?'done':''}"><input type="checkbox" id="gl${i}" data-glck="${i}" ${d.includes(i)?'checked':''}><span>${c}</span></label>`).join('');
+  $('#glBar').style.width = (d.length/GOLIVE.length*100)+'%'; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -3810,6 +3962,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='lifecycle'){ showSeq(0); showBiz(bizStage); renderGL(); }
   if(id==='identity'){ showOrgNode('root'); showAsg(0,0); renderCerts(); renderJML(); }
   if(id==='migration'){ showR(2); rqi=0; renderRQ(); }
   if(id==='catalog') renderPSList();
@@ -3833,12 +3986,13 @@ window.addEventListener('hashchange', route);
 
 document.addEventListener('click', e => {
   const t = e.target;
-  const pb = t.closest('[data-play],[data-trace],[data-oplay]');
+  const pb = t.closest('[data-play],[data-trace],[data-oplay],[data-seqplay]');
   if(pb){ if(PLAY && PLAY.btn===pb){ stopPlay(); return; }
     if(pb.dataset.play){ const id=pb.dataset.play; return startPlay(pb, FLOWS[id].length, i=>selectFlow(id,i)); }
     if(pb.dataset.trace){ const id=pb.dataset.trace; return startPlay(pb, ARCHS[id].length, li=>showArch(`${id}|${li}|0`)); }
+    if(pb.dataset.seqplay) return startPlay(pb, SEQ.length, showSeq);
     return startPlay(pb, OPP_SCEN[oppSel].steps.length, k=>showOpp(oppSel,k)); }
-  if(t.closest('[data-arch],[data-ostep],[data-opp],[data-sol],[data-solcat],[data-bvrcase]')) stopPlay();
+  if(t.closest('[data-arch],[data-ostep],[data-opp],[data-sol],[data-solcat],[data-bvrcase],[data-seq],[data-biz]')) stopPlay();
   const inf = t.closest('[data-infra]'); if(inf){ e.stopPropagation(); showInfra(inf.dataset.infra); return; }
   const sr = t.closest('[data-sr]'); if(sr) return showSR(sr.dataset.sr);
   const tier = t.closest('[data-tier]'); if(tier) return showTier(+tier.dataset.tier);
@@ -3894,6 +4048,9 @@ document.addEventListener('click', e => {
   if(t.id==='jmlReset'){ store.set('jml-'+jmlSel, []); return renderJML(); }
   const ctd = t.closest('[data-ctdel]'); if(ctd){ const l=ctLoad(); l.splice(+ctd.dataset.ctdel,1); store.set('certs', l); return renderCerts(); }
   if(t.id==='ctAdd'){ const n=$('#ctN').value.trim(); if(!n){ $('#ctN').focus(); return; } const l=ctLoad(); l.push({n, c:$('#ctC').value, d:$('#ctD').value, l:$('#ctL').value}); store.set('certs', l); $('#ctN').value=''; return renderCerts(); }
+  const sq = t.closest('[data-seq]'); if(sq) return showSeq(+sq.dataset.seq);
+  const bz = t.closest('[data-biz]'); if(bz) return showBiz(+bz.dataset.biz);
+  if(t.id==='glReset'){ store.set('golive', []); return renderGL(); }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -3917,6 +4074,7 @@ document.addEventListener('change', e => {
     t.closest('.check').classList.toggle('done', t.checked); const p = Math.round(d.length/CHECKLIST.length*100); $('#pct').textContent = p+'%'; $('#pbar').style.width = p+'%'; }
   if(t.dataset.ownSt !== undefined){ const l=ownLoad(); const o=l[+t.dataset.ownSt]; o.s=t.value; delete o.ex; store.set('own', l); return renderOwn(); }
   if(t.dataset.jmlck !== undefined){ let d=store.get('jml-'+jmlSel, []); const i=+t.dataset.jmlck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('jml-'+jmlSel, d); return renderJML(); }
+  if(t.dataset.glck !== undefined){ let d=store.get('golive', []); const i=+t.dataset.glck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('golive', d); return renderGL(); }
   if(t.dataset.dc !== undefined){ let d = store.get('dealcheck', []); const i=+t.dataset.dc; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('dealcheck', d); t.closest('.check').classList.toggle('done', t.checked); }
   if(t.dataset.cl !== undefined){ let d = store.get('close', []); const i=+t.dataset.cl; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('close', d); t.closest('.check').classList.toggle('done', t.checked); }
 });
@@ -3940,7 +4098,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
