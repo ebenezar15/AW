@@ -64,6 +64,7 @@ main{min-width:0;padding-block:32px 80px;padding-left:max(16px,env(safe-area-ins
 .g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
 .card.flat{background:transparent}
+.card.small,.card:has(> b:first-child){display:block}
 .card.tint{background:var(--accent-soft);border-color:transparent}
 .card.warnc{background:var(--signal-soft);border-color:transparent}
 .tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:999px;background:var(--sunk);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
@@ -308,6 +309,7 @@ const CHAPTERS = [
   {id:'partner', t:'Partner Network', g:'Partner business'},
   {id:'portals', t:'Portals & programs', g:'Partner business'},
   {id:'people', t:'Who\u2019s who & RACI', g:'Partner business'},
+  {id:'identity', t:'Identity, access & certs', g:'Partner business'},
   {id:'roles', t:'Partner vs AWS roles', g:'Partner business'},
   {id:'gtm', t:'GTM & co-sell', g:'Partner business'},
   {id:'opps', t:'Opportunity lifecycle', g:'Partner business'},
@@ -777,6 +779,28 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Zero Trust','Security model that verifies every request using identity, device and context instead of trusting network location.'],
+  ['Device posture','Health and management status of a device (encrypted, patched, managed) used in access decisions.'],
+  ['AWS Verified Access','Gives secure access to internal apps without a VPN, checking identity and device on every request.'],
+  ['Amazon Verified Permissions','Fine-grained authorization for your own applications using Cedar policies.'],
+  ['Micro-segmentation','Dividing systems into small isolated zones so a breach can’t spread.'],
+  ['Just-in-time access','Elevated access granted only when needed and removed automatically after a short time.'],
+  ['AWS Organizations','Service to group many AWS accounts with consolidated billing and central guardrails.'],
+  ['Organization root','The top container of an AWS Organization; policies here apply to all accounts.'],
+  ['Management account','The account that owns the organization and pays the consolidated bill.'],
+  ['OU','Organizational unit: a folder of accounts in AWS Organizations.'],
+  ['SCP','Service control policy: a guardrail that caps what any identity in an account can do.'],
+  ['Root user','The original email-and-password identity of an AWS account, with unrestricted access; use only for break-glass tasks.'],
+  ['Centralized root access','Organizations feature to remove member-account root credentials and run root-only tasks from the management account.'],
+  ['Break glass','A documented emergency procedure for using highly privileged access.'],
+  ['IAM Identity Center','AWS’s workforce single sign-on: users, groups and permission sets across many accounts (formerly AWS SSO).'],
+  ['Permission set','A template of permissions that becomes an IAM role in each assigned account.'],
+  ['Identity provider (IdP)','The system that authenticates users, e.g. Okta, Microsoft Entra ID, Google Workspace.'],
+  ['SAML / SCIM','SAML 2.0 handles sign-in between systems; SCIM syncs users and groups.'],
+  ['AWS access portal','The Identity Center page listing a user’s accounts and roles.'],
+  ['Least privilege','Give only the permissions a job needs, nothing more.'],
+  ['JML','Joiner–mover–leaver: the process for changing access as people join, change roles or leave.'],
+  ['Access review','Periodic check that every account and permission is still needed.'],
   ['Migration factory','A repeatable pipeline that moves workloads wave after wave: discover, replicate, test, cut over, hypercare.'],
   ['Wave','A group of applications migrated together.'],
   ['Cutover','The moment traffic switches from the old system to the new one on AWS.'],
@@ -936,6 +960,10 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['In Zero Trust, what replaces “being on the company network” as the main reason to trust a request?',['Nothing, trust everyone','Verified identity, device and context on every request','The office Wi-Fi password','A longer VPN session'],1,'Never trust, always verify: identity is the new perimeter.'],
+  ['What is the recommended way for employees to sign in to many AWS accounts?',['Share the root user','Create IAM users in every account','IAM Identity Center with the company identity provider','Email access keys'],2,'Identity Center gives one sign-in, group-based access and short-term credentials.'],
+  ['A colleague who owned a root password leaves. What should happen?',['Nothing','Rotate the root password and MFA, and move ownership to a group alias','Delete the AWS account','Post the password in chat'],1,'Root credentials must never depend on one person.'],
+  ['Why link certifications in Partner Central?',['To get a free T-shirt','So they count toward the company’s tier and Specializations','To change AWS Regions','To create IAM users'],1,'Unlinked certifications don’t count for the partner.'],
   ['Which migration strategy moves servers as-is to EC2, fastest?',['Refactor','Rehost','Repurchase','Retire'],1,'Rehost is “lift and shift”: quickest, least change.'],
   ['Which MAP phase builds the landing zone and wave plan?',['Assess','Mobilize','Migrate & modernize','Retire'],1,'Mobilize prepares the foundation and plan, including pilots.'],
   ['An AWS Referral arrives in ACE. What matters most first?',['Ignore it until next month','Accept or reject quickly, then contact the customer','Invoice the customer','Create a Marketplace listing'],1,'Response time is tracked and affects future referrals.'],
@@ -3218,7 +3246,7 @@ function countUp(el){ if(RM || el.children.length) return; const txt=el.textCont
   requestAnimationFrame(step); }
 
 /* Animate panels when their content changes */
-const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox']);
+const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox']);
 try{ new MutationObserver(ms=>{ if(RM) return; const seen=new Set(); ms.forEach(m=>{ const t=m.target; if(t.nodeType!==1 || seen.has(t)) return;
   if(t.classList.contains('detail') || DETAIL_IDS.has(t.id)){ seen.add(t); t.animate([{opacity:.35, transform:'translateY(6px)'},{opacity:1, transform:'none'}],{duration:320, easing:'cubic-bezier(.2,.8,.2,1)'}); } }); })
   .observe(document.getElementById('view'), {childList:true, subtree:true}); }catch(e){}
@@ -3444,6 +3472,314 @@ function showPS(i){ psSel=i; const s=PSERVICES[i];
   <div class="card warnc"><h4>Use case</h4><p class="small">${s.uc}</p></div>`;
   document.querySelectorAll('[data-ps]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.ps===i)); }
 
+/* ================= IDENTITY, ACCESS & CERTIFICATIONS ================= */
+const ORG_NODES = [
+  {id:'root', p:null, x:400, y:40, t:'Organization root', s:'Top of the tree', d:'The root is the parent container for every account and OU in the organization. Policies attached here (like service control policies) apply to everything below. Not to be confused with an account’s root user.', k:'root'},
+  {id:'mgmt', p:'root', x:110, y:130, t:'Management account', s:'Pays & governs', d:'The account that created the organization. It pays the consolidated bill, manages Organizations, Control Tower and IAM Identity Center. Keep workloads out of it, and protect its root user most carefully.', k:'acct'},
+  {id:'sec', p:'root', x:280, y:130, t:'Security OU', s:'Logs & security tools', d:'Holds the log archive account (CloudTrail and Config logs nobody can delete) and the security tooling / audit account (GuardDuty, Security Hub delegated admin).', k:'ou'},
+  {id:'infra', p:'root', x:430, y:130, t:'Infrastructure OU', s:'Shared services', d:'Networking (Transit Gateway, VPN, Direct Connect), shared DNS, CI/CD tooling.', k:'ou'},
+  {id:'work', p:'root', x:580, y:130, t:'Workloads OU', s:'Prod & non-prod', d:'Application accounts, split into Prod and Non-prod OUs so stricter guardrails apply to production.', k:'ou'},
+  {id:'sand', p:'root', x:720, y:130, t:'Sandbox OU', s:'Experiments', d:'Personal or team sandboxes with budgets and strict limits; nothing connected to production.', k:'ou'},
+  {id:'log', p:'sec', x:230, y:230, t:'Log archive', s:'Account', d:'Central, tamper-resistant storage of audit logs from every account.', k:'acct'},
+  {id:'audit', p:'sec', x:330, y:230, t:'Security tooling', s:'Account', d:'Delegated administrator for GuardDuty, Security Hub, Config aggregator. Security team works here.', k:'acct'},
+  {id:'net', p:'infra', x:430, y:230, t:'Network', s:'Account', d:'Shared VPC connectivity and hybrid links to offices or data centers.', k:'acct'},
+  {id:'prod', p:'work', x:540, y:230, t:'Prod', s:'OU → accounts', d:'Production accounts per application or customer. Strictest SCPs: e.g. deny disabling CloudTrail, deny unapproved Regions.', k:'ou'},
+  {id:'dev', p:'work', x:640, y:230, t:'Non-prod', s:'OU → accounts', d:'Dev and test accounts. More freedom, still logged and budgeted.', k:'ou'},
+  {id:'sbx', p:'sand', x:740, y:230, t:'Sandbox accts', s:'Accounts', d:'Short-lived learning accounts, e.g. for certification study labs.', k:'acct'}
+];
+const ROOT_TASKS = [
+  'Change account settings: account name, root email address and root password',
+  'Close (delete) the AWS account',
+  'Restore IAM permissions if the only administrator was locked out',
+  'Edit or delete an S3 bucket policy that accidentally denies everyone',
+  'Configure MFA delete on S3 buckets',
+  'Certain billing/tax settings and some legacy console tasks',
+  'Sign up for AWS GovCloud (US)',
+  'Register as a seller in the Reserved Instance Marketplace'
+];
+const ROOT_BP = [
+  ['Turn on MFA','Phishing-resistant MFA (security key or passkey) on every root user. AWS now requires MFA for root users in many account types.'],
+  ['No access keys','Root should never have programmatic access keys. Delete any that exist.'],
+  ['Use a group email','Root email = a shared, monitored alias (e.g. aws-root-prod@company.com), never a personal mailbox, so access survives people leaving.'],
+  ['Store credentials safely','Password in a company vault with two-person access; MFA device locked away; documented owners.'],
+  ['Don’t use it day to day','Admins use Identity Center roles. Root is “break glass” only.'],
+  ['Alert on every root sign-in','CloudTrail + EventBridge send an alert to security whenever root signs in.'],
+  ['Centralize root in Organizations','Organizations can remove root credentials from member accounts and run root-only tasks from the management account (centralized root access).'],
+  ['Keep contacts current','Account, billing, security and operations alternate contacts set, so AWS can reach the right people.']
+];
+const ID_SOURCES = [
+  ['Identity Center directory','Users and groups created directly in IAM Identity Center.','Small companies without another directory.'],
+  ['Active Directory','Connect AWS Managed Microsoft AD or self-managed AD.','Companies already running Windows AD.'],
+  ['External identity provider','Okta, Microsoft Entra ID, Google Workspace, Ping, etc. via SAML 2.0; users/groups synced with SCIM.','Most mid-size and large companies: one login for everything.']
+];
+const PERMSETS = ['AdministratorAccess','PowerUser','ReadOnly','Billing','SecurityAudit'];
+const ID_GROUPS = ['Cloud admins','Developers','Finance / AdminOps','Security team','Partner engineers (customer work)'];
+const ID_ACCTS = ['Management','Log archive','Security tooling','Prod','Non-prod','Sandbox'];
+const ASSIGN = [ // [group][account] = permission set index or -1
+  [0,2,2,0,0,0],
+  [-1,-1,-1,2,1,0],
+  [3,-1,-1,3,3,-1],
+  [2,4,0,4,4,2],
+  [-1,-1,-1,2,1,1]
+];
+const ASSIGN_WHY = {
+  '0':'Full admin, limited to a few named cloud admins, used through Identity Center (never root).',
+  '1':'Can build and change most things but cannot manage IAM or organization settings.',
+  '2':'View only: for troubleshooting and audits without risk of changes.',
+  '3':'Bills, invoices, Cost Explorer, budgets. AdminOps lives here.',
+  '4':'Read security findings and configurations across accounts.',
+  '-1':'No access. Least privilege: access is only granted where the job needs it.'
+};
+const PC_ROLES = [
+  ['Alliance Lead','Primary owner of the partner account; manages users, programs, agreements. Usually one person.'],
+  ['Cloud Admin','Manages the link between Partner Central and the company’s AWS account and related permissions.'],
+  ['ACE Manager','Sees and manages all co-sell opportunities and assigns them.'],
+  ['ACE User','Works on opportunities assigned to them.'],
+  ['Marketing / standard users','Access to marketing tools, training links, and general content.']
+];
+const SYS_ACCESS = [
+  ['AWS (Identity Center)',['Admin','Edit','Billing','View','None']],
+  ['Partner Central',['Alliance Lead','ACE Manager','Standard','ACE User','None']],
+  ['QuickBooks',['None','None','Admin','None','View']],
+  ['CRM',['View','Edit','View','Edit','Admin']],
+  ['Video & design tools',['None','None','Edit','None','View']],
+  ['Password vault (root creds)',['Owner','None','None','None','None']]
+];
+const SYS_ROLES = ['Alliance lead','Engineers','AdminOps / video (you)','Sales','RevOps'];
+const JML = {
+  'Joiner':[ 'Create identity in the company directory / IdP with correct group (drives access everywhere)','Assign Identity Center groups → AWS permission sets by role','Invite to Partner Central with the right role; link their email','Skill Builder: assign Partner Accreditation (Business) in week one','If they hold AWS certifications: link them to the partner account','Add to CRM, QuickBooks, video tools only as their role needs','Enrol MFA on every system on day one','Add to the certification tracker and access register'],
+  'Mover':[ 'Update directory group; access changes follow automatically','Remove old permission sets that the new role doesn’t need','Change Partner Central role (e.g. ACE User → ACE Manager)','Review QuickBooks / CRM roles','Update ownership of anything they owned (processes, reports)','Record the change in the access register'],
+  'Leaver':[ 'Disable directory account on the last day (kills SSO to AWS and SaaS)','Confirm Identity Center sessions end; revoke any IAM access keys','Remove from Partner Central; reassign their ACE opportunities','Transfer ownership of documents, videos, dashboards and shared mailboxes','If they were an owner of root credentials: rotate the root password and MFA','Note their certifications will leave with them; check tier counts','Recover laptop and security keys','Record completion with date in the access register']
+};
+const CERT_DEFAULT = [
+  {n:'Example: Priya (Solutions Architect)', c:'Solutions Architect – Associate', d:'2024-03-10', l:'yes', ex:true},
+  {n:'Example: Marco (Engineer)', c:'Security – Specialty', d:'2024-02-01', l:'no', ex:true},
+  {n:'Example: You', c:'Cloud Practitioner', d:'2026-09-15', l:'yes', ex:true},
+  {n:'Example: Lena (Sales)', c:'AI Practitioner', d:'2025-11-20', l:'yes', ex:true}
+];
+const CERT_OPTIONS = ['Cloud Practitioner','AI Practitioner','Solutions Architect – Associate','Developer – Associate','CloudOps Engineer – Associate','Data Engineer – Associate','Machine Learning Engineer – Associate','Solutions Architect – Professional','DevOps Engineer – Professional','Security – Specialty','Advanced Networking – Specialty','Partner Accreditation (Business)','Partner Accreditation (Technical)','Partner Cloud Economics'];
+let jmlSel='Joiner', asgSel=[0,0];
+
+V.identity = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate → Advanced</span><h1>Identity, access, Zero Trust & certifications</h1>
+  <p class="lede">Who can do what, in which account, and how that is controlled. This covers AWS Organizations and root users, IAM Identity Center for everyday sign-in, Partner Central identities, how partner certifications are managed, and the internal processes that keep access clean when people join, move or leave.</p></header>
+
+  <section class="section"><header><h2>The big picture</h2><p class="muted">How identity flows from your company directory into AWS and partner systems. Trace it.</p></header>
+  ${arch('idbig', [
+    {n:'People', items:[['Employees','You and colleagues','Each person has one company identity, created when they join.'],['Contractors','Time-limited','Same process, with an end date.']]},
+    {n:'Identity provider', items:[['Company directory / IdP','Okta, Entra ID, Google','Single source of truth for who works here and which groups they belong to. MFA enforced here.']]},
+    {n:'AWS sign-in', items:[['IAM Identity Center','Single sign-on','Syncs users and groups (SCIM) and maps groups to permission sets in each account.'],['AWS access portal','One page','Users pick an account and role and get short-term credentials.']]},
+    {n:'AWS accounts', items:[['Organization','Many accounts','Management, security, prod, dev, sandbox accounts with guardrails (SCPs).']]},
+    {n:'Partner systems', items:[['Partner Central','Partner identity','Roles like Alliance Lead and ACE Manager; certifications linked here.'],['SaaS tools','CRM, QuickBooks','Ideally also behind SSO with the same groups.']]},
+    {n:'Oversight', items:[['CloudTrail & access reviews','Audit','Every action logged; access reviewed quarterly.']]}
+  ])}</section>
+
+  <section class="section"><header><h2>AWS Organizations: the account tree</h2><p class="muted">Companies use many AWS accounts, organised in a tree. Click any node.</p></header>
+  <div class="grid" style="grid-template-columns:minmax(0,1fr)">
+    <div class="card">${orgTree()}</div>
+    <div class="detail" id="orgTreeD"></div>
+  </div>
+  <div class="grid g4">${[['Account','A container for AWS resources and billing. The strongest isolation boundary.'],['Organizational unit (OU)','A folder of accounts; policies apply to everything inside.'],['Service control policy (SCP)','A guardrail that sets the maximum permissions in accounts, e.g. “nobody may disable CloudTrail”.'],['Consolidated billing','One bill for all accounts, paid by the management account; volume discounts shared.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div>
+  <div class="card tint small"><b>Two different “roots”:</b> the <b>organization root</b> is the top folder of the account tree. The <b>root user</b> is the original email-and-password login of a single AWS account. Same word, different things.</div></section>
+
+  <section class="section"><header><h2>Root users</h2><p class="muted">Every AWS account has one root user: the email address and password used to create it. It has unrestricted power over that account, so it’s protected and almost never used.</p></header>
+  <div class="grid g2">
+    <div class="card warnc"><h4>Tasks only the root user can do</h4><ul class="clean small">${ROOT_TASKS.map(t=>`<li>${t}</li>`).join('')}</ul><p class="small muted">AWS maintains the official list; check the IAM documentation for current details.</p></div>
+    <div class="card"><h4>Root user vs everyday access</h4><div class="tablewrap"><table><thead><tr><th></th><th>Root user</th><th>Identity Center role</th></tr></thead><tbody>
+      <tr><td>Login</td><td>Email + password + MFA</td><td>Company SSO + MFA</td></tr>
+      <tr><td>Power</td><td>Everything, can’t be limited by IAM</td><td>Only what the permission set allows</td></tr>
+      <tr><td>Credentials</td><td>Long-lived</td><td>Short-term, expire automatically</td></tr>
+      <tr><td>Use</td><td>Break glass only</td><td>Daily work</td></tr>
+      <tr><td>Leaver risk</td><td>High if tied to a person</td><td>Removed when directory account is disabled</td></tr>
+    </tbody></table></div></div>
+  </div>
+  <div class="grid g4">${ROOT_BP.map((b,i)=>`<div class="card"><span class="eyebrow">Practice ${i+1}</span><h4>${b[0]}</h4><p class="small muted">${b[1]}</p></div>`).join('')}</div>
+  <h3>Root sign-in alert pipeline</h3>
+  ${flow('rootalert', FLOWS.rootalert = [
+    {t:'Root signs in', d:'Someone signs in to the console with the root user, intended or not.', do:['Should only happen in a documented break-glass event'], check:['Ticket exists for the event'], tools:['AWS console']},
+    {t:'CloudTrail records it', d:'The ConsoleLogin event for the root user is logged in every Region trail and stored in the log archive account.', do:[], check:['Organization trail enabled'], tools:['AWS CloudTrail']},
+    {t:'EventBridge rule matches', d:'A rule watches for root-user activity across the organization.', do:['Rule deployed to all accounts'], check:[], tools:['Amazon EventBridge']},
+    {t:'Alert sent', d:'Security and the account owner receive an email, chat or pager alert within minutes.', do:['SNS topic to security channel'], check:['Alert reaches a human 24/7'], tools:['Amazon SNS, chat, pager']},
+    {t:'Verify', d:'Security checks the break-glass ticket. If no ticket: treat as an incident.', do:['Confirm who and why'], check:['Expected or incident?'], tools:['Ticketing']},
+    {t:'Close or respond', d:'Expected: document and rotate the password afterwards. Unexpected: lock down, rotate credentials, investigate with CloudTrail.', do:['Rotate password, check MFA','Review activity'], check:['Post-incident notes'], tools:['CloudTrail, Security Hub']}
+  ], {label:'Step', pipe:true})}</section>
+
+  <section class="section"><header><h2>IAM Identity Center</h2><p class="muted">The recommended way for people to sign in to AWS. One login, many accounts, short-term credentials. Formerly called AWS Single Sign-On.</p></header>
+  <div class="grid g4">${[['Identity source','Where users come from: Identity Center directory, Active Directory, or an external IdP.'],['Users & groups','Assign access to groups, not individuals. People inherit access by joining groups.'],['Permission sets','Templates of permissions (e.g. ReadOnly, Billing) that become IAM roles in each assigned account.'],['Account assignments','Group + permission set + account = who can do what where.'],['AWS access portal','The page where users see their accounts and roles and open the console or get CLI credentials.'],['Short-term credentials','Temporary keys that expire automatically; nothing long-lived to leak.'],['Applications','SSO into SAML apps and AWS apps like Amazon Q Business.'],['Delegated admin','Day-to-day Identity Center administration from a member account instead of the management account.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div>
+
+  <h3>Identity sources</h3>
+  <div class="tablewrap"><table><thead><tr><th>Source</th><th>How it works</th><th>Best for</th></tr></thead><tbody>${ID_SOURCES.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div>
+
+  <h3>What happens when you sign in</h3>
+  ${flow('ssoflow', FLOWS.ssoflow = [
+    {t:'Open access portal', d:'You open your company’s AWS access portal URL (or the AWS tile in your company app launcher).', do:['Bookmark it'], check:[], tools:['AWS access portal']},
+    {t:'Authenticate', d:'You’re sent to the company identity provider: password plus MFA.', do:['Approve MFA prompt'], check:['Phishing-resistant MFA preferred'], tools:['Okta / Entra ID / Identity Center directory']},
+    {t:'See your accounts', d:'The portal lists only the accounts and roles assigned to your groups.', do:['Pick account and role, e.g. Prod → ReadOnly'], check:['If something’s missing, ask for a group change, not a one-off grant'], tools:['Access portal']},
+    {t:'Assume the role', d:'Identity Center has created an IAM role from the permission set in that account; you assume it.', do:[], check:['Permissions = permission set ∩ SCP guardrails'], tools:['IAM role, SCPs']},
+    {t:'Short-term credentials', d:'You get a console session or CLI credentials (aws sso login) that expire after the session duration.', do:['CLI: aws sso login --profile prod-readonly'], check:['No access keys stored on laptops'], tools:['AWS CLI v2, console']},
+    {t:'Everything is logged', d:'CloudTrail records actions with your identity attached, for audits and investigations.', do:[], check:['Reviewable in the log archive'], tools:['CloudTrail']}
+  ], {label:'Step', pipe:true})}
+
+  <h3>Access assignment matrix</h3>
+  <p class="muted small">Example company setup: groups (rows) × accounts (columns). Click a cell to see why it’s set that way.</p>
+  <div class="tablewrap"><table><thead><tr><th>Group</th>${ID_ACCTS.map(a=>`<th style="text-align:center">${a}</th>`).join('')}</tr></thead><tbody>${ID_GROUPS.map((g,gi)=>`<tr><td><b>${g}</b></td>${ID_ACCTS.map((a,ai)=>{ const v=ASSIGN[gi][ai]; return `<td style="text-align:center"><button type="button" class="chip" data-asg="${gi}|${ai}" aria-pressed="${gi===0&&ai===0}" style="font-size:11.5px;padding:3px 8px;${v<0?'opacity:.55':''}">${v<0?'—':PERMSETS[v]}</button></td>`; }).join('')}</tr>`).join('')}</tbody></table></div>
+  <div class="detail" id="asgD"></div>
+
+  <h3>Which way to grant access?</h3>
+  <div class="tablewrap"><table><thead><tr><th></th><th>IAM Identity Center</th><th>IAM roles</th><th>IAM users</th><th>Root user</th></tr></thead><tbody>
+    <tr><td><b>For</b></td><td>People (workforce)</td><td>Applications, services, cross-account access</td><td>Rare legacy or special cases</td><td>Break-glass only</td></tr>
+    <tr><td><b>Credentials</b></td><td>Short-term</td><td>Short-term</td><td>Long-term password/keys</td><td>Long-term</td></tr>
+    <tr><td><b>Scales to many accounts</b></td><td>Yes</td><td>Yes</td><td>No (one per account)</td><td>No</td></tr>
+    <tr><td><b>Recommended</b></td><td><span class="tag a">Default</span></td><td><span class="tag a">For workloads</span></td><td><span class="tag s">Avoid</span></td><td><span class="tag s">Lock away</span></td></tr>
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Zero Trust</h2><p class="muted">Zero Trust is a security model: never trust a request just because it comes from “inside” the network. Verify every request, every time, using identity, device and context, and give the least access for the shortest time.</p></header>
+  <div class="grid g2">
+    <div class="card"><span class="eyebrow">Old model · castle and moat</span>${ztCompare(false)}<p class="small muted">Once someone is inside the network (VPN, office Wi-Fi), they’re trusted broadly. One stolen password can reach everything.</p></div>
+    <div class="card tint"><span class="eyebrow">Zero Trust · checkpoint at every door</span>${ztCompare(true)}<p class="small muted">Each app checks identity, device and context on every request. A stolen password alone isn’t enough, and access is limited to one app.</p></div>
+  </div>
+  <div class="grid g4">${[['Verify explicitly','Authenticate and authorize every request using identity, device health, location and behavior.'],['Least privilege','Only the access a task needs, ideally just-in-time and time-limited.'],['Assume breach','Design as if an attacker is already inside: segment, encrypt, monitor.'],['Identity is the new perimeter','Strong identity (SSO + phishing-resistant MFA) replaces network location as the main control.'],['Micro-segmentation','Small, isolated zones: separate accounts, VPCs and security groups per workload.'],['Encrypt everywhere','Data encrypted at rest and in transit, even inside private networks.'],['Continuous monitoring','Log and analyze every action; respond automatically to anomalies.'],['Automate policy','Policies as code, applied consistently across accounts.']].map((x,i)=>`<div class="card"><span class="eyebrow">Principle ${i+1}</span><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div>
+
+  <h3>How a Zero Trust access decision works</h3>
+  ${flow('ztflow', FLOWS.ztflow = [
+    {t:'Request', d:'An employee (or service) asks to open an internal app or AWS resource, from anywhere: office, home, café.', do:['No VPN required for apps behind Verified Access'], check:[], tools:['Browser, CLI, app']},
+    {t:'Verify identity', d:'The identity provider confirms who it is with SSO and phishing-resistant MFA.', do:['Strong MFA (security key/passkey)'], check:['User active in directory'], tools:['IdP, IAM Identity Center']},
+    {t:'Check device', d:'Device posture is checked: managed laptop, encrypted, up to date, endpoint protection running.', do:['Device management signals'], check:['Unmanaged devices get less or no access'], tools:['Device management / endpoint tools integrated with Verified Access']},
+    {t:'Evaluate policy', d:'A policy engine combines identity, groups, device and context (time, location, risk) to decide.', do:['Policies written as code (e.g. Cedar)'], check:['Deny by default'], tools:['AWS Verified Access, Amazon Verified Permissions, IAM policies, SCPs']},
+    {t:'Grant least privilege', d:'Access only to that one app or role, with short-term credentials that expire.', do:['Just-in-time elevation for admin tasks'], check:['Session time-limited'], tools:['IAM Identity Center permission sets, IAM roles']},
+    {t:'Encrypted connection', d:'Traffic is encrypted end to end; resources stay private (no public exposure).', do:['TLS everywhere','Private connectivity'], check:[], tools:['TLS, PrivateLink, VPC Lattice']},
+    {t:'Monitor continuously', d:'Every action is logged and analyzed; unusual behavior triggers alerts or automatic session revocation.', do:['Threat detection','Automated response'], check:['Alerts reach a human'], tools:['CloudTrail, GuardDuty, Security Hub, EventBridge']}
+  ], {label:'Step', pipe:true})}
+
+  <h3>Zero Trust building blocks on AWS</h3>
+  ${arch('ztaws', [
+    {n:'Identity', items:[['IAM Identity Center','Workforce SSO','One sign-in with MFA; group-based, short-term access.'],['IAM roles & policies','Fine-grained','Least privilege for people and workloads; conditions on tags, IP, MFA.'],['Amazon Cognito','Customers','Sign-in for customer-facing apps.']]},
+    {n:'Devices & access', items:[['AWS Verified Access','VPN-less app access','Checks identity and device posture on every request to internal web apps.'],['WorkSpaces / AppStream','Managed endpoints','Data stays in AWS; users get a controlled desktop.']]},
+    {n:'Network', items:[['Separate accounts & VPCs','Segmentation','Workloads isolated by account and network.'],['Security groups','Micro-segmentation','Allow only specific traffic between specific resources.'],['PrivateLink / VPC Lattice','Private service-to-service','Services talk without exposure to the internet, with auth policies.']]},
+    {n:'Application', items:[['Amazon Verified Permissions','App authorization','Fine-grained permissions inside your apps, using Cedar policies.'],['API Gateway authorizers','API checks','Every API call authenticated and authorized.']]},
+    {n:'Data', items:[['AWS KMS','Encryption keys','Encrypt everything; control who can use keys.'],['Amazon Macie','Sensitive data','Finds personal data in S3.'],['Secrets Manager','Secrets','No passwords in code or videos.']]},
+    {n:'Visibility & response', items:[['CloudTrail','Every action','Who did what, when, from where.'],['GuardDuty','Threats','Detects unusual behavior and compromised credentials.'],['Security Hub','Posture','Central findings and best-practice checks.']]}
+  ])}
+
+  <h3>Maturity path</h3>
+  <div class="ladder" style="grid-template-columns:repeat(4,minmax(0,1fr))">${[['Traditional','VPN + passwords; flat network; shared admin accounts'],['Initial','SSO with MFA; separate AWS accounts; no root usage'],['Advanced','Device checks; app access without VPN; least-privilege permission sets; central logging'],['Optimal','Just-in-time access; continuous risk-based decisions; automated response; policies as code']].map((x,i)=>`<div class="rung" style="height:${110+i*30}px;cursor:default"><span class="eyebrow" style="color:inherit;opacity:.75">Stage ${i+1}</span><span class="h">${x[0]}</span><span class="small" style="line-height:1.3">${x[1]}</span></div>`).join('')}</div>
+
+  <div class="grid g3">
+    <div class="card"><h4>Use case: remote workforce without VPN</h4><p class="small">A partner’s 120 consultants reach internal tools through Verified Access with SSO and device checks. VPN retired; help-desk tickets fall; stolen passwords alone no longer work.</p></div>
+    <div class="card"><h4>Use case: contractor access</h4><p class="small">Contractors get one Identity Center group with ReadOnly to a single account for 30 days, on managed WorkSpaces. Access ends automatically.</p></div>
+    <div class="card"><h4>Use case: regulated customer</h4><p class="small">A healthcare client gets segmented accounts, encryption with customer-managed keys, Macie scans and GuardDuty. Evidence supports its compliance audit.</p></div>
+  </div>
+  <div class="card warnc small"><b>Partner opportunity:</b> Zero Trust assessments, identity modernization (Identity Center + IdP), VPN replacement with Verified Access, and managed security monitoring are common security-practice offerings. <b>For you:</b> Zero Trust also means your own habits: MFA everywhere, no shared logins, blur credentials in videos, report anything odd immediately.</div></section>
+
+  <section class="section"><header><h2>Partner identity: Partner Central</h2><p class="muted">Your company’s partner account has its own users and roles, separate from AWS account access.</p></header>
+  <div class="grid g3">${PC_ROLES.map(r=>`<div class="card"><h4>${r[0]}</h4><p class="small muted">${r[1]}</p></div>`).join('')}</div>
+  ${flow('pclink', FLOWS.pclink = [
+    {t:'Register company', d:'The alliance lead registers the company in AWS Partner Central.', do:['Company details, agreements'], check:['Alliance lead named'], tools:['Partner Central']},
+    {t:'Link AWS account', d:'Link the company’s AWS account to Partner Central. Needed for things like Marketplace, funding and some newer features.', do:['Done by Alliance Lead / Cloud Admin'], check:['Use the management or a designated account, per company policy'], tools:['Partner Central, AWS account']},
+    {t:'Invite users', d:'Invite colleagues with their work email and assign roles (least privilege).', do:['Map roles to job: ACE User for sellers, etc.'], check:['No shared logins'], tools:['Partner Central user management']},
+    {t:'Link certifications', d:'Each person links their AWS Certification and Skill Builder accounts so credentials count for the company.', do:['Same work email everywhere helps matching'], check:['Shows in company certification count'], tools:['Partner Central, AWS Certification account']},
+    {t:'Review regularly', d:'Quarterly: remove leavers, adjust roles, confirm one primary Alliance Lead.', do:['Export user list','Compare with HR list'], check:['No orphaned users'], tools:['Access register']}
+  ], {label:'Step', pipe:true})}
+  <p class="small muted">AWS has been moving Partner Central into the AWS Management Console, where access is managed with IAM and IAM Identity Center. Check which experience your company uses; the principles (least privilege, named users, regular reviews) are the same.</p></section>
+
+  <section class="section"><header><h2>Managing partner certifications</h2><p class="muted">Certifications belong to people, but they count toward the company’s tier, Specializations and programs only when linked. Managing them is an ops process.</p></header>
+  ${flow('certlife', FLOWS.certlife = [
+    {t:'Plan', d:'Compare current certification counts with tier and Specialization requirements; pick who studies what.', do:['Gap analysis per quarter'], check:['Budget for vouchers'], tools:['Partner Central dashboards, tracker below']},
+    {t:'Learn', d:'Free partner accreditations and exam prep in Skill Builder; study groups and lab sandboxes.', do:['Book study time in calendars'], check:[], tools:['Skill Builder, sandbox accounts']},
+    {t:'Voucher & exam', d:'Request a partner exam voucher or discount, book the exam online or at a test center.', do:['Track voucher codes and expiry'], check:['Voucher used before it expires'], tools:['AWS Certification account']},
+    {t:'Pass & badge', d:'Certification issued; digital badge on Credly.', do:['Celebrate it (great short video!)'], check:[], tools:['Credly']},
+    {t:'Link to partner account', d:'Link the certification so it counts for the company.', do:['Use the work email; verify it appears in the company count'], check:['Linked = yes in tracker'], tools:['Partner Central']},
+    {t:'Track expiry', d:'Most AWS certifications are valid for 3 years. Recertify before expiry to keep counts.', do:['Alert at 90 days before expiry'], check:['No surprise drops in tier counts'], tools:['Tracker below, calendar']},
+    {t:'People leave', d:'When someone leaves, their certifications leave with them. Plan cover so tier requirements still hold.', do:['Keep a buffer above minimums'], check:['Counts rechecked after each leaver'], tools:['Access register, tracker']}
+  ], {label:'Step', pipe:true})}
+
+  <h3>Certification tracker</h3>
+  <p class="small muted">Saved in this browser only. Example rows are samples to replace. Expiry is calculated as 3 years after the earned date; confirm actual dates in the certification account.</p>
+  <div class="card">
+    <div class="grid" style="grid-template-columns:minmax(0,1.3fr) minmax(0,1.5fr) minmax(0,1fr) auto auto;gap:8px;align-items:end">
+      <label class="field">Person<input type="text" id="ctN" placeholder="Name" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field">Certification<select id="ctC">${CERT_OPTIONS.map(c=>`<option>${c}</option>`).join('')}</select></label>
+      <label class="field">Earned<input type="date" id="ctD" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field">Linked<select id="ctL"><option value="yes">Yes</option><option value="no">No</option></select></label>
+      <button class="btn" type="button" id="ctAdd">Add</button>
+    </div>
+    <div class="grid g4" id="ctSum"></div>
+    <div class="tablewrap"><table><thead><tr><th>Person</th><th>Certification</th><th>Earned</th><th>Expires</th><th>Linked to partner account</th><th>Status</th><th></th></tr></thead><tbody id="ctBody"></tbody></table></div>
+  </div></section>
+
+  <section class="section"><header><h2>Joiners, movers, leavers</h2><p class="muted">The internal process that keeps identity and access correct. Pick a scenario; ticks are saved in this browser.</p></header>
+  ${orbitSVG('jmlorbit', ['Joiner','Mover','Leaver','Access review'], ['Identity lifecycle','people change, access follows'])}
+  <div class="chips">${Object.keys(JML).map(k=>`<button class="chip" type="button" data-jml="${k}" aria-pressed="${k===jmlSel}">${k}</button>`).join('')}<button class="btn ghost" type="button" id="jmlReset" style="padding:4px 12px;font-size:13px">Clear ticks</button></div>
+  <div class="card" id="jmlBox"></div></section>
+
+  <section class="section"><header><h2>Internal access matrix</h2><p class="muted">Example of who gets what across the systems you touch. Adjust to your company.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>System</th>${SYS_ROLES.map(r=>`<th style="text-align:center">${r}</th>`).join('')}</tr></thead><tbody>${SYS_ACCESS.map(r=>`<tr><td><b>${r[0]}</b></td>${r[1].map((v,i)=>`<td style="text-align:center"><span class="tag ${/Admin|Owner|Alliance Lead/.test(v)?'s':v==='None'?'':'a'}" style="animation:rise .4s ${i*60}ms both">${v}</span></td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Quarterly access review</h2></header>
+  ${flow('accrev', FLOWS.accrev = [
+    {t:'Export', d:'Pull user lists from Identity Center, Partner Central, QuickBooks, CRM and other tools.', do:['One sheet per system'], check:['Date stamped'], tools:['Admin consoles']},
+    {t:'Compare with HR', d:'Match against the current employee and contractor list.', do:['Flag leavers and unknown accounts'], check:['Every account has an owner'], tools:['HR list']},
+    {t:'Managers confirm', d:'Each manager confirms their team’s access is still needed.', do:['Approve or revoke'], check:['Signed off'], tools:['Email / form']},
+    {t:'Fix', d:'Remove unneeded access, downgrade roles, rotate shared secrets.', do:['Least privilege'], check:['Changes logged'], tools:['Admin consoles']},
+    {t:'Evidence', d:'Save the review as audit evidence (useful for MSP audits, SOC 2, Specializations).', do:['Store in the compliance folder'], check:['Next review scheduled'], tools:['Document repository']}
+  ], {label:'Step', pipe:true})}</section>
+
+  <section class="section"><header><h2>If something goes wrong</h2><p class="muted">Lost laptop, phished password, leaked access key in a video or repo.</p></header>
+  ${flow('idinc', FLOWS.idinc = [
+    {t:'Report immediately', d:'Tell security/IT the moment you suspect a problem. Speed matters more than certainty.', do:['Don’t try to hide or fix it alone'], check:[], tools:['Security channel']},
+    {t:'Contain', d:'Disable the identity, revoke sessions, deactivate any exposed access keys.', do:['Directory disable, Identity Center session revoke'], check:['Access cut'], tools:['IdP, IAM Identity Center, IAM']},
+    {t:'Investigate', d:'Review CloudTrail for what the credentials did.', do:['Check new users, keys, resources, unusual Regions'], check:['Scope known'], tools:['CloudTrail, GuardDuty']},
+    {t:'Recover', d:'Remove anything created by the attacker; rotate secrets; restore from backup if needed.', do:[], check:['Clean state confirmed'], tools:['AWS Backup, Secrets Manager']},
+    {t:'Learn', d:'Write a short post-incident note and fix the root cause (e.g. blur account IDs in videos, enforce MFA).', do:[], check:['Action items owned'], tools:['Incident template']}
+  ], {label:'Step', pipe:true})}
+  <div class="card warnc small"><b>Video editor note:</b> before publishing any screen recording, check for account IDs, access keys, email addresses, customer names and access portal URLs. Blur them, and re-check the final export.</div></section>
+`;
+function orgTree(){
+  const W=820,H=290, byId=Object.fromEntries(ORG_NODES.map(n=>[n.id,n]));
+  let lines='', nodes='';
+  ORG_NODES.forEach((n,i)=>{ if(n.p){ const p=byId[n.p], d=`M${p.x} ${p.y+18} C ${p.x} ${(p.y+n.y)/2}, ${n.x} ${(p.y+n.y)/2}, ${n.x} ${n.y-18}`;
+      lines+=`<path class="draw" pathLength="1" style="animation-delay:${i*80}ms" d="${d}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+      if(!RM) lines+=`<circle r="3.5" fill="var(--signal)" opacity="0"><set attributeName="opacity" to="1" begin="${(i*0.3).toFixed(1)}s"/><animateMotion dur="2.4s" begin="${(i*0.3).toFixed(1)}s" repeatCount="indefinite" path="${d}"/></circle>`; }
+    const w = n.k==='root'?150:92, h=34, fill = n.k==='root'?'var(--accent)':n.k==='ou'?'var(--accent-soft)':'var(--surface)', tc = n.k==='root'?'var(--accent-ink)':'var(--ink)';
+    nodes+=`<g data-otree="${n.id}" role="button" tabindex="0" aria-label="${n.t}" style="cursor:pointer"><rect x="${n.x-w/2}" y="${n.y-h/2}" width="${w}" height="${h}" rx="${n.k==='ou'?17:8}" fill="${fill}" stroke="var(--accent)" stroke-width="${n.k==='acct'?1.5:2}" ${n.k==='ou'?'stroke-dasharray="5 3"':''}/><text x="${n.x}" y="${n.y-1}" text-anchor="middle" style="fill:${tc};font-weight:700;font-size:11px">${n.t.length>16?n.t.split(' ')[0]:n.t}</text><text x="${n.x}" y="${n.y+11}" text-anchor="middle" style="fill:${tc};font-size:9.5px;opacity:.8">${n.s}</text></g>`; });
+  const legend=`<g transform="translate(20 272)" style="font-size:10.5px"><rect width="18" height="10" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-dasharray="4 2"/><text x="24" y="9" style="fill:var(--muted)">OU</text><rect x="60" width="18" height="10" rx="2" fill="var(--surface)" stroke="var(--accent)"/><text x="84" y="9" style="fill:var(--muted)">Account</text><text x="150" y="9" style="fill:var(--muted)">SCP guardrails flow down the tree ↓</text></g>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:640px" role="img" aria-label="AWS Organizations account tree">${lines}${nodes}${legend}</svg></div>`;
+}
+function ztCompare(zt){
+  const W=360,H=205; let g='';
+  if(!zt){
+    g+=`<rect x="70" y="30" width="220" height="140" rx="20" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="6" stroke-dasharray="2 0"/><text x="180" y="22" text-anchor="middle" style="fill:var(--muted);font-size:11px">Network perimeter (VPN / firewall)</text>`;
+    [[110,70,'App'],[180,70,'DB'],[250,70,'Files'],[110,130,'HR'],[180,130,'Billing'],[250,130,'Admin']].forEach(a=>{ g+=`<rect x="${a[0]-26}" y="${a[1]-14}" width="52" height="28" rx="6" fill="var(--surface)" stroke="var(--line)"/><text x="${a[0]}" y="${a[1]+4}" text-anchor="middle" style="fill:var(--ink);font-size:11px">${a[2]}</text>`; });
+    const path='M20 100 L95 100 L110 84 L180 84 L250 84 L250 116 L180 116 L110 116';
+    g+=`<text x="20" y="90" style="fill:var(--bad);font-size:11px">attacker</text>`;
+    if(!RM) g+=`<circle r="7" fill="var(--bad)"><animateMotion dur="5s" repeatCount="indefinite" path="${path}"/></circle>`; else g+=`<circle cx="20" cy="100" r="7" fill="var(--bad)"/>`;
+  } else {
+    [[90,60,'App'],[180,60,'DB'],[270,60,'Files'],[90,140,'HR'],[180,140,'Billing'],[270,140,'Admin']].forEach(a=>{ g+=`<rect x="${a[0]-30}" y="${a[1]-18}" width="60" height="36" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/><text x="${a[0]}" y="${a[1]+4}" text-anchor="middle" style="fill:var(--ink);font-size:11px">${a[2]}</text><circle cx="${a[0]+26}" cy="${a[1]-14}" r="8" fill="var(--accent)"/><text x="${a[0]+26}" y="${a[1]-11}" text-anchor="middle" style="fill:var(--accent-ink);font-size:9px;font-weight:700">✓</text>`; });
+    const ok='M20 100 L60 100 L60 60', bad='M20 186 L180 186 L180 160';
+    g+=`<text x="4" y="92" style="fill:var(--good);font-size:10px">verified user</text><text x="196" y="190" style="fill:var(--bad);font-size:10px">stolen password: blocked</text>`;
+    if(!RM){ g+=`<circle r="7" fill="var(--good)"><animateMotion dur="3s" repeatCount="indefinite" path="${ok}"/></circle><circle r="7" fill="var(--bad)"><animateMotion dur="3s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.7;1" calcMode="linear" path="${bad}"/><animate attributeName="opacity" values="1;1;0" keyTimes="0;0.7;1" dur="3s" repeatCount="indefinite"/></circle>`; }
+    g+=`<line x1="171" y1="160" x2="189" y2="172" stroke="var(--bad)" stroke-width="3"/><line x1="189" y1="160" x2="171" y2="172" stroke="var(--bad)" stroke-width="3"/>`;
+  }
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${zt?'Zero Trust: each app verifies every request':'Perimeter model: once inside, everything is reachable'}">${g}</svg></div>`;
+}
+function showOrgNode(id){ const n=ORG_NODES.find(x=>x.id===id); $('#orgTreeD').innerHTML = `<span class="eyebrow">${n.k==='ou'?'Organizational unit':n.k==='root'?'Organization root':'Account'}</span><h3>${n.t}</h3><p>${n.d}</p>`;
+  document.querySelectorAll('svg [data-otree]').forEach(g=>{ const r=g.querySelector('rect'); r.setAttribute('stroke-width', g.dataset.otree===id?4:(ORG_NODES.find(x=>x.id===g.dataset.otree).k==='acct'?1.5:2)); }); }
+function showAsg(gi, ai){ asgSel=[gi,ai]; const v=ASSIGN[gi][ai];
+  $('#asgD').innerHTML = `<h4>${ID_GROUPS[gi]} → ${ID_ACCTS[ai]}</h4><p><b>${v<0?'No access':PERMSETS[v]}</b></p><p class="small">${ASSIGN_WHY[String(v)]}</p>`;
+  document.querySelectorAll('[data-asg]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.asg===`${gi}|${ai}`)); }
+function ctLoad(){ return store.get('certs', null) || CERT_DEFAULT.map(c=>({...c})); }
+function ctExpiry(d){ if(!d) return null; const x=new Date(d+'T00:00:00'); if(isNaN(x)) return null; x.setFullYear(x.getFullYear()+3); return x; }
+function renderCerts(){ const b=$('#ctBody'); if(!b) return; const l=ctLoad(), now=new Date();
+  let active=0, linked=0, soon=0, expired=0;
+  b.innerHTML = l.length ? l.map((c,i)=>{ const isAcc=/Accreditation|Cloud Economics/.test(c.c), ex=isAcc?null:ctExpiry(c.d), days= ex? Math.round((ex-now)/864e5):null;
+    let st, col; if(ex && days<0){ st='Expired'; col='var(--bad)'; expired++; } else if(ex && days<=90){ st=`Renew in ${days} days`; col='var(--warn)'; soon++; active++; } else { st='Active'; col='var(--good)'; active++; }
+    if(c.l==='yes' && !(ex && days<0)) linked++;
+    return `<tr><td>${esc(c.n)}${c.ex?' <span class="tag">example</span>':''}</td><td>${esc(c.c)}</td><td class="mono small">${esc(c.d||'–')}</td><td class="mono small">${ex?ex.toISOString().slice(0,10):'n/a'}</td><td>${c.l==='yes'?'<span class="tag a">Linked</span>':'<span class="tag s">Not linked</span>'}</td><td><span class="pill" style="color:${col}">${st}</span></td><td><button class="xbtn" type="button" data-ctdel="${i}" aria-label="Remove">×</button></td></tr>`; }).join('') : '<tr><td colspan="7" class="muted">No certifications yet. Add the first one above.</td></tr>';
+  $('#ctSum').innerHTML = [['Active',active,'var(--good)'],['Counting for the company (linked & active)',linked,'var(--accent)'],['Renew within 90 days',soon,'var(--warn)'],['Expired',expired,'var(--bad)']].map(x=>`<div class="card tint"><span class="eyebrow">${x[0]}</span><div class="out mono" style="color:${x[2]}">${x[1]}</div></div>`).join(''); }
+function renderJML(){ const box=$('#jmlBox'); if(!box) return; const done=store.get('jml-'+jmlSel, []);
+  box.innerHTML = `<h3>${jmlSel} checklist</h3><div class="bar"><i style="width:${done.length/JML[jmlSel].length*100}%"></i></div><div style="display:grid;gap:2px">${JML[jmlSel].map((t,i)=>`<label class="check ${done.includes(i)?'done':''}"><input type="checkbox" id="jml${i}" data-jmlck="${i}" ${done.includes(i)?'checked':''}><span>${t}</span></label>`).join('')}</div>`;
+  document.querySelectorAll('[data-jml]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.jml===jmlSel)); }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -3467,6 +3803,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='identity'){ showOrgNode('root'); showAsg(0,0); renderCerts(); renderJML(); }
   if(id==='migration'){ showR(2); rqi=0; renderRQ(); }
   if(id==='catalog') renderPSList();
   if(id==='bvr') showBvrCase(bvrCase);
@@ -3543,6 +3880,13 @@ document.addEventListener('click', e => {
   if(t.id==='rqReset'){ rqi=0; return renderRQ(); }
   const psc = t.closest('[data-pscat]'); if(psc){ psCat=psc.dataset.pscat; return renderPSList(); }
   const ps = t.closest('[data-ps]'); if(ps) return showPS(+ps.dataset.ps);
+  const ot = t.closest('[data-otree]'); if(ot) return showOrgNode(ot.dataset.otree);
+  const asg = t.closest('[data-asg]'); if(asg){ const [g,a]=asg.dataset.asg.split('|').map(Number); return showAsg(g,a); }
+  const jo = t.closest('[data-pipe^="jmlorbit|"]'); if(jo){ const k=+jo.dataset.pipe.split('|')[1]; document.querySelectorAll('[data-pipe^="jmlorbit|"]').forEach(g=>g.classList.toggle('on', g===jo)); if(k<3){ jmlSel=Object.keys(JML)[k]; renderJML(); } else $('#fd-accrev')?.scrollIntoView({behavior:'smooth', block:'center'}); return; }
+  const jm = t.closest('[data-jml]'); if(jm){ jmlSel=jm.dataset.jml; return renderJML(); }
+  if(t.id==='jmlReset'){ store.set('jml-'+jmlSel, []); return renderJML(); }
+  const ctd = t.closest('[data-ctdel]'); if(ctd){ const l=ctLoad(); l.splice(+ctd.dataset.ctdel,1); store.set('certs', l); return renderCerts(); }
+  if(t.id==='ctAdd'){ const n=$('#ctN').value.trim(); if(!n){ $('#ctN').focus(); return; } const l=ctLoad(); l.push({n, c:$('#ctC').value, d:$('#ctD').value, l:$('#ctL').value}); store.set('certs', l); $('#ctN').value=''; return renderCerts(); }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -3565,6 +3909,7 @@ document.addEventListener('change', e => {
   if(t.dataset.ck !== undefined){ let d = store.get('check', []); const i=+t.dataset.ck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('check', d);
     t.closest('.check').classList.toggle('done', t.checked); const p = Math.round(d.length/CHECKLIST.length*100); $('#pct').textContent = p+'%'; $('#pbar').style.width = p+'%'; }
   if(t.dataset.ownSt !== undefined){ const l=ownLoad(); const o=l[+t.dataset.ownSt]; o.s=t.value; delete o.ex; store.set('own', l); return renderOwn(); }
+  if(t.dataset.jmlck !== undefined){ let d=store.get('jml-'+jmlSel, []); const i=+t.dataset.jmlck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('jml-'+jmlSel, d); return renderJML(); }
   if(t.dataset.dc !== undefined){ let d = store.get('dealcheck', []); const i=+t.dataset.dc; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('dealcheck', d); t.closest('.check').classList.toggle('done', t.checked); }
   if(t.dataset.cl !== undefined){ let d = store.get('close', []); const i=+t.dataset.cl; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('close', d); t.closest('.check').classList.toggle('done', t.checked); }
 });
@@ -3588,7 +3933,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
