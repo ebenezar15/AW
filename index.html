@@ -71,6 +71,8 @@ main{min-width:0;padding-block:32px 80px;padding-left:max(16px,env(safe-area-ins
 .g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
 .card.flat{background:transparent}
+.page > *,.section > *,.grid > *{min-width:0}
+.practice{border:1px solid var(--signal);border-left-width:5px}
 .card.small,.card:has(> b:first-child){display:block}
 .card.tint{background:var(--accent-soft);border-color:transparent}
 .card.warnc{background:var(--signal-soft);border-color:transparent}
@@ -304,6 +306,7 @@ const money = (n) => (isFinite(n) ? n : 0).toLocaleString(undefined,{style:'curr
 /* ---------- chapter list ---------- */
 const CHAPTERS = [
   {id:'start', t:'Start here', g:'Orientation'},
+  {id:'playbook', t:'Daily playbook', g:'Orientation'},
   {id:'cloud', t:'Cloud & AWS basics', g:'Learn AWS'},
   {id:'services', t:'Service explorer', g:'Learn AWS'},
   {id:'tech', t:'Technical essentials', g:'Learn AWS'},
@@ -3287,7 +3290,7 @@ function countUp(el){ if(RM || el.children.length) return; const txt=el.textCont
   requestAnimationFrame(step); }
 
 /* Animate panels when their content changes */
-const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD','reqD','dmD','lpD']);
+const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD','reqD','dmD','lpD','dayD','scBox']);
 try{ new MutationObserver(ms=>{ if(RM) return; const seen=new Set(); ms.forEach(m=>{ const t=m.target; if(t.nodeType!==1 || seen.has(t)) return;
   if(t.classList.contains('detail') || DETAIL_IDS.has(t.id)){ seen.add(t); t.animate([{opacity:.35, transform:'translateY(6px)'},{opacity:1, transform:'none'}],{duration:320, easing:'cubic-bezier(.2,.8,.2,1)'}); } }); })
   .observe(document.getElementById('view'), {childList:true, subtree:true}); }catch(e){}
@@ -4265,6 +4268,272 @@ function renderQ30(){ const box=$('#q30'); if(!box) return; const d=store.get('q
   box.innerHTML = QUESTIONS.map((q,i)=>`<label class="check ${d.includes(i)?'done':''}"><input type="checkbox" id="q30_${i}" data-q30="${i}" ${d.includes(i)?'checked':''}><span>${i+1}. ${q}</span></label>`).join('');
   $('#q30Bar').style.width=(d.length/QUESTIONS.length*100)+'%'; }
 
+/* ================= PRACTICAL LAYER ================= */
+/* "In practice" panel injected at the top of every chapter */
+const PRACTICE = {
+  start:{t:['Open Partner Central and find your company’s tier and Specializations','Ask your manager for the funding tracker, AR aging report and the content library location','Tick the first three items in the 90-day checklist below'], ex:'Day 3 at a partner: you find two invoices over 60 days old and one funding claim due next week. Fixing those three things in week one is worth more than reading every chapter.'},
+  cloud:{t:['Create a free-tier AWS account for learning and turn on root MFA','Open the AWS Pricing Calculator and price one small EC2 server for a month','Find which AWS Region your biggest customer uses (ask an engineer)'], ex:'A customer asks why their AWS bill shows “data transfer out”. You now know: that’s traffic leaving AWS to the internet, often from video or downloads.'},
+  services:{t:['Pick 5 services from the explorer that appear on your customers’ invoices or SOWs','Search the explorer for “video” and note the media services','Explain one service to a colleague in one sentence'], ex:'An SOW line says “CloudFront + WAF configuration”. You can now describe it in an invoice as “content delivery and web firewall setup”.'},
+  tech:{t:['Ask an engineer to show you one real customer architecture diagram','Trace the “classic web application” diagram and match it to that customer','Note the customer’s DR strategy (backup, pilot light, warm standby, multi-site)'], ex:'In a QBR deck, the slide says “Multi-AZ RDS”. You can now caption the slide video: “database with automatic failover across data centers”.'},
+  solutions:{t:['Use the hosting chooser for your company’s own website','Pick the scenario closest to your latest customer and compare the steps with what was delivered','Filter the challenge map by “cost” and note two services'], ex:'A prospect is a school district. You open the School scenario, copy the criteria (privacy, budget, cheap devices) into the video brief for the campaign.'},
+  economics:{t:['Run the TCO calculator with numbers from a real (anonymized) proposal','Open Cost Explorer (if you have billing access) and view last month by service','List two cost levers you could mention in a cost-optimization video'], ex:'Finance asks why a resale customer’s bill jumped 40%. In Cost Explorer you filter by service and find a new EC2 fleet that wasn’t turned off after testing.'},
+  ai:{t:['Plot one internal AI idea on the value-vs-feasibility chart','Use the GenAI cost estimator for a real use case (e.g. support assistant)','Try an approved AI tool to draft captions for one video, then check accuracy'], ex:'Sales asks for a GenAI webinar. You pick “internal knowledge search” from the matrix (high value, high feasibility) as the story and script it around time saved.'},
+  industries:{t:['Tag every case study in your library by industry','Pick the industry with the most customers and read its triggers','Add one industry trigger question to the sales discovery list'], ex:'Three of your last five wins were retailers before peak season. A “peak-readiness in 4 weeks” video for retail is your next campaign.'},
+  ccp:{t:['Do 5 flashcards a day','Book the Cloud Practitioner exam date 4–6 weeks out (ask about partner vouchers)','Link your certification to Partner Central once you pass'], ex:'You pass Cloud Practitioner in week 6; the alliance lead confirms it now counts toward the company’s tier requirement.'},
+  business:{t:['Ask finance for last quarter’s revenue split by stream','Run the consultant economics calculator with real utilization','Identify which part of the flywheel your work touches most'], ex:'Utilization dropped from 74% to 66% last month: about $X of revenue lost. You flag it in the monthly KPI note with the calculator result.'},
+  catalog:{t:['List the services your company actually sells from this catalog','Find the price model for each in recent SOWs','Pick one packaged offer that deserves a 60-second video'], ex:'Your company sells “Cost Optimization Health Check” but has no page or video. You draft a one-pager and a short explainer within a week.'},
+  lifecycle:{t:['Find which lifecycle phase each active project is in','Use the go-live checklist on the next launch','Join one weekly status call to see “day 2” operations'], ex:'A project is in “Test & harden”. You prepare the final milestone invoice and the case-study request so they’re ready the day it launches.'},
+  migration:{t:['Ask for the wave plan of a current migration','Check that migrated resources are tagged map-migrated (ask engineering)','Map MAP funding milestones to invoice milestones'], ex:'Wave 2 cuts over on Saturday. On Monday you collect the cutover report (POE), send milestone invoice 2, and update ACE.'},
+  partner:{t:['Find your company’s tier requirements in Partner Central','Count certified people vs the next-tier requirement','List which programs you’re enrolled in (MAP, MSP, Marketplace)'], ex:'You discover the company needs 3 more certifications for the next tier: you propose a study group and track it in the certification tracker.'},
+  portals:{t:['Log in to every portal you have access to and bookmark it','Check the Partner Solutions Finder listing: is the description and video current?','Ask who owns each portal (alliance lead, sales ops, you)'], ex:'The Partner Solutions Finder profile still shows a 2022 video. You replace it with the latest case study clip in 20 minutes.'},
+  people:{t:['Build a one-page contact sheet: PDM, PSA, PMM, top AWS AMs','Note what each AWS contact cares about this quarter','Fill in the RACI for one process you own'], ex:'The PMM asks for MDF campaign results. Because you know they own MDF, you send leads, attendees and screenshots in one email the same day.'},
+  identity:{t:['Confirm you sign in to AWS through Identity Center, not an IAM user','Check MFA is on for every system you use','Add yourself and three colleagues to the certification tracker'], ex:'A colleague leaves on Friday. You run the leaver checklist: directory disabled, Partner Central removed, opportunities reassigned, shared mailbox transferred.'},
+  roles:{t:['For your customer projects, write down the AWS counterpart for each partner role','Find out which AWS team covers your top 5 customers','Ask your PDM what they’re measured on this year'], ex:'Your PDM is measured on partner-sourced revenue. You send a monthly list of launched co-sell deals; they start inviting you to more AWS planning sessions.'},
+  reqs:{t:['Find where your MSA and SOW templates are stored','List what your top client requires from suppliers','Ask whether AWS ProServe works with any of your accounts'], ex:'A client’s procurement asks for your certificate of insurance and security questionnaire. You send both from the trust library within an hour.'},
+  gtm:{t:['Open ACE and count opportunities by stage','Find any AWS Referral waiting for a response','Pick one play (e.g. cost review) and find its latest case study'], ex:'An AWS Referral has been sitting 3 days. You flag it to the AE at 9:15; they accept by 10:00 and book a call with the customer.'},
+  opps:{t:['Pick your newest deal and identify which of the 7 scenarios it follows','Play the matching timeline and compare to reality','Check the ACE ID is present in CRM, funding tracker and invoices for that deal'], ex:'A deal came via Marketplace private offer. You know there’s no customer invoice from you: instead you reconcile the disbursement next month.'},
+  sales:{t:['Sit in on one discovery call and note MEDDICC items you hear','Collect the top 3 objections from the sales team','Make one asset that answers the most common objection'], ex:'Sales keeps hearing “cloud will cost more”. You produce a 90-second “TCO in plain English” video using the TCO calculator chapter.'},
+  value:{t:['Pick one launched customer and fill the value scorecard','Ask delivery for the baseline numbers from discovery','Draft a one-page value summary for the next QBR'], ex:'Customer infra cost fell from $42k to $31.5k/month. That one number becomes the hook of the case-study video and the renewal conversation.'},
+  bvr:{t:['Ask if your company is enrolled in BVR and which initiatives are active','Find the current pit stop of each initiative','Add each BVR funding PO to the funding tracker'], ex:'An initiative completes “Adapt”. A PO appears; you invoice through Amazon Payee Central the same day and log it.'},
+  funding:{t:['Open the funding tracker and sort by claim deadline','List POE documents missing for the next claim','Set calendar reminders 30/14/7 days before each deadline'], ex:'A POC claim is due in 6 days and the customer sign-off is missing. You email the customer sponsor the sign-off template today.'},
+  revops:{t:['Run the weighted pipeline calculator with this quarter’s CRM numbers','Find 5 deals with close dates in the past','Check CRM closed-won vs ACE launched for last month'], ex:'CRM says 9 deals won last month, ACE shows 6 launched. You find 3 launches never updated in ACE and fix them before the AWS QBR.'},
+  opsess:{t:['Map your top 10 customers to their AWS account managers','Copy the co-sell template and use it once','Answer 5 of the 30 first-month questions'], ex:'Using the co-sell template, a short email to an AWS AM gets you a 15-minute call and an intro to the customer’s CFO.'},
+  kpis:{t:['Add 5 KPIs you own to the tracker with real targets','Write your first 5-line weekly update','Pick one leading indicator you can move this week'], ex:'Your DSO is 52 days. Leading indicator: invoices sent within 2 days of sign-off. You move it from 60% to 95% and DSO falls to 44 in two months.'},
+  adminops:{t:['Pull the AR aging report (QuickBooks: Reports → Accounts receivable aging)','Send reminders for everything over 30 days','Run the month-end checklist at the next close'], ex:'An invoice was rejected for missing a PO. You get the PO from the client’s AP portal, issue a credit note and a corrected invoice the same day.'},
+  content:{t:['Audit the video library: tag by service, industry and stage','Blur-check your last 3 screen recordings for account IDs and emails','Add UTM links to every video description'], ex:'A demo video shows an AWS access portal URL. You re-export with a blur and replace the upload within the hour, then tell security.'},
+  marketing:{t:['Build tracked links with the UTM builder for this week’s posts','Run the funnel calculator with last month’s website numbers','Plan next week using the weekly publishing rhythm'], ex:'Your webinar got 140 registrants and 3 meetings. The funnel calculator shows the drop is registrant → attendee, so next time you add reminder emails and a short teaser video.'},
+  enablement:{t:['Find which sales assets actually get used','Run the closing checklist on one live deal','Score one customer’s health with the sliders'], ex:'A customer’s health score drops because invoices are 60 days late. You tell the account owner before the renewal call.'},
+  calendar:{t:['Put re:Invent, Summits and year-end claim deadlines in your calendar','Plan content 6 weeks before each big event','Check what funding budgets are open this quarter'], ex:'In October you prepare re:Invent teaser videos and a booking page; in December you recap launches for your customers’ industries.'},
+  glossary:{t:['Search every acronym you heard in meetings this week','Make a personal list of 20 terms you use most','Explain 3 terms to a new colleague'], ex:'Someone says “we need POE for the MAP claim”. You know it’s proof of execution and what documents to gather.'},
+  quiz:{t:['Take the quiz once a week until you score 90%+','Revisit chapters for questions you miss','Quiz a colleague with the scenarios in the Daily playbook'], ex:'Scoring 22/42 in week 1 and 38/42 in week 6 is a nice, measurable learning story for your review.'},
+  grow:{t:['Pick one use case from the list and propose it to your manager','Write your 30-60-90 plan in your own words','Track impact metrics monthly'], ex:'You propose the funding tracker in week 2, launch it in week 4, and by month 3 it shows $38k recovered.'},
+  recognition:{t:['Add 3 entries to the work log this week','Mark the things you own and their health','Calculate one impact in money with the calculators'], ex:'Every Friday you log 2 wins in 2 minutes. At review time, the exported summary shows 26 wins with numbers.'},
+  playbook:{t:['Pick your role in the day planner and follow it for one week','Try 5 scenarios','Use the invoice builder before sending your next invoice'], ex:'After one week following the planner, invoices go out the same day as sign-offs and nothing slips past a deadline.'}
+};
+function practicePanel(id){ const p=PRACTICE[id]; if(!p) return '';
+  return `<section class="card practice" aria-label="In practice"><div class="flowbar"><span class="tag s">In practice</span><b>Try this this week</b></div><ol class="small" style="margin:0;padding-left:20px;display:grid;gap:4px">${p.t.map(x=>`<li>${x}</li>`).join('')}</ol><div class="small" style="background:var(--sunk);border-radius:8px;padding:10px 12px"><b>Real-world example:</b> ${p.ex}</div>${id!=='playbook'?'<a class="small" href="#playbook">Open the Daily playbook for more practice →</a>':''}</section>`; }
+
+/* ---------- DAILY PLAYBOOK ---------- */
+const DAY = {
+  'My mixed role':[
+    ['09:00',30,'Triage inbox, ACE & payments','Check email, ACE for new AWS Referrals, and the bank feed for incoming payments.',['ACE: Opportunities → filter “AWS Referral, pending”','Flag referrals to the AE immediately','QuickBooks: Banking/Transactions → match incoming payments to invoices']],
+    ['09:30',30,'Send invoices for yesterday’s sign-offs','Anything signed off yesterday gets invoiced today.',['Find sign-off emails or PM tool updates','QuickBooks: + New → Invoice; add PO, SOW ref, service period','Attach sign-off if the client requires it; send']],
+    ['10:00',120,'Deep work: video editing','Protected block for edits, captions and exports.',['Phone on do-not-disturb','Work from the brief','Blur-check before export: account IDs, emails, URLs']],
+    ['12:00',60,'Lunch','Step away.',['Really step away']],
+    ['13:00',30,'CRM / ACE hygiene','Fix the small things daily so the weekly review is easy.',['Deals with close dates in the past → ask owner','Closed-won without ACE update → update stage','Missing AWS account ID on launched deals']],
+    ['13:30',30,'Funding tracker','Look 14 days ahead.',['Sort by claim deadline','Request missing POE from engineers/customers','Log new approvals and POs']],
+    ['14:00',120,'Content: publish & distribute','Publish, add UTM links, share with sales.',['Upload with captions and description','UTM builder for each channel','Post in sales channel: “new asset for X objection”']],
+    ['16:00',45,'Collections','Polite, scheduled follow-ups.',['AR aging: anything +7, +15, +30 days','Use the reminder templates','Log next action per invoice']],
+    ['16:45',30,'Reporting & requests','Answer data questions; update dashboards.',['Respond to sales/leadership data asks','Note any number that looks odd']],
+    ['17:15',15,'Wrap-up','Log wins, plan tomorrow.',['Add a work-log entry if you shipped something','Write tomorrow’s top 3']]
+  ],
+  'AdminOps':[
+    ['09:00',30,'Bank feed & payments','Match deposits to invoices.',['Banking → for review → match','Unmatched? check remittance emails']],
+    ['09:30',60,'Invoicing','Milestones, retainers, resale.',['Check sign-offs and recurring schedule','Create, review against SOW, send']],
+    ['10:30',60,'Funding & payouts','Requests, claims, PO-based payouts.',['Tracker review','Submit claims with POE','BVR POs → Payee Central invoices']],
+    ['11:30',30,'Vendor bills','Enter and approve bills, including the company’s AWS bill.',['Match to POs/contracts','Schedule payments']],
+    ['12:00',60,'Lunch','',['']],
+    ['13:00',60,'Collections','Follow-ups by aging bucket.',['+7 email, +15 call, +30 escalate']],
+    ['14:00',90,'Supplier onboarding & documents','Client vendor portals, insurance certificates, tax forms.',['Use the supplier onboarding pack']],
+    ['15:30',60,'Reconciliation work','Marketplace disbursements, credit cards.',['Disbursement report vs bank','Fees recorded per accountant rule']],
+    ['16:30',30,'Requests & filing','Contracts filed, documents named consistently.',['Contract register updated']],
+    ['17:00',15,'Wrap-up','',['Tomorrow’s top 3']]
+  ],
+  'RevOps / SalesOps':[
+    ['09:00',30,'Lead routing check','All inbound leads assigned and contacted.',['CRM: new leads not contacted in 24h → alert owner']],
+    ['09:30',60,'Pipeline hygiene','Fields, stages, close dates, ACE sync.',['Run stale-deal report','Check sync errors in the ACE connector']],
+    ['10:30',90,'Reporting','Dashboards and forecast prep.',['Refresh pipeline, forecast, win rate','Note movements since last week']],
+    ['12:00',60,'Lunch','',['']],
+    ['13:00',60,'Deal desk','Review discounts and non-standard terms.',['Apply approval matrix','Turnaround within SLA']],
+    ['14:00',90,'Process & automation','Improve one workflow a week.',['e.g. closed-won → create QuickBooks customer']],
+    ['15:30',60,'Account mapping','Keep AWS AM fields current.',['Update after territory changes']],
+    ['16:30',30,'Answer data questions','',['One source of truth']],
+    ['17:00',15,'Wrap-up','',['Tomorrow’s top 3']]
+  ],
+  'Video & marketing':[
+    ['09:00',30,'Check performance','Yesterday’s posts and videos.',['Views, watch time, clicks, leads']],
+    ['09:30',30,'Engage','Reply to comments; share team posts.',['Respond within a day']],
+    ['10:00',150,'Production block','Edit, captions, thumbnails.',['Work from brief; blur-check']],
+    ['12:30',60,'Lunch','',['']],
+    ['13:30',60,'Publish & distribute','Post with UTMs; repurpose cuts.',['One hero asset → many cut-downs']],
+    ['14:30',60,'Planning & briefs','Next week’s calendar; briefs with sales.',['Use the brief generator']],
+    ['15:30',60,'Approvals & co-marketing','Customer approvals, PMM coordination, MDF evidence.',['Save approvals in project folder']],
+    ['16:30',30,'Enablement','Share new assets with sales.',['Tell them which objection it answers']],
+    ['17:00',15,'Wrap-up','',['Log wins']]
+  ]
+};
+const WEEKLY = [['Monday','AR aging review; pipeline review; plan the week'],['Tuesday','Publish main weekly content; ACE referral check'],['Wednesday','Funding tracker deep review; AWS sync if scheduled'],['Thursday','ACE hygiene sweep; deal desk backlog; content planning'],['Friday','Weekly update with KPIs; work log; tidy files']];
+const MONTHLY = [['Days 1–2','Send all monthly invoices (retainers, resale after AWS bill)'],['Days 2–4','Reconcile bank, cards, Marketplace disbursements, funding payouts'],['Day 5','Close the period; P&L by class reviewed'],['Week 2','KPI dashboard and monthly report'],['Week 3','Certification and access checks; content performance review'],['Week 4','Prepare next month: renewals, deadlines, campaigns']];
+const SCEN = [
+  ['A client’s AP team rejects your invoice: “missing PO number”.',['Resend the same invoice','Ask AP for the PO, issue a credit note for the original and a corrected invoice with the PO','Wait for them to pay anyway','Delete the invoice in QuickBooks'],1,'Never delete a sent invoice. Correct it with a credit note and reissue, then note the PO on the customer record so it doesn’t happen again.'],
+  ['Engineering says a funded POC starts Monday. Funding is still “submitted”, not approved.',['Start anyway','Tell the alliance lead today; delay funded work until approval or get explicit agreement on who carries the risk','Ignore it','Cancel the project'],1,'Work done before approval usually can’t be claimed. Escalate early so the team can decide knowingly.'],
+  ['An AWS Referral arrives at 5 pm on Friday.',['Leave it to Monday afternoon','Forward to the AE/alliance lead now and make sure it’s accepted within 1–2 business days','Reject it','Reply to the customer yourself with pricing'],1,'Responsiveness is tracked and drives future referrals.'],
+  ['You spot an AWS account ID visible in a published demo video.',['Leave it, IDs aren’t secret','Unpublish or replace with a blurred version now and tell security','Add a comment asking people not to look','Wait for the next edit'],1,'Account IDs, emails and URLs help attackers. Remove fast and report so security can check.'],
+  ['A Marketplace deposit is $3,600 less than the $120,000 offer.',['Chase the customer for the difference','Check the disbursement report: the listing fee (3% here) explains it; record the fee per the accountant’s rule','Report AWS for underpaying','Ignore it'],1,'Disbursements are net of the listing fee (and any reseller share). Reconcile line by line.'],
+  ['A funding claim is due in 3 days and the customer sign-off is missing.',['Submit without it','Contact the customer sponsor today with a ready sign-off template; tell the alliance lead and PDM about the risk','Wait until the day of the deadline','Forge a signature'],1,'Move fast and be transparent. Never fabricate evidence.'],
+  ['Sales asks you to apply a 25% discount on a quote today.',['Just apply it','Follow the deal desk approval matrix: above 20% needs leadership and legal','Refuse without explanation','Apply 20% instead'],1,'Approval rules protect margin and keep everyone consistent.'],
+  ['Marketing wants to publish a customer story; legal at the customer hasn’t approved.',['Publish, they said yes verbally','Prepare everything but publish only after written approval','Publish without the logo','Publish and ask forgiveness'],1,'Written approval for names, logos and metrics, every time.'],
+  ['CRM shows a deal closed-won last month, but ACE still says Business Validation.',['Leave ACE alone','Update ACE to Committed (or Launched if live) with the AWS account ID','Delete the ACE opportunity','Create a new ACE opportunity'],1,'Keep CRM and ACE consistent; launched deals count toward tier and funding.'],
+  ['The colleague who holds the root email and MFA for an AWS account leaves on Friday.',['Nothing, they’ll remember it','Move root email to a group alias, rotate password and MFA, store in the vault with two owners','Disable the AWS account','Share the password in chat'],1,'Root access must never depend on one person.'],
+  ['A client pays one lump sum that covers two invoices but is $500 short.',['Apply to whichever invoice','Apply the payment across the invoices, leave $500 open, and ask the client about the short payment (bank fee? dispute?)','Write off $500 immediately','Refund the payment'],1,'Apply payments accurately and investigate differences before writing anything off.'],
+  ['Your manager asks “How is marketing doing?”',['Share follower counts','Share sourced and influenced pipeline, leads, and top-performing assets, with trend','Say “good”','Share likes on the last post'],1,'Leaders care about pipeline and revenue impact.'],
+  ['An AWS account manager asks for a status update on a shared customer by tomorrow.',['Send a long narrative','Send 5 lines: stage, what happened, next step and date, risks, your ask','Ignore it','Forward the whole email thread'],1,'Short, data-first and with a clear ask is how AWS people prefer to work.'],
+  ['You find the same customer twice in QuickBooks with open invoices on both.',['Delete one','Check both records’ transactions, then merge per QuickBooks guidance (or ask the accountant); fix the naming rule','Leave them','Create a third record'],1,'Merging affects history; check first and fix the root cause (naming convention).'],
+  ['You need a video for a webinar in 5 days, but the brief is unclear.',['Start editing anyway','Use the brief generator to get audience, message, CTA and channel agreed in 15 minutes','Make three versions','Wait for someone to send a brief'],1,'A clear brief saves days of rework.']
+];
+const ACE_EX = [
+  {c:'Northwind Retail', st:'Technical Validation', cd:'2026-12-15', ns:'Architecture review 11/12', acct:'—', amt:'$8,000/mo', bad:false, why:'Looks fine: future close date, next step, early stage so no account ID needed yet.'},
+  {c:'Contoso Health', st:'Business Validation', cd:'2026-08-30', ns:'Send proposal', acct:'—', amt:'$12,000/mo', bad:true, why:'Close date is in the past. Update it or move the stage.'},
+  {c:'Fabrikam Bank', st:'Launched', cd:'2026-10-01', ns:'Case study request', acct:'—', amt:'$25,000/mo', bad:true, why:'Launched without an AWS account ID: launch may not be credited.'},
+  {c:'Tailspin Toys', st:'Qualified', cd:'2027-01-20', ns:'', acct:'—', amt:'$3,000/mo', bad:true, why:'No next step recorded.'},
+  {c:'Adatum University', st:'Prospect', cd:'2027-02-28', ns:'Discovery call booked', acct:'—', amt:'$0', bad:true, why:'Amount is $0: estimate expected AWS spend.'},
+  {c:'Litware SaaS', st:'Committed', cd:'2026-11-30', ns:'Kickoff 11/20', acct:'1234-5678-9012', amt:'$15,000/mo', bad:false, why:'Looks fine.'},
+  {c:'Northwind Retail Inc.', st:'Prospect', cd:'2026-12-31', ns:'Intro call', acct:'—', amt:'$5,000/mo', bad:true, why:'Probably a duplicate of “Northwind Retail”. Check before co-selling twice.'},
+  {c:'Wingtip Logistics', st:'Launched', cd:'2026-09-15', ns:'QBR 12/05', acct:'2109-8765-4321', amt:'$9,500/mo', bad:false, why:'Looks fine: launched with account ID and a next step.'}
+];
+const WORKED = {
+  'MAP milestone: sign-off to payout':[
+    {t:'Sign-off received', d:'Mar 3: customer sponsor emails “Wave 1 migration accepted”. Milestone 2 in the SOW = $40,000.', do:['Save email as PDF in the project POE folder'], check:['Matches SOW milestone wording'], tools:['Email, project folder']},
+    {t:'Invoice sent same day', d:'INV-1043, Mar 3, PO 4500123, SOW-2026-014 milestone 2, Net 30 → due Apr 2.', do:['QuickBooks: + New → Invoice; Class: Migration; attach sign-off'], check:['Legal entity, PO, amount, terms'], tools:['QuickBooks']},
+    {t:'ACE updated', d:'Opportunity moved to Launched for wave 1 workloads with the AWS account ID.', do:['Add launch date and account ID'], check:['CRM and ACE match'], tools:['ACE']},
+    {t:'POE pack built', d:'Sign-off PDF, INV-1043, wave report, tagging report showing map-migrated resources.', do:['Name files: ACEID_Claim2_POE_*.pdf'], check:['Names, dates, amounts consistent'], tools:['Shared drive']},
+    {t:'Claim submitted', d:'Mar 10: funding claim submitted in Partner Central for the approved milestone amount.', do:['Log submission date in tracker'], check:['Before deadline (Apr 30)'], tools:['Partner Central']},
+    {t:'Customer pays', d:'Mar 29: $40,000 ACH received; matched to INV-1043.', do:['Receive payment against the invoice'], check:['Invoice shows Paid'], tools:['QuickBooks bank feed']},
+    {t:'Funding payout matched', d:'Apr 20: funding payout received and matched to the claim; tracker line closed.', do:['Record per accountant’s rule'], check:['Amount = approved'], tools:['QuickBooks, tracker']}
+  ],
+  'Marketplace disbursement reconciliation':[
+    {t:'Private offer accepted', d:'Customer accepts a $120,000 annual upfront private offer on Jan 10.', do:['Record the offer ID in CRM'], check:[], tools:['AMMP']},
+    {t:'AWS invoices the customer', d:'Charge appears on the customer’s AWS bill; you do not invoice them.', do:['Note in QuickBooks memo or CRM'], check:['No duplicate invoice from you'], tools:['—']},
+    {t:'Disbursement report', d:'Report shows gross $120,000, listing fee 3% = $3,600, net $116,400.', do:['Download the report'], check:['Offer ID matches'], tools:['AMMP reports']},
+    {t:'Bank deposit', d:'Feb: $116,400 lands in the bank.', do:['Match deposit to the report line'], check:['Amounts equal'], tools:['QuickBooks bank feed']},
+    {t:'Record per accountant rule', d:'E.g. revenue $120,000 and fee expense $3,600, or net revenue $116,400. Your accountant decides; document the rule.', do:['Use a dedicated “Marketplace” item and fee account'], check:['Consistent every month'], tools:['QuickBooks']},
+    {t:'Report', d:'Marketplace revenue line in the monthly dashboard; renewal date in contract register.', do:['Renewal alert 90 days before'], check:[], tools:['Dashboard, contract register']}
+  ],
+  'Launch to case-study video in 10 days':[
+    {t:'Day 1: trigger', d:'ACE marked Launched → you request customer approval to do a case study.', do:['Send the approval request template'], check:['Named contact who can approve'], tools:['Email']},
+    {t:'Day 2: brief', d:'Brief with sales and the delivery lead: audience, one metric, story, CTA.', do:['Brief generator'], check:['One headline metric'], tools:['Brief']},
+    {t:'Day 3–4: interview', d:'30-minute remote interview with the customer + B-roll and architecture diagram.', do:['Record clean audio; get release form'], check:['Release signed'], tools:['Recording tool']},
+    {t:'Day 5–7: edit', d:'2-minute main cut, 30-second vertical cut, captions, thumbnail.', do:['Blur-check'], check:['Brand and trademark rules'], tools:['Editing suite']},
+    {t:'Day 8: approvals', d:'Customer and internal review; PMM if AWS will promote it.', do:['Approval in writing'], check:['All approvals saved'], tools:['Email']},
+    {t:'Day 9: publish', d:'Website, YouTube, LinkedIn, Partner Solutions Finder, Marketplace listing, sales library.', do:['UTM links everywhere'], check:['Captions on'], tools:['Channels']},
+    {t:'Day 10: enable', d:'Share with sales and the AWS account team; add to Specialization evidence folder.', do:['One-line note: when to use it'], check:['Logged in work log'], tools:['Sales channel, email']}
+  ],
+  'Month-end close in 5 working days':[
+    {t:'Day 1', d:'Send all monthly invoices: retainers, managed services, resale (once the AWS bill is in).', do:['Recurring invoices check'], check:['Nothing unbilled'], tools:['QuickBooks, AWS billing']},
+    {t:'Day 2', d:'Match all payments; clear undeposited funds; enter vendor bills including your AWS bill.', do:['Bank feed review'], check:['No unapplied payments'], tools:['QuickBooks']},
+    {t:'Day 3', d:'Reconcile bank and cards; Marketplace disbursements; funding payouts.', do:['Reconcile screens'], check:['Difference = 0.00'], tools:['QuickBooks']},
+    {t:'Day 4', d:'Review AR aging, P&L by class, accruals and deferred revenue with the accountant.', do:['Flag odd numbers'], check:['Accountant sign-off'], tools:['Reports']},
+    {t:'Day 5', d:'Close the period (closing date), send the monthly KPI note.', do:['Set closing date with password'], check:['KPI note sent'], tools:['QuickBooks settings, email']}
+  ]
+};
+const SNIPS = {
+  'Overdue reminder (+7 days)':`Hi [Name],\n\nA friendly reminder that invoice [INV-####] for [amount] was due on [date]. I’ve attached a copy for convenience.\n\nCould you let me know the expected payment date, or if anything is needed from our side (e.g. PO or portal upload)?\n\nThank you,\n[Your name]`,
+  'Request a PO':`Hi [Name],\n\nTo invoice milestone [#] of [SOW reference] (accepted on [date]), we need a purchase order number from your team.\n\nCould you share the PO number, or let me know who can raise it? Happy to provide any details your procurement team needs.\n\nThanks,\n[Your name]`,
+  'Ask customer for milestone sign-off':`Hi [Sponsor],\n\nWe’ve completed [milestone] as described in [SOW reference]: [1–2 lines of what was delivered].\n\nCould you reply to confirm acceptance? A simple “accepted” is enough. This lets us close the milestone and keep the project on schedule.\n\nThank you,\n[Your name]`,
+  'Ask engineer for proof of execution':`Hi [Engineer],\n\nFor the [program] claim on [customer] (ACE [ID]), I need by [date]:\n- [wave/cutover report]\n- [screenshot/report of map-migrated tags]\n- [any customer sign-off you received]\n\nDrop them in [folder link]. Thanks, this unlocks $[amount] of funding.\n[Your name]`,
+  'Case study approval request':`Hi [Name],\n\nThanks again for the partnership on [project]. We’d love to share the story: a short case study and 2-minute video highlighting [outcome/metric].\n\nYou’ll review everything before publishing, and nothing goes out without your written approval. Would you be open to a 30-minute interview next week?\n\nBest,\n[Your name]`,
+  'Status update to AWS AM':`Hi [AWS AM],\n\n[Customer] — ACE [ID]\nStage: [stage] (moved from [previous])\nThis week: [one line]\nNext step: [action] on [date]\nRisk: [one line or “none”]\nAsk: [specific help or “none”]\n\nThanks,\n[Your name]`
+};
+let dayRole='My mixed role', daySel=0, scI=0, scScore=0, scDone=false, snipSel='Overdue reminder (+7 days)', wkSel='MAP milestone: sign-off to payout';
+V.playbook = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Practice</span><h1>Daily playbook</h1>
+  <p class="lede">The hands-on side of the job: what a real day, week and month look like, how to handle everyday situations, practice tools you can use on real work, and worked examples with numbers.</p></header>
+
+  <section class="section"><header><h2>A day in the role</h2><p class="muted">Pick a role, then click a block on the timeline for the how-to steps. Times are a suggested rhythm, not a rule.</p></header>
+  <div class="chips">${Object.keys(DAY).map(k=>`<button class="chip" type="button" data-dayrole="${k}" aria-pressed="${k===dayRole}">${k}</button>`).join('')}</div>
+  <div class="flowbar">${playBtn('data-dayplay','1','▶ Play the day')}</div>
+  <div class="card" id="dayTL"></div>
+  <div class="detail" id="dayD"></div>
+  <div class="grid g2">
+    <div class="card"><h4>Weekly rhythm</h4><div class="tablewrap"><table><tbody>${WEEKLY.map(w=>`<tr><td><b>${w[0]}</b></td><td>${w[1]}</td></tr>`).join('')}</tbody></table></div></div>
+    <div class="card"><h4>Monthly rhythm</h4><div class="tablewrap"><table><tbody>${MONTHLY.map(w=>`<tr><td><b>${w[0]}</b></td><td>${w[1]}</td></tr>`).join('')}</tbody></table></div></div>
+  </div></section>
+
+  <section class="section"><header><h2>What would you do?</h2><p class="muted">${SCEN.length} real situations. Choose, then read why.</p></header>
+  <div class="card" id="scBox" style="max-width:760px"></div></section>
+
+  <section class="section"><header><h2>Practice tools</h2></header>
+  <h3>1. Invoice builder with checks</h3>
+  <p class="small muted">Fill it in from a real SOW milestone before you create the invoice in QuickBooks. It catches the mistakes that delay payment.</p>
+  <div class="grid g2">
+    <div class="card"><div class="grid g2" style="gap:8px">
+      ${[['ivC','Client legal name','Contoso Health Ltd'],['ivPO','PO number',''],['ivS','SOW reference','SOW-2026-014'],['ivM','Line description','Milestone 2: Wave 1 migration complete (14 servers)'],['ivA','Amount','40000'],['ivCur','Currency','USD'],['ivD','Invoice date',today()],['ivT','Payment terms (days)','30'],['ivX','Tax %','0']].map(f=>`<label class="field" ${f[0]==='ivM'?'style="grid-column:1/-1"':''}>${f[1]}<input type="${['ivA','ivT','ivX'].includes(f[0])?'number':f[0]==='ivD'?'date':'text'}" id="${f[0]}" value="${f[2]}" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>`).join('')}
+    </div></div>
+    <div class="card" id="ivOut"></div>
+  </div>
+
+  <h3>2. Funding deadline calculator</h3>
+  <div class="grid g2">
+    <div class="card"><div class="grid g3" style="gap:8px">
+      <label class="field">Work completed<input type="date" id="fdE" value="${new Date(Date.now()-10*864e5).toISOString().slice(0,10)}" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field">Claim window (days)<input type="number" id="fdW" value="60" min="1"></label>
+      <label class="field">Amount $<input type="number" id="fdA" value="25000" min="0" step="500"></label>
+    </div><p class="small muted">Use the claim window stated in your approval; 60 days is only an example.</p></div>
+    <div class="card tint" id="fdOut"></div>
+  </div>
+
+  <h3>3. Video brief generator</h3>
+  <div class="grid g2">
+    <div class="card"><div class="grid g2" style="gap:8px">
+      <label class="field">Audience<select id="vbA">${['CIO / CTO','Cloud architects / engineers','CFO / finance','Procurement','AWS sellers','Existing customers'].map(o=>`<option>${o}</option>`).join('')}</select></label>
+      <label class="field">Goal<select id="vbG">${['Awareness','Generate leads','Support a live deal','Customer success / retention','Enable sales'].map(o=>`<option>${o}</option>`).join('')}</select></label>
+      <label class="field">Format<select id="vbF">${['Case study (2 min)','Explainer (60–90 s)','Demo (3–5 min)','Vertical short (30 s)','Webinar clip set'].map(o=>`<option>${o}</option>`).join('')}</select></label>
+      <label class="field">Main channel<select id="vbC">${['LinkedIn','YouTube','Website','Email','Marketplace / PSF listing','Sales follow-ups'].map(o=>`<option>${o}</option>`).join('')}</select></label>
+      <label class="field" style="grid-column:1/-1">One message<input type="text" id="vbM" value="We cut a retailer’s AWS bill by 31% in 6 weeks" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field" style="grid-column:1/-1">Call to action<input type="text" id="vbX" value="Book a free cost health check" style="font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%"></label>
+      <label class="field">MDF-funded?<select id="vbD"><option>No</option><option>Yes</option></select></label>
+    </div></div>
+    <div class="card"><pre id="vbOut" class="mono small" style="white-space:pre-wrap;margin:0;background:var(--sunk);padding:12px;border-radius:8px;user-select:all"></pre><div><button class="btn" type="button" id="vbCopy">Copy brief</button></div></div>
+  </div>
+
+  <h3>4. Spot the problems: ACE hygiene</h3>
+  <p class="small muted">Click “Flag” on every opportunity you think needs fixing, then check your answers.</p>
+  <div class="tablewrap"><table><thead><tr><th>Customer</th><th>Stage</th><th>Close date</th><th>Next step</th><th>AWS account ID</th><th>Expected spend</th><th></th></tr></thead><tbody id="aceEx"></tbody></table></div>
+  <div class="flowbar"><button class="btn" type="button" id="aceCheck">Check my answers</button><button class="btn ghost" type="button" id="aceReset">Reset</button><span id="aceScore" class="small"></span></div></section>
+
+  <section class="section"><header><h2>Worked examples with real numbers</h2><p class="muted">Pick one and press play.</p></header>
+  <div class="chips">${Object.keys(WORKED).map(k=>`<button class="chip" type="button" data-wk="${k}" aria-pressed="${k===wkSel}">${k}</button>`).join('')}</div>
+  <div id="wkD"></div></section>
+
+  <section class="section"><header><h2>Ready-to-send messages</h2><p class="muted">For the situations that come up every week.</p></header>
+  <div class="chips">${Object.keys(SNIPS).map(k=>`<button class="chip" type="button" data-snip="${k}" aria-pressed="${k===snipSel}">${k}</button>`).join('')}</div>
+  <div class="card"><pre id="snipOut" class="mono small" style="white-space:pre-wrap;margin:0;background:var(--sunk);padding:12px;border-radius:8px;user-select:all"></pre><div><button class="btn" type="button" id="snipCopy">Copy message</button></div></div>
+  <p class="small muted">Menu names in QuickBooks, Partner Central and the AWS console change between versions; the steps here describe the usual path.</p></section>
+`;
+const tmin = s => { const [h,m]=s.split(':').map(Number); return h*60+m; };
+function renderDay(){ const blocks=DAY[dayRole], W=900, H=120, start=9*60, end=17.5*60, x=m=>20+(W-40)*(m-start)/(end-start);
+  let g=''; for(let h=9;h<=17;h++){ g+=`<line x1="${x(h*60)}" x2="${x(h*60)}" y1="20" y2="${H-20}" stroke="var(--line)"/><text x="${x(h*60)}" y="14" text-anchor="middle" style="fill:var(--muted);font-size:11px">${h}:00</text>`; }
+  blocks.forEach((b,i)=>{ const s=tmin(b[0]), w=x(s+b[1])-x(s), lunch=/Lunch/.test(b[2]);
+    g+=`<g data-dayb="${i}" role="button" tabindex="0" aria-label="${b[0]} ${b[2]}" style="cursor:pointer"><rect class="gx" style="animation-delay:${i*70}ms" x="${x(s)+1}" y="${i%2?62:28}" width="${Math.max(w-2,4)}" height="30" rx="6" fill="${lunch?'var(--sunk)':i===daySel?'var(--signal)':'var(--accent)'}" fill-opacity="${lunch?1:i===daySel?1:0.75}"/><text x="${x(s)+6}" y="${(i%2?62:28)+19}" style="fill:${lunch?'var(--muted)':'var(--accent-ink)'};font-size:10.5px;font-weight:600">${w>70?b[2].slice(0,Math.floor(w/6.4)):''}</text></g>`; });
+  if(!RM){ const now=x(start); g+=`<line x1="${now}" x2="${now}" y1="20" y2="${H-20}" stroke="var(--signal)" stroke-width="2"><animate attributeName="x1" from="${x(start)}" to="${x(end)}" dur="18s" repeatCount="indefinite"/><animate attributeName="x2" from="${x(start)}" to="${x(end)}" dur="18s" repeatCount="indefinite"/></line>`; }
+  $('#dayTL').innerHTML = `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:720px" role="img" aria-label="Daily timeline for ${dayRole}">${g}</svg></div>`;
+  document.querySelectorAll('[data-dayrole]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.dayrole===dayRole)); showDayB(Math.min(daySel, blocks.length-1)); }
+function showDayB(i){ daySel=i; const b=DAY[dayRole][i];
+  $('#dayD').innerHTML = `<span class="eyebrow">${b[0]} · ${b[1]} min</span><h3>${b[2]}</h3>${b[3]?`<p>${b[3]}</p>`:''}${b[4].filter(Boolean).length?`<div class="eyebrow">How</div><ol class="small" style="margin:0;padding-left:20px">${b[4].filter(Boolean).map(x=>`<li>${x}</li>`).join('')}</ol>`:''}`;
+  document.querySelectorAll('svg [data-dayb] rect').forEach((r,k)=>{ const lunch=/Lunch/.test(DAY[dayRole][k][2]); if(!lunch){ r.setAttribute('fill', k===i?'var(--signal)':'var(--accent)'); r.setAttribute('fill-opacity', k===i?1:.75); } }); }
+function renderSC(){ const box=$('#scBox'); if(!box) return;
+  if(scI>=SCEN.length){ box.innerHTML=`<span class="eyebrow">Result</span><div class="out">${scScore} / ${SCEN.length}</div><p>${scScore>=13?'Excellent judgment. You’re ready to handle these on your own.':scScore>=9?'Good. Review the explanations you missed.':'Keep practicing. Each of these happens at partners every month.'}</p><div><button class="btn" type="button" id="scRestart">Try again</button></div>`; return; }
+  const s=SCEN[scI]; scDone=false;
+  box.innerHTML = `<div style="display:flex;justify-content:space-between"><span class="eyebrow">Scenario ${scI+1} of ${SCEN.length}</span><span class="eyebrow">Score ${scScore}</span></div><div class="bar"><i style="width:${scI/SCEN.length*100}%"></i></div><h3>${s[0]}</h3><div style="display:grid;gap:6px">${s[1].map((o,i)=>`<button class="opt" type="button" data-sc="${i}">${o}</button>`).join('')}</div><div id="scFb"></div>`; }
+function calcInvoice(){ const g=id=>($('#'+id)?.value||'').trim(); const amt=+g('ivA')||0, tax=+g('ivX')||0, terms=+g('ivT')||0, d=g('ivD');
+  const due = d ? new Date(new Date(d+'T00:00:00').getTime()+terms*864e5).toISOString().slice(0,10) : '—', total=amt*(1+tax/100);
+  const checks=[[!!g('ivC'),'Client legal name present'],[!!g('ivPO'),'PO number present (most enterprise AP teams reject invoices without one)'],[!!g('ivS'),'SOW reference present'],[g('ivM').length>=20,'Description specific enough for an AP clerk'],[amt>0,'Amount greater than zero'],[terms>0&&terms<=45,'Payment terms set (≤ 45 days)'],[!!d,'Invoice date set']];
+  const ok=checks.filter(c=>c[0]).length;
+  $('#ivOut').innerHTML = `<div style="border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--surface);display:grid;gap:6px"><div style="display:flex;justify-content:space-between"><b style="font-family:var(--display);font-size:18px">INVOICE</b><span class="mono small">INV-####</span></div><div class="small"><b>Bill to:</b> ${esc(g('ivC'))||'<span style="color:var(--bad)">missing</span>'}</div><div class="small mono">PO: ${esc(g('ivPO'))||'<span style="color:var(--bad)">missing</span>'} · SOW: ${esc(g('ivS'))||'—'}</div><div class="small mono">Date: ${esc(d)} · Due: ${due} (Net ${terms})</div><div class="tablewrap"><table><tbody><tr><td>${esc(g('ivM'))}</td><td class="num">${esc(g('ivCur'))} ${amt.toLocaleString()}</td></tr><tr><td>Tax ${tax}%</td><td class="num">${(amt*tax/100).toLocaleString()}</td></tr><tr><td><b>Total</b></td><td class="num"><b>${esc(g('ivCur'))} ${total.toLocaleString()}</b></td></tr></tbody></table></div></div>
+  <div class="eyebrow">Checks: ${ok}/${checks.length}</div><ul class="clean small">${checks.map(c=>`<li style="color:${c[0]?'var(--good)':'var(--bad)'}">${c[0]?'✓':'✗'} <span style="color:var(--ink)">${c[1]}</span></li>`).join('')}</ul><p class="small muted">Then in QuickBooks: + New → Invoice, use the same values, and attach the sign-off if required.</p>`; }
+function calcFD(){ const e=$('#fdE')?.value, w=+($('#fdW')?.value||0), a=+($('#fdA')?.value||0); if(!e){ $('#fdOut').innerHTML='Enter a date.'; return; }
+  const end=new Date(e+'T00:00:00'), dl=new Date(end.getTime()+w*864e5), now=new Date(), left=Math.ceil((dl-now)/864e5), f=d=>d.toISOString().slice(0,10);
+  const st = left<0?['Deadline passed','var(--bad)']:left<=7?['Urgent: submit this week','var(--bad)']:left<=21?['Prepare POE now','var(--warn)']:['On track','var(--good)'];
+  const rem=[30,14,7].map(n=>[n,new Date(dl.getTime()-n*864e5)]);
+  $('#fdOut').innerHTML = `<div class="eyebrow">Claim deadline</div><div class="out mono">${f(dl)}</div><span class="pill" style="color:${st[1]}">${st[0]} · ${left} days left</span><div class="eyebrow">Calendar reminders</div><ul class="clean small">${rem.map(r=>`<li>${r[0]} days before: <span class="mono">${f(r[1])}</span></li>`).join('')}</ul><p class="small muted">At stake: ${money(a)}. Add the deadline to the funding tracker.</p>`; }
+function calcVB(){ const g=id=>$('#'+id)?.value||''; const mdf=g('vbD')==='Yes';
+  $('#vbOut').textContent = `VIDEO BRIEF — ${today()}\nAudience: ${g('vbA')}\nGoal: ${g('vbG')}\nFormat: ${g('vbF')}\nMain channel: ${g('vbC')}\nOne message: ${g('vbM')}\nCall to action: ${g('vbX')}\n\nStory: problem → what we did on AWS → result (one number) → CTA\nProof needed: customer approval for names/logos/metrics${mdf?'\nMDF: keep final file, publish date, analytics screenshots and lead list for proof of execution':''}\nChecks: captions on · blur account IDs/emails/URLs · AWS trademark rules · UTM link for CTA\nCut-downs: 30 s vertical, thumbnail, 3 quote cards\nSuccess metric: ${/lead/i.test(g('vbG'))?'leads and meetings booked':/deal/i.test(g('vbG'))?'used in deal; stage progress':/sales/i.test(g('vbG'))?'times shared by sellers':/retention/i.test(g('vbG'))?'customer engagement, renewal support':'views and watch time'}\nOwner: [you] · Reviewer: [sales/PMM] · Due: [date]`; }
+function renderACE(reveal){ const fl=store.get('aceflags', []);
+  $('#aceEx').innerHTML = ACE_EX.map((r,i)=>`<tr${reveal?` style="background:${r.bad?'color-mix(in srgb,var(--bad) 10%,transparent)':'color-mix(in srgb,var(--good) 8%,transparent)'}"`:''}><td><b>${r.c}</b></td><td>${r.st}</td><td class="mono small">${r.cd}</td><td class="small">${r.ns||'<span class="muted">—</span>'}</td><td class="mono small">${r.acct}</td><td class="mono small">${r.amt}</td><td style="min-width:210px"><button type="button" class="chip" data-aceflag="${i}" aria-pressed="${fl.includes(i)}">${fl.includes(i)?'Flagged':'Flag'}</button>${reveal?`<div class="small" style="margin-top:4px;color:${(fl.includes(i)===r.bad)?'var(--good)':'var(--bad)'}">${fl.includes(i)===r.bad?'✓':'✗'} ${r.why}</div>`:''}</td></tr>`).join('');
+  if(reveal){ const right=ACE_EX.filter((r,i)=>fl.includes(i)===r.bad).length; $('#aceScore').textContent=`${right} of ${ACE_EX.length} correct`; } else $('#aceScore').textContent=''; }
+function showWK(k){ wkSel=k; FLOWS.wk = WORKED[k]; $('#wkD').innerHTML = flow('wk', FLOWS.wk, {label:'Step', pipe:true}); document.querySelectorAll('[data-wk]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.wk===k)); }
+function renderSnip(){ $('#snipOut').textContent = SNIPS[snipSel]; document.querySelectorAll('[data-snip]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.snip===snipSel)); }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -4272,6 +4541,7 @@ function route(){
   stopPlay(); FIRST = true;
   renderNav(id);
   $('#view').innerHTML = V[id]();
+  const firstEl = $('#view > header.section') || $('#view').firstElementChild; if(firstEl) firstEl.insertAdjacentHTML('afterend', practicePanel(id));
   Array.from($('#view').children).forEach((c,i)=>c.style.setProperty('--i', Math.min(i,10)));
   const eb = $('#view .eyebrow'), ch = CHAPTERS.find(c=>c.id===id);
   if(eb && /^Chapter \d+/.test(eb.textContent)) eb.textContent = eb.textContent.replace(/^Chapter \d+/, 'Chapter '+ch.n);
@@ -4288,6 +4558,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='playbook'){ renderDay(); scI=0; scScore=0; renderSC(); calcInvoice(); calcFD(); calcVB(); renderACE(false); showWK(wkSel); renderSnip(); }
   if(id==='opsess'){ showLP(0); calcFC(); renderTpl(); renderQ30(); }
   if(id==='reqs'){ showReq(reqSel); showDM(dmSel); }
   if(id==='lifecycle'){ showSeq(0); showBiz(bizStage); renderGL(); }
@@ -4314,11 +4585,12 @@ window.addEventListener('hashchange', route);
 
 document.addEventListener('click', e => {
   const t = e.target;
-  const pb = t.closest('[data-play],[data-trace],[data-oplay],[data-seqplay]');
+  const pb = t.closest('[data-play],[data-trace],[data-oplay],[data-seqplay],[data-dayplay]');
   if(pb){ if(PLAY && PLAY.btn===pb){ stopPlay(); return; }
     if(pb.dataset.play){ const id=pb.dataset.play; return startPlay(pb, FLOWS[id].length, i=>selectFlow(id,i)); }
     if(pb.dataset.trace){ const id=pb.dataset.trace; return startPlay(pb, ARCHS[id].length, li=>showArch(`${id}|${li}|0`)); }
     if(pb.dataset.seqplay) return startPlay(pb, SEQ.length, showSeq);
+    if(pb.dataset.dayplay) return startPlay(pb, DAY[dayRole].length, showDayB);
     return startPlay(pb, OPP_SCEN[oppSel].steps.length, k=>showOpp(oppSel,k)); }
   if(t.closest('[data-arch],[data-ostep],[data-opp],[data-sol],[data-solcat],[data-bvrcase],[data-seq],[data-biz]')) stopPlay();
   const inf = t.closest('[data-infra]'); if(inf){ e.stopPropagation(); showInfra(inf.dataset.infra); return; }
@@ -4384,6 +4656,20 @@ document.addEventListener('click', e => {
   const lp = t.closest('[data-lp]'); if(lp) return showLP(+lp.dataset.lp);
   const tp = t.closest('[data-tpl]'); if(tp){ tplSel=tp.dataset.tpl; return renderTpl(); }
   if(t.id==='tplCopy'){ const txt=TEMPLATES[tplSel]; try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; setTimeout(()=>t.textContent='Copy template',1500); }, ()=>getSelection().selectAllChildren($('#tplOut'))); }catch(err){ getSelection().selectAllChildren($('#tplOut')); } return; }
+  const dr = t.closest('[data-dayrole]'); if(dr){ stopPlay(); dayRole=dr.dataset.dayrole; daySel=0; return renderDay(); }
+  const db = t.closest('[data-dayb]'); if(db){ stopPlay(); return showDayB(+db.dataset.dayb); }
+  const scn = t.closest('[data-sc]'); if(scn && !scDone){ scDone=true; const s=SCEN[scI], pick=+scn.dataset.sc;
+    document.querySelectorAll('[data-sc]').forEach(b=>{ const i=+b.dataset.sc; if(i===s[2]) b.classList.add('right'); else if(i===pick) b.classList.add('wrong'); });
+    if(pick===s[2]) scScore++;
+    $('#scFb').innerHTML = `<p class="small" style="margin-top:6px">${pick===s[2]?'<b style="color:var(--good)">Good call.</b>':'<b style="color:var(--bad)">Not the best option.</b>'} ${s[3]}</p><div style="margin-top:8px"><button class="btn" type="button" id="scNext">${scI===SCEN.length-1?'See result':'Next scenario'}</button></div>`; return; }
+  if(t.id==='scNext'){ scI++; return renderSC(); }
+  if(t.id==='scRestart'){ scI=0; scScore=0; return renderSC(); }
+  const af = t.closest('[data-aceflag]'); if(af){ let fl=store.get('aceflags', []); const i=+af.dataset.aceflag; fl = fl.includes(i)?fl.filter(x=>x!==i):[...fl,i]; store.set('aceflags', fl); return renderACE(false); }
+  if(t.id==='aceCheck') return renderACE(true);
+  if(t.id==='aceReset'){ store.set('aceflags', []); return renderACE(false); }
+  const wk = t.closest('[data-wk]'); if(wk){ stopPlay(); return showWK(wk.dataset.wk); }
+  const sn = t.closest('[data-snip]'); if(sn){ snipSel=sn.dataset.snip; return renderSnip(); }
+  if(t.id==='snipCopy' || t.id==='vbCopy'){ const el=$(t.id==='snipCopy'?'#snipOut':'#vbOut'), txt=el.textContent, lbl=t.textContent; try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; setTimeout(()=>t.textContent=lbl,1500); }, ()=>getSelection().selectAllChildren(el)); }catch(err){ getSelection().selectAllChildren(el); } return; }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -4421,6 +4707,9 @@ document.addEventListener('input', e => {
   if(id.startsWith('mp')) calcMP();
   if(id.startsWith('ds')) calcDSO();
   if(id.startsWith('tc')) calcTCO();
+  if(id.startsWith('iv')) calcInvoice();
+  if(['fdE','fdW','fdA'].includes(id)) calcFD();
+  if(id.startsWith('vb')) calcVB();
   if(['fcC','fcB','fcP','fcT'].includes(id)) calcFC();
   if(id.startsWith('fn')) calcFunnel();
   if(id.startsWith('utm')) calcUTM();
@@ -4433,7 +4722,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }

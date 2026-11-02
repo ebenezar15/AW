@@ -9,6 +9,7 @@ Open `index.html` in any browser. No install or build step needed.
 | Group | Chapter | What's inside |
 |-------|---------|---------------|
 | Orientation | Start here | Learning levels, the partner business loop, 90-day checklist |
+| | Daily playbook | Day timelines for 4 roles (incl. your mixed role) with how-to steps, weekly and monthly rhythms, 15 “what would you do?” scenarios, invoice builder with checks, funding deadline calculator, video brief generator, ACE hygiene “spot the problems” exercise, 4 worked examples with real numbers, ready-to-send messages |
 | Learn AWS | Cloud & AWS basics | Global infrastructure diagram, shared responsibility toggle, pricing models, Well-Architected pillars |
 | | Service explorer | ~57 services in plain English with search and filters |
 | | Technical essentials | Clickable architecture diagrams (web app, serverless, data pipeline, video pipeline), compute/database/storage decision guides, disaster recovery (RPO/RTO), security checklist, DevOps |
@@ -47,6 +48,8 @@ Open `index.html` in any browser. No install or build step needed.
 Every step-by-step flow has a “Play walkthrough” button, architecture diagrams have “Trace the flow”, and key processes have animated pipelines (orbit loop, BVR racetrack, portal hub, request journey). Motion turns off automatically for viewers who prefer reduced motion.
 
 Checklists, the KPI tracker, ownership register, work log and quiz scores are saved in your browser only.
+
+Every chapter also opens with an **In practice** panel: three things to try this week and a real-world example.
 
 ## Editing
 
