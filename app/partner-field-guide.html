@@ -322,6 +322,7 @@ const CHAPTERS = [
   {id:'bvr', t:'BVR pit stops', g:'Partner business'},
   {id:'funding', t:'Funding programs', g:'Partner business'},
   {id:'revops', t:'RevOps', g:'Your job'},
+  {id:'opsess', t:'Ops essentials', g:'Your job'},
   {id:'kpis', t:'KPIs & tracking', g:'Your job'},
   {id:'adminops', t:'AdminOps & QuickBooks', g:'Your job'},
   {id:'content', t:'Video & content', g:'Your job'},
@@ -784,6 +785,19 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Leadership Principles','Amazon’s 16 principles that guide how AWS employees think, decide and hire.'],
+  ['Working Backwards / PR-FAQ','Amazon method: write the customer press release and FAQ before building.'],
+  ['WBR','Weekly business review of a consistent set of metrics.'],
+  ['Mechanism','A repeatable process with an owner, tools and a feedback loop.'],
+  ['Account mapping','Matching your target customers with the AWS sellers who cover them.'],
+  ['Forecast category','Commit, best case, pipeline: how confident a deal is to close this period.'],
+  ['Deal desk','The function that reviews pricing, discounts and non-standard terms before deals go out.'],
+  ['Contract register','A list of all contracts with dates, values, owners and renewal alerts.'],
+  ['Deferred revenue','Money received before the service is delivered; recognized over time.'],
+  ['Accrual','Revenue or cost recorded in the period it belongs to, before invoicing.'],
+  ['Supplier onboarding','A client’s process to register you as a vendor before paying you.'],
+  ['Certificate of insurance (COI)','Proof of the insurance clients often require from suppliers.'],
+  ['Joint business plan','Annual plan agreed between a partner and AWS: goals, accounts, plays, enablement, marketing.'],
   ['AWS Customer Agreement','The contract between AWS and a customer for using AWS services.'],
   ['MSA','Master services agreement: the overall contract between partner and client; SOWs sit under it.'],
   ['AWS Managed Services (AMS)','AWS’s own service for operating infrastructure for certain enterprise customers.'],
@@ -974,6 +988,8 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['How do AWS teams often make important decisions?',['Long slide decks','Written narratives read at the start of the meeting','Coin toss','Only by email'],1,'Amazon uses written narratives (and PR/FAQs) instead of slides for key decisions.'],
+  ['What should every open co-sell deal in your CRM have?',['Only a name','Amount, future close date, next step, ACE ID and AWS AM','A video','Nothing'],1,'These fields keep CRM and ACE trustworthy.'],
   ['Does AWS deliver projects without partners?',['Never','Yes, through Professional Services and specialist teams, but most hands-on work is done by partners or customers','Only for startups','Only through Marketplace'],1,'AWS ProServe delivers selectively, often alongside partners; partners and customer teams do most delivery.'],
   ['Which agreement governs the work between a partner and a client?',['AWS Customer Agreement','APN terms','MSA / SOW and purchase order','Acceptable Use Policy'],2,'The partner–client relationship runs on their own contract and SOW.'],
   ['Which phase comes right after “Test & harden” in the service lifecycle?',['Plan & contract','Launch (go-live)','Foundation','Discover & assess'],1,'Test & harden proves it works; then the launch.'],
@@ -3264,7 +3280,7 @@ function countUp(el){ if(RM || el.children.length) return; const txt=el.textCont
   requestAnimationFrame(step); }
 
 /* Animate panels when their content changes */
-const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD','reqD','dmD']);
+const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD','reqD','dmD','lpD']);
 try{ new MutationObserver(ms=>{ if(RM) return; const seen=new Set(); ms.forEach(m=>{ const t=m.target; if(t.nodeType!==1 || seen.has(t)) return;
   if(t.classList.contains('detail') || DETAIL_IDS.has(t.id)){ seen.add(t); t.animate([{opacity:.35, transform:'translateY(6px)'},{opacity:1, transform:'none'}],{duration:320, easing:'cubic-bezier(.2,.8,.2,1)'}); } }); })
   .observe(document.getElementById('view'), {childList:true, subtree:true}); }catch(e){}
@@ -4029,6 +4045,219 @@ function showDM(i){ dmSel=i; const m=DELIVERY_MODELS[i], W=420, H=200, labels=['
   $('#dmD').innerHTML = `<h3>${m.n}</h3><p>${m.d}</p><div class="kv small"><dt>Typical when</dt><dd>${m.when}</dd><dt>AWS provides</dt><dd>${m.aws}</dd></div>`;
   document.querySelectorAll('[data-dm]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.dm===i)); }
 
+/* ================= OPS ESSENTIALS ================= */
+const LPS = [
+  ['Customer Obsession','Start with the customer and work backwards.','Frame every ask to AWS around the customer outcome.'],
+  ['Ownership','Act on behalf of the whole company; never say “that’s not my job”.','Own your processes end to end.'],
+  ['Invent and Simplify','Find new ways; simplify.','Turn messy processes into simple checklists.'],
+  ['Are Right, A Lot','Good judgment, seek diverse perspectives.','Check numbers before sharing.'],
+  ['Learn and Be Curious','Always learning.','One service or concept a week.'],
+  ['Hire and Develop the Best','Raise the bar; develop others.','Teach what you learn.'],
+  ['Insist on the Highest Standards','Relentlessly high standards.','Zero-error invoices and clean data.'],
+  ['Think Big','Bold direction that inspires results.','Propose improvements, not just fixes.'],
+  ['Bias for Action','Speed matters; many decisions are reversible.','Ship the draft, iterate.'],
+  ['Frugality','Accomplish more with less.','Use funding and credits well.'],
+  ['Earn Trust','Listen, speak candidly, treat others respectfully.','Report problems early.'],
+  ['Dive Deep','Stay connected to the details; audit frequently.','Know the numbers behind your dashboard.'],
+  ['Have Backbone; Disagree and Commit','Challenge respectfully, then commit fully.','Raise concerns with data, then support the decision.'],
+  ['Deliver Results','Focus on key inputs and deliver with quality and on time.','Track your outputs and impact.'],
+  ['Strive to be Earth’s Best Employer','Create a safer, more productive, more diverse workplace.','Help colleagues succeed.'],
+  ['Success and Scale Bring Broad Responsibility','Be humble and thoughtful about secondary effects.','Consider privacy, accessibility and sustainability.']
+];
+const AWS_SEGMENTS = [
+  ['Strategic & enterprise accounts','Largest customers with dedicated account teams, often with enterprise commitments.','Co-sell big programs; ProServe may be involved.'],
+  ['Commercial / mid-market ("greenfield" and growth)','Many mid-size customers per seller; growth-focused.','Partners are critical for delivery and new logos.'],
+  ['SMB & startups','High volume, light-touch; startup programs and credits.','Packaged offers, Marketplace, quick wins.'],
+  ['Public sector','Government, education, nonprofits, healthcare; specific contract vehicles.','Compliance and procurement expertise needed.'],
+  ['ISV / software companies','Software vendors building on AWS and selling via Marketplace.','ISV Accelerate co-sell, SaaS enablement.']
+];
+const FC_CATS = [
+  ['Commit','Very high confidence: will close this period','Signed or verbal yes, PO in process'],
+  ['Best case','Could close this period if things go right','Strong deal, a few steps left'],
+  ['Pipeline','Real opportunity, not expected this period','Qualified but early'],
+  ['Omitted / closed lost','Not counted','Lost, stalled or disqualified']
+];
+const STAGE_MAP = [
+  ['Lead / MQL','—','Marketing'],
+  ['Discovery / qualified','Prospect → Qualified','Sales'],
+  ['Solution & estimate','Technical Validation','Pre-sales'],
+  ['Proposal / negotiation','Business Validation','Sales'],
+  ['Closed won (signed)','Committed','Sales → AdminOps'],
+  ['Delivering / live','Launched','Delivery → RevOps'],
+  ['Closed lost','Closed Lost','Sales']
+];
+const APPROVALS = [
+  ['Standard rate card, standard terms','Account executive','Same day'],
+  ['Discount up to 10%','Sales manager','24 hours'],
+  ['Discount 10–20% or payment terms beyond Net 45','Head of sales + finance','48 hours'],
+  ['Discount above 20%, fixed price above a threshold, or liability changes','Leadership + legal','Deal desk review'],
+  ['Funding-dependent pricing','Alliance lead + finance','Before proposal is sent'],
+  ['Non-standard contract terms (IP, indemnity, SLA credits)','Legal','Before signature']
+];
+const CONTRACT_DOCS = [
+  ['NDA','Mutual confidentiality before sharing details.','Before discovery'],
+  ['MSA','Master services agreement: legal terms for all work.','Once per client'],
+  ['SOW','Scope, deliverables, milestones, price, acceptance for one project.','Per project'],
+  ['Change order','Approved change to scope, time or price.','When scope changes'],
+  ['DPA','Data processing agreement for personal data.','When personal data is handled'],
+  ['Managed services agreement / SLA','Service levels, response times, credits.','For ongoing services'],
+  ['Renewal','Extend or update the agreement.','90 days before end']
+];
+const FIN_OPS = [
+  ['Revenue recognition','Revenue is recorded when it’s earned, not when invoiced or paid: milestones when delivered, retainers over the service period. Follow your accountant and the applicable standards.'],
+  ['Deferred revenue','Cash received in advance (e.g. annual prepaid managed service) is a liability until the service is delivered month by month.'],
+  ['Accruals','Costs or revenue for the period that haven’t been invoiced yet (e.g. contractor hours, the AWS bill that arrives after month-end).'],
+  ['Gross vs net','For resale and Marketplace, whether to record the full amount or only the margin/net is an accounting judgment. Get one written decision from your accountant.'],
+  ['Multi-currency','Invoice in the client’s currency if agreed; record exchange gains/losses; know which bank account receives which currency.'],
+  ['Sales tax / VAT / GST','Depends on where the client is and what is sold. Store client tax IDs; let your accountant set tax rules in QuickBooks.'],
+  ['Credit notes','Correct an invoice with a credit note, never by deleting a sent invoice.'],
+  ['Collections','Reminders, statements, escalation path; agree when to pause work for non-payment.'],
+  ['Seller tax & bank setup','AWS Marketplace and funding payouts need correct tax forms and bank details on file; keep them current.'],
+  ['Audit trail','Every invoice ties to a PO/SOW; every payout ties to a claim or disbursement report.']
+];
+const VENDOR_ONB = ['Company legal name, address and registration details','Tax form (e.g. W-9 in the US, W-8 or local equivalent abroad)','Bank details on letterhead / bank letter','Certificate of insurance (general, professional, cyber liability)','Security questionnaire answers (standard library)','Compliance reports or certifications (e.g. SOC 2, ISO 27001) if held','Data processing agreement','Signed MSA / NDA','Supplier portal registration (Coupa, Ariba, etc.)','Remit-to and invoice submission instructions'];
+const TRUST_DOCS = [
+  ['Security questionnaire library','Pre-approved answers to common questions (access control, encryption, incident response).','Security lead; AdminOps keeps it organized'],
+  ['Policies','Information security, acceptable use, access control, incident response, data retention.','Security / leadership'],
+  ['Certifications & reports','SOC 2 report, ISO 27001 certificate, AWS MSP audit report, Specialization validations.','Security / alliance lead'],
+  ['Insurance certificates','Current certificate of insurance for client onboarding.','Finance / AdminOps'],
+  ['Data processing terms','Standard DPA and list of subprocessors (including AWS).','Legal'],
+  ['Customer reference list','Approved references and case studies with permission dates.','Marketing']
+];
+const MISTAKES = [
+  ['Starting work before funding approval','Approved funding can’t cover work already done.'],
+  ['Letting ACE go stale','AWS judges partners partly by ACE quality and responsiveness.'],
+  ['Invoicing without PO numbers','Client AP rejects the invoice and payment slips 30+ days.'],
+  ['Publishing customer names without approval','Damages trust with the customer and AWS.'],
+  ['Mixing personal and shared accounts','Access lost when people leave; security risk.'],
+  ['Ignoring claim deadlines','Expired funding is gone for good.'],
+  ['Treating marketing as likes','Tie content to pipeline or it won’t get budget.'],
+  ['Not writing things down','Undocumented processes break when you’re away.'],
+  ['Guessing accounting treatments','Ask the accountant once; document the rule.'],
+  ['Waiting to be told','Proactive owners grow fastest, especially in partner businesses.']
+];
+const QUESTIONS = [
+  'What tier are we and what’s our plan for the next tier?','Which Specializations do we hold, and which are we pursuing?','Who are our PDM, PSA and PMM at AWS?','Which AWS account managers send us the most referrals?','What does our ACE pipeline look like this quarter?','What are our top 3 offerings and their typical price?','Which funding programs do we use most, and what’s open now?','Where is the funding tracker, and who owns it?','How are invoices numbered, approved and sent?','What payment terms do we use, and who chases overdue invoices?','How do we handle AWS resale billing, if at all?','Do we sell through AWS Marketplace? Who reconciles disbursements?','What’s in our QuickBooks chart of accounts for AWS-related items?','Who is our accountant, and what rules have they set?','Which CRM do we use, and is it synced with ACE?','What are our pipeline stages and forecast categories?','Who approves discounts and non-standard terms?','Where are contracts, SOWs and POs stored?','What do clients usually ask for during supplier onboarding?','Do we have a security questionnaire library?','What brand guidelines and templates exist?','Which content performed best last year?','How do we measure marketing’s contribution?','What are the company OKRs this year?','What are my KPIs and how will my performance be reviewed?','What does a great first 90 days look like to you?','Which recurring meetings should I join?','Who should I build relationships with first?','What has gone wrong before that I should watch for?','How can I help the team win more deals this quarter?'
+];
+const OTHER_CERTS = [
+  ['QuickBooks Online certification (ProAdvisor program)','AdminOps / finance','Free through the Intuit ProAdvisor program for eligible users'],
+  ['Salesforce Administrator','RevOps / SalesOps','If your CRM is Salesforce'],
+  ['HubSpot Academy certifications','Marketing / RevOps','Free courses: inbound, sales hub, reporting'],
+  ['Google Analytics certification','Marketing','Free; web analytics basics'],
+  ['Excel / Google Sheets advanced','Everyone in ops','Pivot tables, lookups, charts'],
+  ['SQL basics','RevOps','Query data beyond dashboards'],
+  ['Project management (e.g. PMP, PRINCE2, Scrum basics)','Ops','Useful for running internal programs'],
+  ['RevOps courses (various communities)','RevOps','Frameworks for pipeline, forecasting, comp']
+];
+const TEMPLATES = {
+  'Co-sell ask to AWS AM':`Subject: Co-sell request — [Customer] — [Workload]\n\nHi [AWS AM name],\n\nCustomer: [Customer legal name] (AWS account ID: [if known])\nNeed: [one sentence: business problem and outcome]\nOur solution: [migration / GenAI POC / ...], est. AWS spend $[x]/month\nStage: [ACE stage], ACE ID: [ID], target close [date]\nAsk: [intro to economic buyer / SA review / funding guidance]\n\nHappy to walk through it in 15 minutes this week.\n[Name]`,
+  'Funding request checklist':`FUNDING REQUEST — [Program: MAP / POC / MDF]\n[ ] ACE opportunity ID linked and stage current\n[ ] Customer legal name + AWS account ID\n[ ] Scope and deliverables (matches SOW)\n[ ] Timeline: start after expected approval date\n[ ] Cost breakdown and amount requested\n[ ] Expected AWS spend\n[ ] POE plan: what evidence we will collect\n[ ] Claim deadline added to calendar\n[ ] Logged in funding tracker`,
+  'Weekly ops update':`WEEKLY UPDATE — [Week of]\nDone: [3 bullets with numbers]\nNext: [3 bullets]\nBlocked / need help: [1–2 items + who can help]\nKPIs: DSO [x] (↓/↑), funding recovered [x%], invoices sent on time [x%], ACE current [x%]\nWins to share: [customer, content, process]`,
+  'SOW pre-signature check':`SOW CHECK — [Customer / Project]\n[ ] Correct legal entity and address\n[ ] Scope, deliverables, acceptance criteria clear\n[ ] Milestones with dates and amounts\n[ ] Payment terms and currency\n[ ] PO required? Who issues it?\n[ ] Taxes addressed\n[ ] Funding referenced (and what happens if not approved)\n[ ] Change order process\n[ ] Signatories identified`
+};
+let tplSel = 'Co-sell ask to AWS AM';
+V.opsess = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Your job · Essentials</span><h1>Ops essentials</h1>
+  <p class="lede">The things that aren’t obvious to newcomers but make a big difference in GTM, SalesOps, RevOps, AdminOps and operations at an AWS partner: how AWS people think, how deals and contracts are governed, finance details, trust documents, your tool stack, and practical templates.</p></header>
+
+  <section class="section"><header><h2>How AWS people think and work</h2><p class="muted">Amazon’s culture shapes how AWS teams communicate and decide. Knowing it helps you work with your AWS counterparts.</p></header>
+  <div class="grid g4">${[['Working Backwards','Start from the customer outcome. New ideas are often written as a press release and FAQ (PR/FAQ) before anything is built.'],['Written narratives','Important decisions use written documents (often six pages) read silently at the start of meetings, instead of slide decks.'],['Weekly business reviews (WBR)','Teams review a consistent set of metrics weekly, focusing on inputs they control and anomalies.'],['Mechanisms','Good intentions don’t work; mechanisms do. A repeatable process with an owner and a feedback loop.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div>
+  <h3>Amazon Leadership Principles</h3>
+  <p class="small muted">Click any principle for what it means for you. AWS people use these words in everyday conversation and hiring.</p>
+  <div class="chips">${LPS.map((l,i)=>`<button class="chip" type="button" data-lp="${i}" aria-pressed="${i===0}">${l[0]}</button>`).join('')}</div>
+  <div class="detail" id="lpD"></div>
+  <div class="card tint small"><b>Practical use:</b> when you write to AWS, lead with the customer and the data, keep it short, be clear about the ask, and own the follow-up. Bring numbers to meetings, not adjectives.</div></section>
+
+  <section class="section"><header><h2>How AWS sales teams are organized</h2><p class="muted">AWS sellers cover customers by segment and territory. Knowing which AWS seller covers each of your customers is the foundation of co-sell.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Segment</th><th>Who they are</th><th>What it means for partners</th></tr></thead><tbody>${AWS_SEGMENTS.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div>
+  <p class="small muted">Segment names and structures change over time; ask your PDM for the current coverage model in your region.</p>
+  ${flow('acctmap', FLOWS.acctmap = [
+    {t:'List target accounts', d:'Your top customers and prospects, with industry and region.', do:['Export from CRM'], check:[], tools:['CRM']},
+    {t:'Find the AWS seller', d:'Identify the AWS account manager for each (ask your PDM, check ACE history, LinkedIn).', do:['Record AM name, segment, territory'], check:['No guesses: confirm'], tools:['ACE, PDM']},
+    {t:'Share & align', d:'Share the overlap list with your PDM; agree priority accounts and plays.', do:['Account mapping session'], check:['Top 10 joint accounts agreed'], tools:['Spreadsheet, meeting']},
+    {t:'Engage AWS sellers', d:'Short intro to each AM with your relevant case study and offer.', do:['Use the co-sell template below'], check:['Meetings booked'], tools:['Email, video one-pager']},
+    {t:'Track & refresh', d:'Log AM contacts in CRM; refresh every quarter as territories change.', do:[], check:['AM field filled for top accounts'], tools:['CRM']}
+  ], {label:'Step', pipe:true})}</section>
+
+  <section class="section"><header><h2>SalesOps essentials</h2></header>
+  <h3>Forecast categories</h3>
+  <div class="grid g4">${FC_CATS.map((f,i)=>`<div class="card" style="border-top:4px solid ${['var(--good)','var(--accent)','var(--warn)','var(--muted)'][i]}"><h4>${f[0]}</h4><p class="small">${f[1]}</p><p class="small muted">${f[2]}</p></div>`).join('')}</div>
+  <div class="grid g2">
+    <div class="card"><h4>Forecast roll-up</h4><div class="grid g3" style="gap:8px">${[['fcC','Commit $',180000],['fcB','Best case $',120000],['fcP','Pipeline $',400000]].map(f=>`<label class="field">${f[1]}<input type="number" id="${f[0]}" value="${f[2]}" min="0" step="5000"></label>`).join('')}</div><label class="field">Quarter target $<input type="number" id="fcT" value="300000" min="0" step="5000"></label></div>
+    <div class="card tint" id="fcOut"></div>
+  </div>
+  <h3>CRM stages mapped to ACE</h3>
+  <div class="tablewrap"><table><thead><tr><th>Your CRM stage</th><th>ACE stage</th><th>Owner of the update</th></tr></thead><tbody>${STAGE_MAP.map(r=>`<tr><td>${r[0]}</td><td><span class="tag a">${r[1]}</span></td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div>
+  <h3>Deal desk: approval matrix</h3>
+  <div class="tablewrap"><table><thead><tr><th>Situation</th><th>Approver</th><th>Turnaround</th></tr></thead><tbody>${APPROVALS.map(r=>`<tr><td>${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div>
+  <p class="small muted">Example thresholds; your company sets its own.</p>
+  <div class="grid g3">${[['Lead routing SLA','Inbound leads assigned within 1 business hour, contacted within 24 hours; AWS Referrals within 1–2 days.'],['CRM hygiene rules','Every open deal has amount, close date in the future, next step, ACE ID (if co-sell) and AWS AM.'],['Pipeline review','Weekly: new, moved, slipped, stalled deals. Monthly: forecast accuracy. Quarterly: win/loss.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Contract operations</h2><p class="muted">The document trail every deal leaves behind.</p></header>
+  ${flow('contracts', FLOWS.contracts = CONTRACT_DOCS.map(c=>({t:c[0], d:c[1], do:[], check:[`When: ${c[2]}`], tools:['Contract repository, e-signature']})), {label:'Document', pipe:true})}
+  <div class="card tint small"><b>Keep one contract register:</b> client, document type, version, signed date, start/end, value, renewal date, owner, link. Renewal alerts at 90/60/30 days.</div></section>
+
+  <section class="section"><header><h2>Finance ops details that matter</h2></header>
+  <div class="grid g3">${FIN_OPS.map(f=>`<div class="card"><h4>${f[0]}</h4><p class="small muted">${f[1]}</p></div>`).join('')}</div>
+  <h3>Supplier onboarding with a new client</h3>
+  <p class="small muted">Large clients make you register as a supplier before they can pay you. Keep this pack ready.</p>
+  <div class="card"><div style="display:grid;gap:2px">${VENDOR_ONB.map((v,i)=>`<label class="check"><input type="checkbox" id="vo${i}"><span>${v}</span></label>`).join('')}</div></div>
+  <h3>Period-end calendar</h3>
+  <div class="tablewrap"><table><thead><tr><th>When</th><th>Finance & AdminOps</th><th>Partner & AWS angle</th></tr></thead><tbody>
+    <tr><td><b>Month-end</b></td><td>Close books, reconcile, AR review, AWS bill accrual</td><td>Marketplace disbursement reconciliation; funding payouts matched</td></tr>
+    <tr><td><b>Quarter-end</b></td><td>Forecast vs actual, deferred revenue review, tax filings as required</td><td>QBR with AWS; ACE launched counts; tier progress</td></tr>
+    <tr><td><b>Year-end</b></td><td>Audit prep, contract renewals, budget</td><td>AWS fiscal year ends in December: funding budgets and claims deadlines cluster here</td></tr>
+  </tbody></table></div></section>
+
+  <section class="section"><header><h2>Trust & compliance documents</h2><p class="muted">Clients and AWS programs ask for these. Keep them current in one place.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Document</th><th>What it is</th><th>Owner</th></tr></thead><tbody>${TRUST_DOCS.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Your tool stack and how data flows</h2><p class="muted">Trace the flow. One record ID should travel across every system.</p></header>
+  ${arch('stack', [
+    {n:'Attract', items:[['Website & forms','Leads','Forms with UTM capture.'],['LinkedIn, YouTube, email','Content','Your videos live here.']]},
+    {n:'Sell', items:[['CRM','Salesforce / HubSpot','System of record for deals and contacts.'],['ACE (Partner Central)','Co-sell','Synced with CRM via connector or API.']]},
+    {n:'Agree', items:[['Quote / proposal tool','CPQ','Standard pricing.'],['E-signature','DocuSign etc.','Signed SOWs.']]},
+    {n:'Deliver', items:[['Project & ticket tools','Jira, Asana','Milestones and sign-offs.']]},
+    {n:'Bill & collect', items:[['QuickBooks','Accounting','Invoices, payments, close.'],['Marketplace & funding reports','AWS payouts','Reconciled monthly.']]},
+    {n:'Measure', items:[['BI dashboard','One view','Pipeline, revenue, DSO, funding, content ROI.']]}
+  ])}
+  <div class="grid g3">${[['Data dictionary','One page defining each field and metric (e.g. what counts as “launched”).'],['Naming conventions','Customer: Legal Name (Country). Opportunity: Customer – Workload – Program – Quarter.'],['Automation ideas','CRM closed-won → create QuickBooks customer; ACE launched → case-study task; funding approved → calendar deadline.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Planning with AWS: the joint business plan</h2></header>
+  <div class="card">${orbitSVG('jbp', ['Set goals with PDM','Pick target accounts & plays','Plan enablement & certs','Plan marketing & MDF','Execute & track','Quarterly review'], ['Joint business plan','annual cycle, reviewed quarterly'])}</div>
+  ${flow('jbp', FLOWS.jbp = [
+    {t:'Set goals with PDM', d:'Agree annual targets: launched opportunities, pipeline, tier or Specialization goals, Marketplace revenue.', do:['Use last year’s data'], check:['Goals written and shared'], tools:['Planning doc']},
+    {t:'Pick target accounts & plays', d:'Which customers and which offers (migration, GenAI, security) you’ll focus on together.', do:['Account mapping'], check:['Top accounts agreed'], tools:['Account map']},
+    {t:'Plan enablement & certs', d:'Certification and accreditation targets to meet tier and Specialization needs.', do:['Certification tracker'], check:['Owners and dates'], tools:['Tracker']},
+    {t:'Plan marketing & MDF', d:'Campaigns, events and content with your PMM, and MDF requests.', do:['Campaign calendar'], check:['MDF requested early in the year'], tools:['Marketing plan']},
+    {t:'Execute & track', d:'Run the plan; track monthly in a shared scorecard.', do:['WBR-style metrics'], check:['Owners update on time'], tools:['Dashboard']},
+    {t:'Quarterly review', d:'Review results with AWS; adjust plays and goals.', do:['Short written narrative + metrics'], check:['Actions agreed'], tools:['QBR document']}
+  ], {label:'Step'})}</section>
+
+  <section class="section"><header><h2>Templates</h2><p class="muted">Pick one, copy, and adapt.</p></header>
+  <div class="chips">${Object.keys(TEMPLATES).map(k=>`<button class="chip" type="button" data-tpl="${k}" aria-pressed="${k===tplSel}">${k}</button>`).join('')}</div>
+  <div class="card"><pre id="tplOut" class="mono small" style="white-space:pre-wrap;margin:0;background:var(--sunk);padding:12px;border-radius:8px;user-select:all"></pre><div><button class="btn" type="button" id="tplCopy">Copy template</button></div></div></section>
+
+  <section class="section"><header><h2>Common newcomer mistakes</h2></header>
+  <div class="grid g2">${MISTAKES.map(m=>`<div class="card warnc"><h4>${m[0]}</h4><p class="small">${m[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>30 questions to ask in your first month</h2><p class="muted">Tick them off as you get answers. Saved in this browser.</p></header>
+  <div class="card"><div class="bar"><i id="q30Bar" style="width:0"></i></div><div id="q30" style="display:grid;gap:2px"></div></div></section>
+
+  <section class="section"><header><h2>Other certifications worth having</h2><p class="muted">Beyond AWS, these build credibility in ops roles.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Certification</th><th>Useful for</th><th>Note</th></tr></thead><tbody>${OTHER_CERTS.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="small">${r[2]}</td></tr>`).join('')}</tbody></table></div></section>
+`;
+function showLP(i){ const l=LPS[i]; $('#lpD').innerHTML = `<span class="eyebrow">Principle ${i+1} of ${LPS.length}</span><h3>${l[0]}</h3><p>${l[1]}</p><p class="small"><b>For you:</b> ${l[2]}</p>`; document.querySelectorAll('[data-lp]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.lp===i)); }
+function calcFC(){ const v=id=>+($('#'+id)?.value||0); const c=v('fcC'), b=v('fcB'), p=v('fcP'), t=v('fcT');
+  const W=420,H=120, mx=Math.max(t,c+b,1)*1.1, x=val=>20+(W-40)*val/mx;
+  const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Forecast against target"><rect x="20" y="30" width="${x(c)-20}" height="30" fill="var(--good)" class="${FIRST?'gx':''}"/><rect x="${x(c)}" y="30" width="${x(c+b)-x(c)}" height="30" fill="var(--accent)" opacity=".6" class="${FIRST?'gx':''}"/><line x1="${x(t)}" x2="${x(t)}" y1="18" y2="72" stroke="var(--signal)" stroke-width="3"/><text x="${x(t)}" y="14" text-anchor="middle" style="fill:var(--signal);font-size:11px">target</text><rect x="20" y="81" width="10" height="10" fill="var(--good)"/><text x="34" y="90" style="fill:var(--muted);font-size:11px">commit</text><rect x="90" y="81" width="10" height="10" fill="var(--accent)" opacity=".6"/><text x="104" y="90" style="fill:var(--muted);font-size:11px">best case</text></svg>`;
+  const gap=t-c;
+  $('#fcOut').innerHTML = `<div class="chart">${svg}</div><div class="kv"><dt>Commit vs target</dt><dd class="mono">${t?Math.round(c/t*100):0}%</dd><dt>Commit + best case</dt><dd class="mono">${money(c+b)}</dd><dt>Gap between commit and target</dt><dd class="mono">${money(Math.max(gap,0))}</dd><dt>Pipeline coverage of remaining gap</dt><dd class="mono">${gap>0?((b+p)/gap).toFixed(1)+'×':'covered'}</dd></div>`; }
+function renderTpl(){ $('#tplOut').textContent = TEMPLATES[tplSel]; document.querySelectorAll('[data-tpl]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.tpl===tplSel)); }
+function renderQ30(){ const box=$('#q30'); if(!box) return; const d=store.get('q30', []);
+  box.innerHTML = QUESTIONS.map((q,i)=>`<label class="check ${d.includes(i)?'done':''}"><input type="checkbox" id="q30_${i}" data-q30="${i}" ${d.includes(i)?'checked':''}><span>${i+1}. ${q}</span></label>`).join('');
+  $('#q30Bar').style.width=(d.length/QUESTIONS.length*100)+'%'; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -4052,6 +4281,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='opsess'){ showLP(0); calcFC(); renderTpl(); renderQ30(); }
   if(id==='reqs'){ showReq(reqSel); showDM(dmSel); }
   if(id==='lifecycle'){ showSeq(0); showBiz(bizStage); renderGL(); }
   if(id==='identity'){ showOrgNode('root'); showAsg(0,0); renderCerts(); renderJML(); }
@@ -4144,6 +4374,9 @@ document.addEventListener('click', e => {
   if(t.id==='glReset'){ store.set('golive', []); return renderGL(); }
   const rqp = t.closest('[data-req]'); if(rqp) return showReq(rqp.dataset.req);
   const dm = t.closest('[data-dm]'); if(dm) return showDM(+dm.dataset.dm);
+  const lp = t.closest('[data-lp]'); if(lp) return showLP(+lp.dataset.lp);
+  const tp = t.closest('[data-tpl]'); if(tp){ tplSel=tp.dataset.tpl; return renderTpl(); }
+  if(t.id==='tplCopy'){ const txt=TEMPLATES[tplSel]; try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; setTimeout(()=>t.textContent='Copy template',1500); }, ()=>getSelection().selectAllChildren($('#tplOut'))); }catch(err){ getSelection().selectAllChildren($('#tplOut')); } return; }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -4168,6 +4401,7 @@ document.addEventListener('change', e => {
   if(t.dataset.ownSt !== undefined){ const l=ownLoad(); const o=l[+t.dataset.ownSt]; o.s=t.value; delete o.ex; store.set('own', l); return renderOwn(); }
   if(t.dataset.jmlck !== undefined){ let d=store.get('jml-'+jmlSel, []); const i=+t.dataset.jmlck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('jml-'+jmlSel, d); return renderJML(); }
   if(t.dataset.glck !== undefined){ let d=store.get('golive', []); const i=+t.dataset.glck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('golive', d); return renderGL(); }
+  if(t.dataset.q30 !== undefined){ let d=store.get('q30', []); const i=+t.dataset.q30; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('q30', d); return renderQ30(); }
   if(t.dataset.dc !== undefined){ let d = store.get('dealcheck', []); const i=+t.dataset.dc; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('dealcheck', d); t.closest('.check').classList.toggle('done', t.checked); }
   if(t.dataset.cl !== undefined){ let d = store.get('close', []); const i=+t.dataset.cl; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('close', d); t.closest('.check').classList.toggle('done', t.checked); }
 });
@@ -4180,6 +4414,7 @@ document.addEventListener('input', e => {
   if(id.startsWith('mp')) calcMP();
   if(id.startsWith('ds')) calcDSO();
   if(id.startsWith('tc')) calcTCO();
+  if(['fcC','fcB','fcP','fcT'].includes(id)) calcFC();
   if(id.startsWith('fn')) calcFunnel();
   if(id.startsWith('utm')) calcUTM();
   if(id.startsWith('hs')) calcHS();
