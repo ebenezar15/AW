@@ -321,6 +321,7 @@ const CHAPTERS = [
   {id:'people', t:'Who\u2019s who & RACI', g:'Partner business'},
   {id:'identity', t:'Identity, access & certs', g:'Partner business'},
   {id:'roles', t:'Partner vs AWS roles', g:'Partner business'},
+  {id:'reqs', t:'Roles & requirements', g:'Partner business'},
   {id:'gtm', t:'GTM & co-sell', g:'Partner business'},
   {id:'opps', t:'Opportunity lifecycle', g:'Partner business'},
   {id:'sales', t:'Sales essentials', g:'Partner business'},
@@ -790,6 +791,9 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['AWS Customer Agreement','The contract between AWS and a customer for using AWS services.'],
+  ['MSA','Master services agreement: the overall contract between partner and client; SOWs sit under it.'],
+  ['AWS Managed Services (AMS)','AWS’s own service for operating infrastructure for certain enterprise customers.'],
   ['UAT','User acceptance testing: the client confirms the solution does what they need before go-live.'],
   ['Go-live','The moment a solution starts serving real users.'],
   ['Day-2 operations','Everything needed to keep a service running after launch: monitoring, patching, backups, security, cost.'],
@@ -977,6 +981,8 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['Does AWS deliver projects without partners?',['Never','Yes, through Professional Services and specialist teams, but most hands-on work is done by partners or customers','Only for startups','Only through Marketplace'],1,'AWS ProServe delivers selectively, often alongside partners; partners and customer teams do most delivery.'],
+  ['Which agreement governs the work between a partner and a client?',['AWS Customer Agreement','APN terms','MSA / SOW and purchase order','Acceptable Use Policy'],2,'The partner–client relationship runs on their own contract and SOW.'],
   ['Which phase comes right after “Test & harden” in the service lifecycle?',['Plan & contract','Launch (go-live)','Foundation','Discover & assess'],1,'Test & harden proves it works; then the launch.'],
   ['Who operates and secures the underlying cloud infrastructure once a service is live?',['The client only','AWS, under the shared responsibility model','Nobody','The video team'],1,'AWS secures the cloud; client and partner secure what runs in it.'],
   ['In Zero Trust, what replaces “being on the company network” as the main reason to trust a request?',['Nothing, trust everyone','Verified identity, device and context on every request','The office Wi-Fi password','A longer VPN session'],1,'Never trust, always verify: identity is the new perimeter.'],
@@ -3265,7 +3271,7 @@ function countUp(el){ if(RM || el.children.length) return; const txt=el.textCont
   requestAnimationFrame(step); }
 
 /* Animate panels when their content changes */
-const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD']);
+const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD','reqD','dmD']);
 try{ new MutationObserver(ms=>{ if(RM) return; const seen=new Set(); ms.forEach(m=>{ const t=m.target; if(t.nodeType!==1 || seen.has(t)) return;
   if(t.classList.contains('detail') || DETAIL_IDS.has(t.id)){ seen.add(t); t.animate([{opacity:.35, transform:'translateY(6px)'},{opacity:1, transform:'none'}],{duration:320, easing:'cubic-bezier(.2,.8,.2,1)'}); } }); })
   .observe(document.getElementById('view'), {childList:true, subtree:true}); }catch(e){}
@@ -3939,6 +3945,97 @@ function renderGL(){ const box=$('#glList'); if(!box) return; const d=store.get(
   box.innerHTML = GOLIVE.map((c,i)=>`<label class="check ${d.includes(i)?'done':''}"><input type="checkbox" id="gl${i}" data-glck="${i}" ${d.includes(i)?'checked':''}><span>${c}</span></label>`).join('');
   $('#glBar').style.width = (d.length/GOLIVE.length*100)+'%'; }
 
+/* ================= ROLES & REQUIREMENTS ================= */
+const REQ = {
+  AWS:{c:'var(--accent)', general:['Run and secure the cloud infrastructure: data centers, hardware, network, managed services (“security of the cloud”)','Meet published service level agreements (SLAs) and maintain compliance certifications','Bill accurately and provide support according to the support plan','Provide account teams, programs, funding and training','Keep customer content private and follow its data privacy commitments'],
+    ofOthers:['Customers accept the AWS Customer Agreement and Acceptable Use Policy and pay their bills','Partners accept the AWS Partner Network terms, meet tier and program requirements, keep ACE data accurate, submit honest funding claims with proof, and follow trademark guidelines'],
+    project:['Account Manager: commercial lead, programs, executive alignment','Solutions Architect: architecture guidance and reviews (advisory, usually not hands-on build)','PDM / Partner Success: funding, BVR, partner support','Support / TAM: technical issues and proactive guidance','Professional Services (when engaged): hands-on delivery']},
+  Partner:{c:'var(--signal)', general:['Be a registered AWS Partner and accept the APN terms','Meet tier requirements: trained and certified staff, launched opportunities, customer references','Pass audits for Specializations, MSP or Service Delivery programs','Protect customer data and access; sign NDAs and data agreements','Use AWS names and badges according to guidelines; never imply AWS endorsement'],
+    ofOthers:['From the client: clear goals, a sponsor, timely decisions, access, a signed SOW and PO, and payment on time','From AWS: program access, funding decisions, co-sell support and technical escalation paths'],
+    project:['Account executive: deal, SOW, relationship','Alliance lead: ACE, funding, AWS coordination','Solutions architect: design and estimates','Project manager: plan, risks, status, change control','Engineers: build, migrate, test, document','Customer success / MSP: adoption, operations, value reviews','AdminOps / RevOps: invoices, funding claims, data hygiene (you)']},
+  Client:{c:'var(--good)', general:['Own the AWS account (or contract a partner to bill it) and pay for usage','Secure what they put in the cloud: data, identities, configurations (“security in the cloud”), alone or with a partner','Meet their own industry and legal obligations (privacy, healthcare, finance rules)','Accept the AWS Customer Agreement and follow the Acceptable Use Policy'],
+    ofOthers:['From AWS: reliable, secure services, support, fair billing','From the partner: delivery to the SOW, skilled people, transparency, documentation and handover'],
+    project:['Executive sponsor: owns the outcome and budget, removes blockers','Product owner / business lead: priorities and acceptance','IT / cloud team: access, integrations, future operations','Security & compliance: reviews and approvals','Procurement & legal: contract, PO, Marketplace purchase','Finance / AP: pays invoices and the AWS bill','End users & champions: testing and adoption']}
+};
+const DELIVERY_MODELS = [
+  {n:'Customer self-serve', w:[100,0,0], d:'The customer’s own team builds and runs everything using AWS documentation, training and support. Very common for startups and companies with strong engineering teams.', when:'Simple needs or strong in-house skills', aws:'Services, documentation, support plan, SA guidance for larger accounts'},
+  {n:'Partner-led, AWS-supported', w:[25,65,10], d:'The most common model for projects. The partner delivers; AWS supports with co-sell, SA reviews and funding (MAP, POC, BVR).', when:'Migrations, modernization, data, GenAI, managed services', aws:'Account team, funding, technical escalation'},
+  {n:'Partner alone (no AWS involvement)', w:[30,70,0], d:'Partner delivers without registering the deal in ACE. Works, but misses funding, AWS support and tier credit.', when:'Small projects, or partners not yet using co-sell', aws:'Only the services themselves'},
+  {n:'AWS ProServe + partner', w:[20,50,30], d:'AWS Professional Services leads strategy, architecture or a specialized piece; partners deliver much of the hands-on work and often run it afterwards.', when:'Large, strategic or complex enterprise and public-sector programs', aws:'ProServe consultants alongside the account team'},
+  {n:'AWS-delivered (ProServe / specialist teams)', w:[25,0,75], d:'AWS delivers directly with its own consultants or specialist teams. Selective and usually for large strategic customers, specialized areas, or when a capability isn’t available in the partner ecosystem.', when:'Strategic customers, unique expertise, accelerating adoption of new services', aws:'Professional Services, specialist innovation teams, managed services for some enterprises'}
+];
+const AWS_DIRECT = [
+  ['AWS Professional Services (ProServe)','Consulting and hands-on delivery by AWS employees','Yes, hands-on','Large or strategic engagements; frequently works with partners'],
+  ['AWS Managed Services (AMS)','AWS operates infrastructure for certain enterprise customers','Yes, operations','Enterprises wanting AWS-run operations'],
+  ['Generative AI Innovation Center','AWS experts help customers design and build GenAI solutions','Yes, selective','Strategic GenAI use cases'],
+  ['Solutions Architects (account SAs)','Architecture advice, reviews, best practices','Advisory only','All customers with an account team'],
+  ['Technical Account Managers (Enterprise Support)','Proactive guidance and escalation','Advisory only','Enterprise Support customers'],
+  ['Workshops: Immersion Days, Experience-Based Acceleration','Hands-on learning and accelerated sprints with customer teams','Guided, time-boxed','Adoption of new services, migration acceleration'],
+  ['AWS Training and Certification','Courses and certifications','Education','Everyone']
+];
+let reqSel='Partner', dmSel=1;
+V.reqs = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate</span><h1>Roles & requirements</h1>
+  <p class="lede">What AWS, partners and clients are each responsible for, in general and inside a project, what each requires from the others, and whether AWS delivers projects without partners.</p></header>
+
+  <section class="section"><header><h2>The agreements that connect everyone</h2><p class="muted">Each line is a contract. Moving dots show the obligations flowing both ways.</p></header>
+  <div class="card">${triSVG()}</div>
+  <div class="grid g4">${[['AWS ↔ Client','AWS Customer Agreement, Acceptable Use Policy, service terms, SLAs, support plan, any enterprise commitment (EDP/PPA).'],['AWS ↔ Partner','AWS Partner Network terms, program terms (MAP, MSP, BVR, Marketplace seller terms), funding rules, trademark guidelines.'],['Partner ↔ Client','Master services agreement (MSA), statement of work (SOW), purchase order, NDA, data processing terms, SLAs for managed services.'],['Through Marketplace','When buying via AWS Marketplace, the offer’s terms apply and AWS handles billing between client and partner.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Responsibilities and requirements by party</h2><p class="muted">Pick a party.</p></header>
+  <div class="chips">${Object.keys(REQ).map(k=>`<button class="chip" type="button" data-req="${k}" aria-pressed="${k===reqSel}">${k}</button>`).join('')}</div>
+  <div id="reqD" class="grid g3"></div></section>
+
+  <section class="section"><header><h2>Shared responsibility, three ways</h2><p class="muted">Who looks after each layer in a typical partner-delivered, partner-managed project.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Layer</th><th style="text-align:center">AWS</th><th style="text-align:center">Partner</th><th style="text-align:center">Client</th></tr></thead><tbody>
+  ${[['Business goals, budget, decisions','','C','A'],['Data ownership and classification','','C','A'],['User access approvals','','R','A'],['Application design and build','C','A','C'],['Configuration of AWS services','','A','C'],['Patching, monitoring, backups (managed service)','','A','I'],['Managed service internals (e.g. RDS engine patching)','A','I',''],['Physical data centers, hardware, global network','A','',''],['Paying the AWS bill','','R (resale)','A'],['Compliance with industry rules','C','R','A']].map((r,i)=>`<tr><td>${r[0]}</td>${[1,2,3].map(k=>`<td style="text-align:center">${r[k]?`<span class="tag ${r[k][0]==='A'?'s':r[k][0]==='R'?'a':''}" style="animation:rise .4s ${i*50+k*40}ms both">${r[k]}</span>`:'<span class="muted">–</span>'}</td>`).join('')}</tr>`).join('')}
+  </tbody></table></div>
+  <p class="small muted">A = accountable, R = does the work, C = consulted, I = informed. Typical split; contracts define the real one.</p></section>
+
+  <section class="section"><header><h2>Does AWS undertake projects without partners?</h2><p class="muted">Yes, but it’s the exception. Most hands-on project work on AWS is done by partners or by customers’ own teams. Pick a delivery model to see who does how much of the work.</p></header>
+  <div class="chips">${DELIVERY_MODELS.map((m,i)=>`<button class="chip" type="button" data-dm="${i}" aria-pressed="${i===dmSel}">${m.n}</button>`).join('')}</div>
+  <div class="grid g2"><div class="card chart" id="dmChart"></div><div class="detail" id="dmD"></div></div>
+
+  <h3>What AWS offers directly</h3>
+  <div class="tablewrap"><table><thead><tr><th>AWS team or offering</th><th>What it does</th><th>Hands-on delivery?</th><th>Typical customers</th></tr></thead><tbody>${AWS_DIRECT.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td><span class="tag ${/Yes/.test(r[2])?'s':'a'}">${r[2]}</span></td><td class="small">${r[3]}</td></tr>`).join('')}</tbody></table></div>
+
+  <h3>Why AWS usually brings in partners</h3>
+  ${flow('whypartner', FLOWS.whypartner = [
+    {t:'Scale', d:'There are far more customers and projects than AWS’s own consultants could ever deliver. Partners provide the capacity.', do:[], check:[], tools:[]},
+    {t:'Local presence', d:'Partners are in every region and language, close to the customer, often with long relationships.', do:[], check:[], tools:[]},
+    {t:'Breadth', d:'Partners combine AWS with other software (SAP, Salesforce, security tools) and industry knowledge.', do:[], check:[], tools:[]},
+    {t:'Run after launch', d:'Customers need someone to operate and improve the solution for years; managed service partners do that.', do:[], check:[], tools:[]},
+    {t:'AWS’s focus', d:'AWS earns from customers using its services. Partner success grows that usage, so AWS invests in partners with funding, co-sell and programs.', do:[], check:[], tools:[]}
+  ], {label:'Reason', pipe:true})}
+  <div class="card tint small"><b>What it means for you:</b> when AWS Professional Services is involved, partners are often brought in to deliver parts of the work or to take over operations. A good relationship with the AWS account team and a strong case-study library make your company the partner they call.</div></section>
+
+  <section class="section"><header><h2>A project, by party</h2><p class="muted">The roles each side brings to a typical project. Trace it.</p></header>
+  ${arch('projroles', [
+    {n:'Client', items:[['Executive sponsor','Outcome & budget','Owns the business result; unblocks decisions.'],['Product owner','Priorities','Decides what gets built first and accepts work.'],['IT, security, procurement, finance','Supporting teams','Access, approvals, contracts, payment.']]},
+    {n:'Partner', items:[['AE & alliance lead','Commercials & AWS link','SOW, ACE, funding.'],['Solutions architect & PM','Design & delivery management','Architecture, plan, risks, status.'],['Engineers & MSP','Build & run','Hands-on delivery and operations.'],['AdminOps & RevOps','Money & data','Invoices, POE, claims, reporting.']]},
+    {n:'AWS', items:[['Account manager','Commercial','Programs, commitments, executive alignment.'],['Solutions architect','Advisory','Design reviews, best practices.'],['PDM / PSS','Partner programs','Funding, BVR reviews.'],['Support / TAM / ProServe','As needed','Technical help; ProServe if engaged.']]}
+  ])}</section>
+`;
+function triSVG(){
+  const W=640,H=330, P={AWS:[320,50],Partner:[110,270],Client:[530,270]};
+  const edges=[['AWS','Partner','APN terms · funding · co-sell'],['AWS','Client','Customer Agreement · services · bill'],['Partner','Client','MSA / SOW · delivery · invoices']];
+  let g='';
+  edges.forEach((e,i)=>{ const a=P[e[0]], b=P[e[1]], path=`M${a[0]} ${a[1]} L${b[0]} ${b[1]}`, back=`M${b[0]} ${b[1]} L${a[0]} ${a[1]}`, mx=(a[0]+b[0])/2+[-70,70,0][i], my=(a[1]+b[1])/2;
+    g+=`<path d="${path}" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/><path class="pipe-flow" d="${path}" stroke="var(--accent)" stroke-width="2" stroke-dasharray="3 8"/>`;
+    if(!RM) g+=`<circle r="6" fill="var(--signal)" opacity="0"><set attributeName="opacity" to="1" begin="${i*0.5}s"/><animateMotion dur="3s" begin="${i*0.5}s" repeatCount="indefinite" path="${path}"/></circle><circle r="6" fill="var(--accent)" opacity="0"><set attributeName="opacity" to="1" begin="${i*0.5+1.5}s"/><animateMotion dur="3s" begin="${i*0.5+1.5}s" repeatCount="indefinite" path="${back}"/></circle>`;
+    g+=`<rect x="${mx-108}" y="${my-13}" width="216" height="24" rx="12" fill="var(--surface)" stroke="var(--line)"/><text x="${mx}" y="${my+4}" text-anchor="middle" style="fill:var(--ink);font-size:11.5px">${e[2]}</text>`; });
+  Object.entries(P).forEach(([k,p])=>{ g+=`<g data-req="${k}" role="button" tabindex="0" aria-label="${k}" style="cursor:pointer"><circle cx="${p[0]}" cy="${p[1]}" r="40" fill="${REQ[k].c}"/><text x="${p[0]}" y="${p[1]+5}" text-anchor="middle" style="fill:var(--surface);font-weight:800;font-family:var(--display);font-size:16px">${k}</text></g>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:520px" role="img" aria-label="Triangle of agreements between AWS, partner and client">${g}</svg></div>`;
+}
+function showReq(k){ reqSel=k; const r=REQ[k]; const li=a=>`<ul class="clean small">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  $('#reqD').innerHTML = `<div class="card" style="border-top:4px solid ${r.c}"><span class="eyebrow">${k}</span><h4>General responsibilities</h4>${li(r.general)}</div><div class="card" style="border-top:4px solid ${r.c}"><span class="eyebrow">${k}</span><h4>What they require / expect</h4>${li(r.ofOthers)}</div><div class="card" style="border-top:4px solid ${r.c}"><span class="eyebrow">${k}</span><h4>Roles in a project</h4>${li(r.project)}</div>`;
+  document.querySelectorAll('[data-req]').forEach(b=>{ if(b.tagName==='BUTTON') b.setAttribute('aria-pressed', b.dataset.req===k); else b.querySelector('circle').setAttribute('r', b.dataset.req===k?46:40); }); }
+function showDM(i){ dmSel=i; const m=DELIVERY_MODELS[i], W=420, H=200, labels=['Customer team','Partner','AWS'], cols=['var(--good)','var(--signal)','var(--accent)'];
+  let g=''; labels.forEach((l,k)=>{ const y=30+k*52, w=(W-150)*m.w[k]/100; g+=`<text x="120" y="${y+18}" text-anchor="end" style="fill:var(--ink)">${l}</text><rect x="130" y="${y}" width="${W-150}" height="26" rx="5" fill="var(--sunk)"/><rect class="gx" style="animation-delay:${k*120}ms" x="130" y="${y}" width="${Math.max(w,0.1)}" height="26" rx="5" fill="${cols[k]}"/><text x="${136+w}" y="${y+18}" style="fill:var(--ink);font-weight:600">${m.w[k]}%</text>`; });
+  $('#dmChart').innerHTML = `<div class="eyebrow">Share of hands-on work (illustrative)</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Share of work by party">${g}</svg>`;
+  $('#dmD').innerHTML = `<h3>${m.n}</h3><p>${m.d}</p><div class="kv small"><dt>Typical when</dt><dd>${m.when}</dd><dt>AWS provides</dt><dd>${m.aws}</dd></div>`;
+  document.querySelectorAll('[data-dm]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.dm===i)); }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -3962,6 +4059,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='reqs'){ showReq(reqSel); showDM(dmSel); }
   if(id==='lifecycle'){ showSeq(0); showBiz(bizStage); renderGL(); }
   if(id==='identity'){ showOrgNode('root'); showAsg(0,0); renderCerts(); renderJML(); }
   if(id==='migration'){ showR(2); rqi=0; renderRQ(); }
@@ -4051,6 +4149,8 @@ document.addEventListener('click', e => {
   const sq = t.closest('[data-seq]'); if(sq) return showSeq(+sq.dataset.seq);
   const bz = t.closest('[data-biz]'); if(bz) return showBiz(+bz.dataset.biz);
   if(t.id==='glReset'){ store.set('golive', []); return renderGL(); }
+  const rqp = t.closest('[data-req]'); if(rqp) return showReq(rqp.dataset.req);
+  const dm = t.closest('[data-dm]'); if(dm) return showDM(+dm.dataset.dm);
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -4098,7 +4198,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
