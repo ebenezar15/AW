@@ -319,6 +319,7 @@ const CHAPTERS = [
   {id:'roles', t:'Partner vs AWS roles', g:'Partner business'},
   {id:'reqs', t:'Roles & requirements', g:'Partner business'},
   {id:'gtm', t:'GTM & co-sell', g:'Partner business'},
+  {id:'hypergtm', t:'Hyperscaler partner GTM', g:'Partner business'},
   {id:'opps', t:'Opportunity lifecycle', g:'Partner business'},
   {id:'sales', t:'Sales essentials', g:'Partner business'},
   {id:'value', t:'Business value realisation', g:'Partner business'},
@@ -788,6 +789,22 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['PDMaaS','Partner development manager as a service: a fractional, external PDM who runs field engagement, ACE pipeline and funding workflows.'],
+  ['PMMaaS','Partner marketing manager as a service: fractional partner marketing for cloud-aligned messaging, field assets and Marketplace copy.'],
+  ['PALaaS','Partner alliance lead as a service: fractional alliance leadership for programs, QBRs and executive alignment.'],
+  ['PRM (AWS)','Partner Revenue Measurement: attributes AWS consumption to a partner via Marketplace metering, resource tagging and API call decoration.'],
+  ['aws-apn-id tag','Resource tag used for PRM attribution on cost-incurring AWS resources.'],
+  ['PSQL','Partner sales-qualified lead: an opportunity qualified for co-sell with a hyperscaler.'],
+  ['MPO','Managed private offer: a Marketplace private offer set up and run on the buyer’s behalf.'],
+  ['FTR','Foundational Technical Review: AWS review that builds seller trust and opens co-sell paths.'],
+  ['Zombie listing','A Marketplace listing that is live but produces no pipeline.'],
+  ['Better Together narrative','Messaging that shows how a product and a cloud’s services deliver more value together.'],
+  ['Field enablement','Sessions that teach cloud sellers what you do, for whom, and when to introduce you.'],
+  ['Partner Center (Microsoft)','Microsoft’s partner portal, including co-sell.'],
+  ['Partner Advantage (Google Cloud)','Google Cloud’s partner program and portal.'],
+  ['MACC','Microsoft Azure Consumption Commitment: a customer’s committed Azure spend that eligible Marketplace purchases can draw down.'],
+  ['OLA','Optimization and Licensing Assessment: an AWS-funded assessment of licensing and right-sizing.'],
+  ['Hyperscaler','A very large cloud provider: AWS, Microsoft Azure, Google Cloud.'],
   ['Leadership Principles','Amazon’s 16 principles that guide how AWS employees think, decide and hire.'],
   ['Working Backwards / PR-FAQ','Amazon method: write the customer press release and FAQ before building.'],
   ['WBR','Weekly business review of a consistent set of metrics.'],
@@ -991,6 +1008,9 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['What are the three gaps that keep a Marketplace listing silent?',['Price, logo, website','No PDM relationship, no co-sell submissions, no field enablement','Too many reviews','Wrong AWS Region'],1,'Close all three and the listing starts producing introductions and pipeline.'],
+  ['Which is NOT one of the PRM attribution signals?',['Marketplace metering','aws-apn-id resource tagging','API call user-agent decoration','Number of LinkedIn followers'],3,'PRM uses metering, tagging and API decoration.'],
+  ['How do most large enterprise deals close on cloud marketplaces?',['Public list price checkout','Private Offers with negotiated terms','Gift cards','Free trials only'],1,'Private Offers carry the custom pricing and terms large deals need.'],
   ['How do AWS teams often make important decisions?',['Long slide decks','Written narratives read at the start of the meeting','Coin toss','Only by email'],1,'Amazon uses written narratives (and PR/FAQs) instead of slides for key decisions.'],
   ['What should every open co-sell deal in your CRM have?',['Only a name','Amount, future close date, next step, ACE ID and AWS AM','A video','Nothing'],1,'These fields keep CRM and ACE trustworthy.'],
   ['Does AWS deliver projects without partners?',['Never','Yes, through Professional Services and specialist teams, but most hands-on work is done by partners or customers','Only for startups','Only through Marketplace'],1,'AWS ProServe delivers selectively, often alongside partners; partners and customer teams do most delivery.'],
@@ -3283,7 +3303,7 @@ function countUp(el){ if(RM || el.children.length) return; const txt=el.textCont
   requestAnimationFrame(step); }
 
 /* Animate panels when their content changes */
-const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD','reqD','dmD','lpD','dayD','scBox']);
+const DETAIL_IDS = new Set(['solD','oppD','bvrCaseD','indD','roleD','mstageD','orgD','tierD','portalD','aiD','infraD','ideaGrid','ucGrid','pplGrid','svcGrid','psD','rD','rqBox','orgTreeD','asgD','jmlBox','seqD','bizD','reqD','dmD','lpD','dayD','scBox','motD','psvcD']);
 try{ new MutationObserver(ms=>{ if(RM) return; const seen=new Set(); ms.forEach(m=>{ const t=m.target; if(t.nodeType!==1 || seen.has(t)) return;
   if(t.classList.contains('detail') || DETAIL_IDS.has(t.id)){ seen.add(t); t.animate([{opacity:.35, transform:'translateY(6px)'},{opacity:1, transform:'none'}],{duration:320, easing:'cubic-bezier(.2,.8,.2,1)'}); } }); })
   .observe(document.getElementById('view'), {childList:true, subtree:true}); }catch(e){}
@@ -4301,6 +4321,7 @@ const PRACTICE = {
   quiz:{t:['Take the quiz once a week until you score 90%+','Revisit chapters for questions you miss','Quiz a colleague with the scenarios in the Daily playbook'], ex:'Scoring 22/42 in week 1 and 38/42 in week 6 is a nice, measurable learning story for your review.'},
   grow:{t:['Pick one use case from the list and propose it to your manager','Write your 30-60-90 plan in your own words','Track impact metrics monthly'], ex:'You propose the funding tracker in week 2, launch it in week 4, and by month 3 it shows $38k recovered.'},
   recognition:{t:['Add 3 entries to the work log this week','Mark the things you own and their health','Calculate one impact in money with the calculators'], ex:'Every Friday you log 2 wins in 2 minutes. At review time, the exported summary shows 26 wins with numbers.'},
+  hypergtm:{t:['Count your co-sell submissions in the last 90 days (target: 3+)','Ask your alliance lead whether PRM attribution is live and validated','Score one live opportunity with the PSQL scorer before it goes into ACE'], ex:'A software partner had a live listing and zero pipeline for six months. After briefing two PDMs, submitting four qualified co-sell opportunities and running two field enablement sessions, the first AWS seller introduction arrived in week seven.'},
   playbook:{t:['Pick your role in the day planner and follow it for one week','Try 5 scenarios','Use the invoice builder before sending your next invoice'], ex:'After one week following the planner, invoices go out the same day as sign-offs and nothing slips past a deadline.'}
 };
 function practicePanel(id){ const p=PRACTICE[id]; if(!p) return '';
@@ -4527,6 +4548,214 @@ function renderACE(reveal){ const fl=store.get('aceflags', []);
 function showWK(k){ wkSel=k; FLOWS.wk = WORKED[k]; $('#wkD').innerHTML = flow('wk', FLOWS.wk, {label:'Step', pipe:true}); document.querySelectorAll('[data-wk]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.wk===k)); }
 function renderSnip(){ $('#snipOut').textContent = SNIPS[snipSel]; document.querySelectorAll('[data-snip]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.snip===snipSel)); }
 
+/* ================= HYPERSCALER PARTNER GTM (operator-led execution) ================= */
+const MOTIONS = [
+  {k:'pd', n:'Partner development', s:'Field relationships & pipeline', c:'var(--accent)', d:'Building trusted relationships with hyperscaler field teams (account managers, PDMs, partner managers, solutions architects) and turning them into co-sell pipeline every week.', acts:['Partner plan aligned to the cloud’s priorities','Map target sellers, SA teams and industry pods','Introductions, alignment calls, follow-ups','Validate opportunities and progress them in ACE / Partner Center','Weekly pipeline movement reporting'], kpi:'Named field contacts who respond; opportunities progressing; time to first opportunity'},
+  {k:'pm', n:'Partner marketing', s:'Messaging sellers can use', c:'var(--signal)', d:'Translating the product into cloud-aligned, “Better Together” messaging and field-ready assets so hyperscaler sellers can explain it in 30 seconds.', acts:['Cloud-aligned value propositions by industry and persona','Co-sell pitch decks, solution briefs, battlecards, talk tracks','Marketplace listing and Private Offer copy','Co-marketing and MDF-funded demand generation','Competency / designation messaging (e.g. GenAI)'], kpi:'Seller confidence; co-sell conversion; Marketplace listing conversion'},
+  {k:'ao', n:'Alliance operations', s:'Programs, QBRs, executives', c:'var(--good)', d:'The operational and executive layer: program navigation, designations, funding tracking, QBRs and keeping executive relationships active across clouds.', acts:['Multi-cloud alliance strategy and partner plan','APN / ISV Accelerate / Competency timelines; Microsoft designations','Track MDF, MAP and other funding allocations','Prepare data-driven QBRs; enforce follow-ups','Board-level reporting on cloud-attributed pipeline'], kpi:'Tier and designations kept; funding utilized; cloud-attributed ARR visible'},
+  {k:'cs', n:'Co-sell', s:'From submission to closed deal', c:'#7a5bd0', d:'Running joint selling with hyperscaler sellers end to end: opportunity identification, submission, field engagement, deal validation and revenue attribution.', acts:['Qualify opportunities (PSQL scoring)','Submit in ACE (AWS), Partner Center (Microsoft), Partner Advantage (Google Cloud)','Field enablement sessions for sellers','Unblock friction with sellers each week','Attribute won revenue to the cloud'], kpi:'Co-sell acceptance rate; cloud-sourced deals; win rate'},
+  {k:'mp', n:'Marketplace', s:'Procurement vehicle', c:'#c0398a', d:'Using cloud marketplaces as the way enterprises buy: Private Offers, channel partner offers, committed-spend drawdown, and operations that scale.', acts:['Listing optimization with proof points','Private Offers and channel partner (CPPO) offers','ACE-to-Marketplace workflow','Disbursement reconciliation and renewals','Foundational Technical Review (FTR) readiness'], kpi:'Private offers per month; Marketplace-influenced revenue; time to transact'}
+];
+const PSVC = [
+  {n:'PDMaaS', full:'Partner Development Manager as a Service', role:'Your fractional PDM', gap:['Ad-hoc co-selling with unpredictable field cadence','Eligible funding expires unused every quarter','Hyperscaler sellers shift focus to better-managed ISVs','Engineers pulled into partner admin'], pillars:[['Partner strategy & field alignment',['Partner plan aligned to cloud priorities','Map field teams, sellers, SAs, industry pods','Weekly field engagement and follow-ups']],['Pipeline development & co-sell',['Validate co-sell eligibility','Progress deals in ACE / Partner Center','Weekly pipeline movement reports']],['PRM, Marketplace & readiness',['PRM activation and tagging hygiene','Funding workflow support','Marketplace and Private Offer support']]], out:['Partner plan','Weekly co-sell pipeline progression','Monthly funding program status','Portal hygiene score','Weekly governance summary'], impact:['Faster co-sell activation','Shorter time to first opportunity','Funding captured instead of expiring','Higher Marketplace conversion']},
+  {n:'PMMaaS', full:'Partner Marketing Manager as a Service', role:'Your fractional partner marketer', gap:['Sellers can’t grasp the use case quickly','Generic messaging without hyperscaler context','Listings don’t resonate with enterprise buyers','No bandwidth to build battlecards'], pillars:[['Cloud messaging & positioning',['Cloud-aligned value propositions','Industry and persona messaging','Better Together narratives']],['Field assets & sales readiness',['Use cases by vertical','Solution briefs and one-pagers','Co-sell decks per cloud, talk tracks, objection handling']],['Marketplace & launch optimization',['Listing optimization','Private Offer packaging','Launch support and attribution setup']]], out:['Marketing execution plan','Better Together narratives','Co-sell decks and field assets','Solution briefs and use cases','Weekly execution summary'], impact:['Higher co-sell conversion','Faster capability-to-positioning','Consistent Marketplace visibility','Faster ACE stage progression']},
+  {n:'PALaaS', full:'Partner Alliance Lead as a Service', role:'Your fractional alliance leader', gap:['Executive relationships go cold after intros','Multi-cloud strategy only on paper','Tier and program deadlines missed','Founders stuck in operational partner meetings'], pillars:[['Alliance leadership & field coordination',['Multi-cloud alliance strategy','Executive relationship map (BD, PDM, industry)','Weekly alliance engagement rhythm']],['Program navigation & designations',['APN, ISV Accelerate, commit alignment','Competencies and designations timeline','Track MDF, MAP, OLA funding; Private Offer workflows']],['QBR prep & executive alignment',['Data-driven QBRs','Internal alignment: sales, product, finance','Board reporting on cloud-attributed ARR']]], out:['Alliance strategy','QBR materials and action logs','Program compliance tracking','Funding milestone tracking','Monthly executive pipeline report'], impact:['Faster deals through field alignment','No “ghosting” of relationships','Funding used to offset acquisition cost','No lost designations from missed deadlines']},
+  {n:'PRMaaS', full:'Partner Revenue Measurement as a Service', role:'Attribution infrastructure', gap:['Broken attribution across regions','Incomplete tagging → unreliable Partner Central reporting','Missed MDF due to low visibility','Engineering friction from manual tagging'], pillars:[['Architecture & tagging strategy',['Resource and architecture assessment','Verify Marketplace product codes','Cross-account IAM design']],['IaC integration & deployment',['Terraform / CloudFormation / CDK modules','Tag all supported resources','Partner, Customer or Hybrid deployment patterns']],['Validation & governance',['Validate signals in Partner Analytics','Ongoing compliance governance','Audit-ready documentation']]], out:['Tagging plan across accounts','IaC PRM modules','Compliance documentation','Attribution verification plan','Standard tagging rules'], impact:['Revenue attribution visible to cloud leaders','Funding eligibility protected','Tier progression supported','No silent attribution drops']},
+  {n:'PCMaaS', full:'Partner Central Migration readiness', role:'Console migration readiness', gap:['Duplicate registrations blocking co-sell tracking','Access failures during live deals','Billing and funding workflow disruption','Confusion about IAM, SSO, Entra ID linking'], pillars:[['IAM, SSO & account linking',['Prepare for IAM-based authentication','Align SSO and permissions','Validate AWS account linking']],['Unified console workflows',['Update opportunity routing','Align co-sell initiation logic','Check Marketplace portal parity']],['Cross-functional preparation',['Align GTM, ops and partner teams','Define ownership in the new console','Update sales expectations']]], out:['Verified migration to the unified console','IAM access mapped to roles','Documented steps','Partner portal ↔ Marketplace portal linkage'], impact:['No disruption to co-sell or Marketplace','No duplicate registrations','Clear ownership']}
+];
+const STAGES_GTM = [
+  {n:'Stage 1 · Activate', dur:'about 1–3 months', fit:'Pre-Series A → Series A: listing needed, or listed with little traction', get:['Optimized Marketplace listing','Better Together messaging','Partner portal readiness and ACE/PRM hygiene','Early co-sell activation','90-day roadmap and evidence package'], impact:['Baseline alignment','Foundational messaging','Early co-sell activation','Marketplace foundation'], w:[0,3]},
+  {n:'Stage 2 · Market entry', dur:'about 4 months', fit:'Series A → B: global ISVs expanding into the US with cloud traction', get:['Verified co-sell opportunities in the new market','First cloud-attributable signal','PRM with consumption data','Partner and channel map (incl. CPPO)','ISV Accelerate progression proof'], impact:['2–4× stronger field engagement*','40–60% fewer co-sell rejections*','1–2 quarters earlier visibility*'], w:[3,7]},
+  {n:'Stage 3 · Multi-cloud scale', dur:'about 6 months', fit:'Series A → C: multi-cloud ISVs building repeatable global revenue', get:['Co-sell across AWS, Azure, Google Cloud','Scalable attribution model','Marketplace hygiene on all three','PRM partner-lifecycle automation','SI/GSI engagement map'], impact:['3–5× attributable cloud revenue*','2–3× stronger SI/GSI alignment*','25–40% Marketplace lift*'], w:[7,13]}
+];
+const CLOUDS = [
+  ['Co-sell system','ACE in AWS Partner Central','Partner Center co-sell','Partner Advantage portal'],
+  ['Marketplace','AWS Marketplace','Microsoft Marketplace (Azure)','Google Cloud Marketplace'],
+  ['Committed-spend drawdown','Eligible purchases count toward AWS commitments (EDP/PPA)','Eligible purchases count toward MACC','Eligible purchases count toward Google Cloud commits'],
+  ['Custom deals','Private Offers; Channel Partner Private Offers (CPPO)','Private offers; multiparty private offers','Private offers; reseller offers'],
+  ['ISV co-sell program','ISV Accelerate','IP co-sell / co-sell ready','Partner Advantage ISV programs'],
+  ['Technical trust signal','Foundational Technical Review (FTR)','Technical validation for co-sell','Integration / technical validation'],
+  ['Attribution','Partner Revenue Measurement (PRM)','Partner attribution in Partner Center','Partner attribution in Partner Advantage'],
+  ['Credentials','Specializations / Competencies','Solutions Partner designations, specializations','Specializations, expertise']
+];
+const CASES_GTM = [
+  {n:'Managed detection & response (MDR) security ISV', cloud:'AWS · 6-month sprint', sit:'Strong product-market fit and a fast direct sales motion, but no AWS-specific GTM architecture. AWS sellers couldn’t route deals, use the Marketplace, or position the solution confidently.', steps:[['Live GTM sprint','A 4-hour in-person session with AWS PDMs and the ISV’s alliances, field marketing, channel, demand gen, creative and product marketing teams.'],['GTM plan as the contract','Target segments, pipeline targets, owners, PSQL funnel definitions and a bi-monthly QBR cadence.'],['Marketplace readiness in 90 days','Managed Private Offers (MPO) and Channel Partner Private Offers (CPPO) made fully operational.'],['Field enablement rebuilt','AWS-aligned value propositions and reference architectures with EC2, S3, EKS and Lambda.'],['ACE-to-Marketplace workflow','A defined path from co-sell opportunity to Marketplace transaction to cut procurement friction.']], res:[['2,000+','Partner sales-qualified leads (PSQLs)'],['9×','ROI validated'],['300%+','of pipeline goal'],['168','SQLs from AWS-aligned campaigns'],['3,300','MQLs from one campaign series'],['Managed','status inside AWS security demand generation']], note:'Moved from unmanaged to managed status, which the case study says fewer than 5% of security ISVs achieved at the time.'},
+  {n:'AI real-time threat-intelligence ISV', cloud:'AWS · 6-month sprint', sit:'Differentiated product and enterprise traction, a Series C fundraise underway and investors asking for cloud traction proof. AWS sellers lacked routing logic and clarity to progress opportunities in ACE.', steps:[['Live GTM workshop','Alliances, product, marketing and sales leaders aligned on a baseline and a six-month accountability plan.'],['Co-build prioritization','Mapped integrations with AWS security services, focusing on Amazon Security Lake and Amazon GuardDuty, creating a validated Better Together story.'],['PSQL scoring model','Defined the co-sell workflow from origination to ACE submission, with AE talk tracks and qualification guides.'],['Marketplace acceleration','Marketplace tooling integration, CRM widgets and an ACE-to-Marketplace workflow.'],['AWS-reviewed GTM plan','Used to secure marketing development funds.']], res:[['$300K','MDF secured'],['<12 months','to graduate from AWS Rising Star'],['Repeatable','co-sell rhythm via ACE'],['Public sector','Marketplace wins']], note:'Exceeded PSQL targets and scaled Marketplace Private Offer adoption.'},
+  {n:'Small business ISV (testimonial)', cloud:'AWS', sit:'A small company with limited capacity struggling to engage a large channel partner.', steps:[['Clarity on engagement','How to engage AWS through a structured activation program.'],['More listings','Launched more Marketplace listings.'],['Funding','Unlocked credits and funding.']], res:[['$40K+','credits and funding unlocked'],['More','Marketplace listings launched']], note:'Described the external team as a “force multiplier” for its AWS strategy.'}
+];
+const MYTHS = [
+  ['“List it and they’ll come.”','High-value B2B deals close through Private Offers with negotiated terms, not public listings. A listing is a procurement vehicle, not a lead-gen machine.'],
+  ['“Our sales team will figure it out.”','Marketplace selling is a different motion: registering deals in Partner Central, explaining why burning cloud commit matters, creating Private Offers fast. Without a playbook, reps ignore it.'],
+  ['“We’ll handle operations later.”','Manual offers work at 2 deals a quarter and break at 10 a month. Operations are the engine, not the clean-up crew.']
+];
+const FAILS = [
+  ['Readiness','Treated as a form (tax, bank, page live). Real readiness maps sales workflows to cloud processes and passes the Foundational Technical Review so sellers trust the product.'],
+  ['Listing','A generic brochure. A strong page answers in 10 seconds: what does this do for my customer, and why should I bet my credibility on it?'],
+  ['Seller motion','Every deal is a one-off: no ACE registration, slow Private Offers, no narrative for sellers. Fix with ACE hygiene and standard offer workflows.'],
+  ['Operations','Offers tracked in chat threads, renewals in someone’s calendar, finance unable to reconcile disbursements to the CRM.']
+];
+const SELFCHECK = ['Is your sales team equipped (and paid) with a repeatable cloud co-sell playbook?','Can you create and send a Private Offer from your CRM in under an hour?','Do you have one dashboard showing Marketplace pipeline from opportunity to disbursed revenue?','Have you briefed a PDM and submitted at least 3 co-sell opportunities in the last 90 days?','Have you run at least 2 field enablement sessions with cloud sellers?','Is PRM attribution live and validated?'];
+const PSQL_Q = [['Customer already runs on this cloud (or is migrating)',2],['Your solution uses or integrates with the cloud’s services',2],['There is a defined use case and pain',2],['Budget or committed cloud spend available',1],['Timeline within two quarters',1],['A cloud account manager covers the account',1],['Customer is open to buying via the Marketplace',1]];
+let motSel='pd', psvcSel=0, gcase=0, scState={};
+V.hypergtm = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Advanced · Multi-cloud</span><h1>Hyperscaler partner GTM</h1>
+  <p class="lede">How software companies (ISVs) turn cloud marketplace listings into real pipeline across AWS, Microsoft Azure and Google Cloud. It runs on five motions (partner development, partner marketing, alliance operations, co-sell and Marketplace), often delivered by fractional, operator-led teams: PDMaaS, PMMaaS, PALaaS, plus attribution (PRMaaS) and console migration (PCMaaS).</p></header>
+
+  <section class="section"><header><h2>Listed is not selling</h2><p class="muted">Drag the slider to see what changes when the execution gap is closed.</p></header>
+  <div class="card"><input type="range" id="lsRange" min="0" max="100" value="0" aria-label="Execution progress" style="width:100%;accent-color:var(--accent)"><div id="lsOut"></div></div>
+  <div class="card tint small"><b>The mall analogy:</b> a listing is like opening a shop in a huge mall. Millions of visitors and big anchor stores that could send customers your way. But someone still has to introduce you to the mall staff, explain what you sell and give them a reason to send buyers through your door. In cloud terms, those staff are partner development managers and field sellers, and they only recommend ISVs they know and trust.</div></section>
+
+  <section class="section"><header><h2>The five motions</h2><p class="muted">Your company sits in the middle; each motion connects it to the hyperscalers. Click a motion.</p></header>
+  <div class="card">${motionHub()}</div>
+  <div class="detail" id="motD"></div></section>
+
+  <section class="section"><header><h2>The execution model</h2><p class="muted">Four steps from relationships to evidence. Press play.</p></header>
+  ${flow('aedp', FLOWS.aedp = [
+    {t:'Activate', d:'Identify and build relationships with account executives, PDMs and partner managers at AWS, Azure and Google Cloud. Human trust, not just portal registrations.', do:['Map the field teams for your target accounts','Brief PDMs on ICP and use cases'], check:['Named field contacts who respond'], tools:['Partner plan, CRM']},
+    {t:'Drive', d:'Run co-sell end to end: opportunity identification, field engagement, deal validation and revenue attribution. Not just filed; followed through.', do:['Submit validated opportunities','Weekly follow-ups with sellers'], check:['Attributable cloud-sourced deals'], tools:['ACE, Partner Center, Partner Advantage']},
+    {t:'Convert', d:'Close the gap between listing and revenue: co-marketing alignment, MDF strategy, field enablement and Private Offers.', do:['Field enablement sessions','MDF-funded campaigns','Private Offers'], check:['Repeatable deal flow'], tools:['Marketplace, MDF, enablement decks']},
+    {t:'Prove', d:'Produce verified, attributable evidence boards and investors can use: co-sell logs, field-validated deals, revenue attribution, relationship maps.', do:['Monthly attribution report','Board-ready pipeline pack'], check:['Holistic GTM ROI story'], tools:['PRM, dashboards']}
+  ], {label:'Step', pipe:true})}</section>
+
+  <section class="section"><header><h2>Same motions, three clouds</h2><p class="muted">The names differ; the mechanics are similar. Check each cloud’s current program details.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>What</th><th>AWS</th><th>Microsoft Azure</th><th>Google Cloud</th></tr></thead><tbody>${CLOUDS.map((r,i)=>`<tr><td><b>${r[0]}</b></td>${r.slice(1).map((c,k)=>`<td class="small"><span style="animation:rise .4s ${(i*3+k)*35}ms both;display:inline-block">${c}</span></td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
+
+  <section class="section"><header><h2>Fractional GTM roles “as a service”</h2><p class="muted">Many ISVs can’t hire a full alliance team yet, so they embed an external operator team month to month. Pick a service.</p></header>
+  <div class="chips">${PSVC.map((p,i)=>`<button class="chip" type="button" data-psvc="${i}" aria-pressed="${i===psvcSel}">${p.n}</button>`).join('')}</div>
+  <div id="psvcD" class="section"></div>
+  <h3>Who does what: PDM vs PMM vs PAL</h3>
+  <div class="card">${roleVenn()}</div></section>
+
+  <section class="section"><header><h2>Pick the stage, then execute</h2><p class="muted">Stage-based programs matched to GTM maturity. Durations and impact ranges are as described by the provider (* = provider-claimed ranges, not guarantees).</p></header>
+  <div class="card chart">${stageGantt()}</div>
+  <div class="grid g3">${STAGES_GTM.map(s=>`<div class="card"><span class="eyebrow">${s.dur}</span><h3>${s.n}</h3><p class="small muted">${s.fit}</p><div class="eyebrow">What you get</div><ul class="clean small">${s.get.map(x=>`<li>${x}</li>`).join('')}</ul><div class="eyebrow">Impact</div><div class="tags">${s.impact.map(x=>`<span class="tag a" style="white-space:normal">${x}</span>`).join('')}</div></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Case studies</h2><p class="muted">Customer names withheld. Pick one, then play the approach.</p></header>
+  <div class="chips">${CASES_GTM.map((c,i)=>`<button class="chip" type="button" data-gcase="${i}" aria-pressed="${i===gcase}">${c.n}</button>`).join('')}</div>
+  <div id="gcaseD" class="section"></div></section>
+
+  <section class="section"><header><h2>Lesson 1: Why “zombie listings” stay silent</h2><p class="muted">Inside the hyperscalers, inactive listings are called zombie listings: technically alive, functionally dead. Three gaps cause it.</p></header>
+  <div class="card">${gapSVG()}</div>
+  <div class="grid g3">${[['Gap 1 · No PDM relationship','A real relationship means the PDM knows your product and ICP and can explain your value to a seller in 30 seconds. It needs a structured, consistent approach.'],['Gap 2 · No co-sell submissions','Field teams use submission history to decide which ISVs deserve attention. Most ISVs submit zero. A healthy early target: 3+ co-sell opportunities in the first 90 days.'],['Gap 3 · No field enablement','Sessions that explain the product, ICP and problem solved give sellers a reason to introduce you. Skipping this is the number-one reason listings stay silent.']].map(x=>`<div class="card warnc"><h4>${x[0]}</h4><p class="small">${x[1]}</p></div>`).join('')}</div>
+  <div class="card tint small"><b>90-day targets after closing the gaps:</b> ICP-aligned marketplace activation · 3+ co-sell opportunities activated · 2+ field enablement sessions · active PDM relationships · an investor-ready cloud GTM brief. Results: enterprise introductions flow, pipeline grows without extra headcount, and the listing becomes board-ready evidence.</div></section>
+
+  <section class="section"><header><h2>Lesson 2: Why Marketplace GTM fails, and what winners do</h2><p class="muted">Six months after launch, most SaaS companies have zero Marketplace pipeline. Flip each myth.</p></header>
+  <div class="grid g3">${MYTHS.map((m,i)=>`<button type="button" class="card" data-myth="${i}" style="text-align:left;cursor:pointer;font:inherit;color:inherit"><span class="eyebrow">Myth ${i+1} · click to flip</span><h4 id="mythT${i}">${m[0]}</h4><p class="small muted" id="mythB${i}">Click to see the reality.</p></button>`).join('')}</div>
+  <h3>Where it actually breaks</h3>
+  ${flow('mpfail', FLOWS.mpfail = FAILS.map(f=>({t:f[0]+' failure', d:f[1], do:[], check:[], tools:[]})), {label:'Failure point', pipe:true})}
+  <div class="grid g3">${[['Faster deals','Buyers use their existing cloud relationship instead of new vendor onboarding; cycles that take months can shrink to weeks.'],['Committed budgets','Purchases can count toward the customer’s cloud commitment, money already committed, so you help them use budget instead of competing for it.'],['Cloud sellers working for you','Field teams are incentivized to help partners close when deals are registered correctly and the product is reviewed.']].map(x=>`<div class="card tint"><h4>${x[0]}</h4><p class="small">${x[1]}</p></div>`).join('')}</div>
+  <h3>Self-check: system or just a listing?</h3>
+  <div class="card"><div id="scList" style="display:grid;gap:2px"></div><div id="scRes"></div></div></section>
+
+  <section class="section"><header><h2>Lesson 3: Partner Revenue Measurement (PRM)</h2><p class="muted">AWS moved from estimated partner influence to service-level attribution: consumption tied to your product shows up on AWS scorecards. AWS set July 31, 2026 as a key PRM compliance date.</p></header>
+  <div class="card">${prmSVG()}</div>
+  <div class="grid g2">
+    <div class="card warnc"><h4>Without PRM data</h4><ul class="clean small"><li>Funding benefits (MDF and others) at risk</li><li>“Deployed on AWS” badge at risk</li><li>Reduced co-sell eligibility and seller visibility</li><li>Marketplace and ACE motions can stall</li></ul></div>
+    <div class="card"><h4>DIY pitfalls</h4><ul class="clean small"><li>Infrastructure-as-code drift breaks tags</li><li>Untagged “shadow” resources</li><li>New workloads spin up unmonitored</li><li>Engineers pulled off the roadmap</li></ul></div>
+  </div>
+  ${flow('prmimpl', FLOWS.prmimpl = [
+    {t:'Architecture & tagging strategy', d:'Assess resources, verify Marketplace product codes, design cross-account IAM and the tagging strategy.', do:['Choose pattern: partner account, customer account or hybrid'], check:['Every cost-incurring resource covered'], tools:['Architecture review']},
+    {t:'IaC integration & deployment', d:'Add PRM tagging into Terraform, CloudFormation or CDK without disrupting engineering.', do:['aws-apn-id tag on resources','User-agent decoration in API/CLI calls'], check:['Zero-disruption rollout'], tools:['Terraform, CloudFormation, CDK']},
+    {t:'Validation & governance', d:'Confirm signals arrive in Partner Analytics; set ongoing compliance checks and documentation.', do:['Monitoring for untagged resources'], check:['Attribution visible and stable'], tools:['Partner Analytics, Config rules']}
+  ], {label:'Phase', pipe:true})}</section>
+
+  <section class="section"><header><h2>Lesson 4: Moving to the new Partner Central console</h2><p class="muted">AWS unified its Partner and Marketplace consoles. A messy migration can lock teams out of co-sell during live deals.</p></header>
+  <div class="grid g3">${[['IAM, SSO & account linking','Prepare for IAM-based sign-in (including Entra ID / SSO) and validate the AWS account link.'],['Zero duplicate registrations','Clean legacy permissions and IDs so the company isn’t registered twice.'],['Workflow modernization','Update opportunity routing, co-sell initiation and Marketplace parity; define owners.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div>
+  <p class="small muted">See the Identity, access & certs chapter for IAM Identity Center basics.</p></section>
+
+  <section class="section"><header><h2>The ACE-to-Marketplace workflow</h2><p class="muted">The path both case studies built so co-sell turns into transactions.</p></header>
+  ${flow('ace2mp', FLOWS.ace2mp = [
+    {t:'Qualify (PSQL)', d:'Score the opportunity against the PSQL model before submitting.', do:['Use the scorer below'], check:['Meets threshold'], tools:['CRM']},
+    {t:'Submit in ACE', d:'Register with use case, AWS services, expected spend and target close.', do:['Complete fields; link account'], check:['Accepted by AWS'], tools:['ACE']},
+    {t:'Field engagement', d:'AWS seller engaged; enablement or joint call.', do:['Talk track and reference architecture'], check:['Seller actively helping'], tools:['Enablement deck']},
+    {t:'Private Offer', d:'Managed Private Offer or Channel Partner Private Offer with negotiated terms.', do:['Create from CRM integration'], check:['Sent within an hour'], tools:['Marketplace portal / tooling']},
+    {t:'Customer accepts', d:'Purchase can draw down the customer’s cloud commitment.', do:[], check:['Agreement live'], tools:['AWS Marketplace']},
+    {t:'Disburse & reconcile', d:'AWS bills and disburses; finance matches to the CRM deal.', do:['Monthly reconciliation'], check:['No unmatched payouts'], tools:['Disbursement reports, QuickBooks']},
+    {t:'Attribute & report', d:'Revenue attributed via PRM and ACE; added to board-ready evidence.', do:['Update attribution dashboard'], check:['Cloud-sourced ARR visible'], tools:['PRM, dashboard']}
+  ], {label:'Step', pipe:true})}</section>
+
+  <section class="section"><header><h2>Practice: PSQL qualification scorer</h2><p class="muted">A partner sales-qualified lead (PSQL) is a lead qualified for co-sell. Tick what’s true about an opportunity.</p></header>
+  <div class="grid g2"><div class="card">${PSQL_Q.map((q,i)=>`<label class="check"><input type="checkbox" id="psq${i}" data-psq="${i}"><span>${q[0]} <span class="muted small">(+${q[1]})</span></span></label>`).join('')}</div><div class="card tint" id="psqOut"></div></div></section>
+
+  <section class="section"><header><h2>Weekly operating cadence</h2><p class="muted">These motions run every week, not every quarter.</p></header>
+  <div class="tablewrap"><table><thead><tr><th>Cadence</th><th>Partner development</th><th>Partner marketing</th><th>Alliance operations</th></tr></thead><tbody>
+    <tr><td><b>Weekly</b></td><td>Field alignment calls; ACE progression; seller follow-ups</td><td>Asset requests from sellers; content calendar</td><td>Alliance engagement rhythm; action log</td></tr>
+    <tr><td><b>Monthly</b></td><td>Funding program status; portal hygiene score</td><td>Listing review; campaign results</td><td>Executive pipeline report; program compliance</td></tr>
+    <tr><td><b>Quarterly</b></td><td>Partner plan refresh</td><td>Messaging refresh for new launches</td><td>QBRs with each cloud; tier and designation check</td></tr>
+  </tbody></table></div>
+  <div class="card tint small"><b>Board-ready evidence pack:</b> co-sell logs, field-validated deal evidence, revenue attribution (PRM), field relationship maps, funding secured and used, Marketplace pipeline from opportunity to disbursement.</div></section>
+`;
+function motionHub(){
+  const W=720,H=480,cx=360,cy=228,n=MOTIONS.length;
+  let g=`<circle cx="${cx}" cy="${cy}" r="150" fill="none" stroke="var(--line)" stroke-dasharray="3 6"/>`;
+  MOTIONS.forEach((m,i)=>{ const a=(-90+i*360/n)*Math.PI/180, x=cx+165*Math.cos(a), y=cy+150*Math.sin(a), path=`M${cx} ${cy} L${x.toFixed(1)} ${y.toFixed(1)}`;
+    g+=`<path d="${path}" stroke="${m.c}" stroke-width="3" class="pipe-flow" stroke-dasharray="4 8"/>`;
+    if(!RM) g+=`<circle r="5" fill="${m.c}" opacity="0"><set attributeName="opacity" to="1" begin="${i*0.3}s"/><animateMotion dur="2.2s" begin="${i*0.3}s" repeatCount="indefinite" path="${path}"/></circle>`;
+    const [l1,l2]=wrap2(m.n,14);
+    g+=`<g data-mot="${m.k}" role="button" tabindex="0" aria-label="${m.n}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="46" fill="var(--surface)" stroke="${m.c}" stroke-width="3"/><text x="${x}" y="${y-2}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:12px">${l1}</text><text x="${x}" y="${y+13}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:12px">${l2}</text><text x="${x}" y="${y+(y>cy?66:-56)}" text-anchor="middle" style="fill:var(--muted);font-size:11px">${m.s}</text></g>`; });
+  g+=`<circle cx="${cx}" cy="${cy}" r="52" fill="var(--accent)"/><g class="spin"><circle cx="${cx}" cy="${cy}" r="64" fill="none" stroke="var(--accent)" stroke-dasharray="4 6"/></g><text x="${cx}" y="${cy-4}" text-anchor="middle" style="fill:var(--accent-ink);font-family:var(--display);font-weight:800;font-size:15px">ISV</text><text x="${cx}" y="${cy+13}" text-anchor="middle" style="fill:var(--accent-ink);font-size:10.5px">AWS · Azure · GCP</text>`;
+  g+=`<rect x="${cx-150}" y="${H-28}" width="300" height="22" rx="11" fill="var(--sunk)"/><text x="${cx}" y="${H-13}" text-anchor="middle" style="fill:var(--muted);font-size:11px">Foundation: PRM attribution · clean portals · evidence</text>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:560px" role="img" aria-label="Five GTM motions around the ISV">${g}</svg></div>`;
+}
+function showMot(k){ motSel=k; const m=MOTIONS.find(x=>x.k===k);
+  $('#motD').innerHTML = `<span class="eyebrow" style="color:${m.c}">Motion</span><h3>${m.n}</h3><p>${m.d}</p><div class="cols"><div><div class="eyebrow">What it involves</div><ul class="clean">${m.acts.map(a=>`<li>${a}</li>`).join('')}</ul></div><div><div class="eyebrow">How it’s measured</div><p class="small">${m.kpi}</p></div></div>`;
+  document.querySelectorAll('svg [data-mot]').forEach(g=>g.querySelector('circle').setAttribute('stroke-width', g.dataset.mot===k?6:3)); }
+function showPsvc(i){ psvcSel=i; const p=PSVC[i]; const li=a=>`<ul class="clean small">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  $('#psvcD').innerHTML = `<div class="card tint"><span class="eyebrow">${p.role}</span><h2>${p.n}</h2><p class="small"><b>${p.full}</b></p></div>
+  <div class="grid g2"><div class="card warnc"><h4>The resource gap it fills</h4>${li(p.gap)}</div><div class="card"><h4>Outputs</h4>${li(p.out)}</div></div>
+  <h3>Three execution pillars</h3>
+  <div class="grid g3">${p.pillars.map((pl,k)=>`<div class="card" style="border-top:4px solid var(--accent);animation:rise .45s ${k*120}ms both"><span class="eyebrow">Pillar ${k+1}</span><h4>${pl[0]}</h4>${li(pl[1])}</div>`).join('')}</div>
+  <div class="card"><h4>Impact</h4><div class="tags">${p.impact.map(x=>`<span class="tag a" style="white-space:normal">${x}</span>`).join('')}</div></div>`;
+  document.querySelectorAll('[data-psvc]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.psvc===i)); }
+function roleVenn(){
+  const W=640,H=330, C=[[240,140,'PDM','Field & pipeline','var(--accent)'],[400,140,'PMM','Messaging & assets','var(--signal)'],[320,235,'PAL','Programs & executives','var(--good)']];
+  let g=C.map(c=>`<circle cx="${c[0]}" cy="${c[1]}" r="105" fill="${c[4]}" fill-opacity=".14" stroke="${c[4]}" stroke-width="2"/>`).join('');
+  g+=C.map((c,i)=>{ const ox=[-60,60,0][i], oy=[-35,-35,55][i]; return `<text x="${c[0]+ox}" y="${c[1]+oy}" text-anchor="middle" style="font-family:var(--display);font-weight:800;font-size:18px;fill:${c[4]}">${c[2]}</text><text x="${c[0]+ox}" y="${c[1]+oy+16}" text-anchor="middle" style="fill:var(--ink);font-size:11px">${c[3]}</text>`; }).join('');
+  g+=`<text x="320" y="128" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">Field enablement</text><text x="262" y="205" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">Funding</text><text x="378" y="205" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">Co-marketing</text><text x="320" y="172" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:11px">Co-sell pipeline</text>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:480px" role="img" aria-label="Overlap of PDM, PMM and PAL responsibilities">${g}</svg></div>`;
+}
+function stageGantt(){ const W=760, lh=40, pl=190, H=STAGES_GTM.length*lh+40, max=13, x=v=>pl+(W-pl-20)*v/max;
+  let g=''; for(let m=0;m<=13;m++){ g+=`<line x1="${x(m)}" x2="${x(m)}" y1="10" y2="${H-24}" stroke="var(--line)" stroke-dasharray="${m%3?'2 4':'0'}"/>${m%3===0?`<text x="${x(m)}" y="${H-8}" text-anchor="middle">${m} mo</text>`:''}`; }
+  STAGES_GTM.forEach((s,i)=>{ const y=i*lh+16; g+=`<text x="${pl-8}" y="${y+16}" text-anchor="end" style="fill:var(--ink);font-weight:600">${s.n}</text><rect class="gx" style="animation-delay:${i*180}ms" x="${x(s.w[0])}" y="${y}" width="${x(s.w[1])-x(s.w[0])}" height="24" rx="6" fill="var(--accent)" fill-opacity="${0.5+i*0.2}"/>`; });
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="min-width:620px;width:100%" role="img" aria-label="Stage programs laid out over about a year">${g}</svg></div><p class="small muted">Stages can run one after another as a company matures.</p>`; }
+function showGcase(i){ gcase=i; const c=CASES_GTM[i];
+  FLOWS.gcflow = c.steps.map(s=>({t:s[0], d:s[1], do:[], check:[], tools:[]}));
+  $('#gcaseD').innerHTML = `<div class="card tint"><span class="eyebrow">${c.cloud}</span><h3>${c.n}</h3><p class="small"><b>Situation:</b> ${c.sit}</p></div>
+  <div class="grid g3">${c.res.map(r=>`<div class="card"><div class="out mono" style="color:var(--accent)">${r[0]}</div><span class="small muted">${r[1]}</span></div>`).join('')}</div>
+  <h4>The approach</h4>${flow('gcflow', FLOWS.gcflow, {label:'Step', pipe:true})}<p class="small muted">${c.note}</p>`;
+  document.querySelectorAll('#gcaseD .out').forEach(countUp);
+  document.querySelectorAll('[data-gcase]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.gcase===i)); }
+function gapSVG(){
+  const W=760,H=200, xs=[100,280,460,640], labels=['Listing live','PDM relationship','Co-sell submissions','Field enablement'];
+  let g=`<path d="M${xs[0]} 90 L${xs[3]} 90" stroke="var(--sunk)" stroke-width="14" stroke-linecap="round"/>`;
+  [1,2,3].forEach(i=>{ const mx=(xs[i-1]+xs[i])/2; g+=`<g><rect x="${mx-22}" y="70" width="44" height="40" rx="6" fill="var(--signal-soft)" stroke="var(--bad)" stroke-dasharray="4 3"/><text x="${mx}" y="95" text-anchor="middle" style="fill:var(--bad);font-weight:700;font-size:12px">Gap ${i}</text></g>`; });
+  xs.forEach((x,i)=>{ g+=`<circle cx="${x}" cy="90" r="22" fill="${i===0?'var(--accent)':'var(--surface)'}" stroke="var(--accent)" stroke-width="3"/><text x="${x}" y="95" text-anchor="middle" style="fill:${i===0?'var(--accent-ink)':'var(--ink)'};font-weight:700">${i===0?'✓':i}</text><text x="${x}" y="140" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:600">${labels[i]}</text>`; });
+  g+=`<text x="${W-20}" y="40" text-anchor="end" style="fill:var(--good);font-weight:700">→ pipeline</text><text x="20" y="40" style="fill:var(--muted)">Most ISVs stop here ↓</text>`;
+  if(!RM) g+=`<circle r="8" fill="var(--signal)"><animateMotion dur="5s" repeatCount="indefinite" keyPoints="0;0.3;0.3;0.62;0.62;1" keyTimes="0;0.2;0.35;0.55;0.7;1" calcMode="linear" path="M${xs[0]} 90 L${xs[3]} 90"/></circle>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:600px" role="img" aria-label="Three execution gaps between a live listing and pipeline">${g}</svg></div>`;
+}
+function prmSVG(){
+  const W=760,H=260, src=[['Marketplace metering','Automatic for AMI / ML products',60],['Resource tagging','aws-apn-id tag on cost-incurring resources',130],['API call decoration','User-agent string in AWS API / CLI calls',200]];
+  let g='';
+  src.forEach((s,i)=>{ const path=`M260 ${s[2]} C 380 ${s[2]}, 420 130, 520 130`;
+    g+=`<rect x="20" y="${s[2]-26}" width="240" height="52" rx="10" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/><text x="36" y="${s[2]-4}" style="fill:var(--ink);font-weight:700;font-size:13px">${s[0]}</text><text x="36" y="${s[2]+14}" style="fill:var(--muted);font-size:11px">${s[1]}</text><path d="${path}" stroke="var(--accent)" stroke-width="2.5" fill="none" class="pipe-flow" stroke-dasharray="4 8"/>`;
+    if(!RM) g+=`<circle r="6" fill="var(--signal)" opacity="0"><set attributeName="opacity" to="1" begin="${i*0.5}s"/><animateMotion dur="2.4s" begin="${i*0.5}s" repeatCount="indefinite" path="${path}"/></circle>`; });
+  g+=`<rect x="520" y="90" width="220" height="80" rx="12" fill="var(--accent)"/><text x="630" y="122" text-anchor="middle" style="fill:var(--accent-ink);font-weight:800;font-family:var(--display);font-size:15px">AWS scorecards</text><text x="630" y="142" text-anchor="middle" style="fill:var(--accent-ink);font-size:11px">consumption attributed to you</text><text x="630" y="158" text-anchor="middle" style="fill:var(--accent-ink);font-size:11px">EC2 · S3 · ECS · RDS · Lambda…</text>`;
+  g+=`<text x="630" y="210" text-anchor="middle" style="fill:var(--ink);font-size:11.5px">→ field visibility · funding eligibility · co-sell priority</text>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:620px" role="img" aria-label="Three PRM attribution signals flowing into AWS scorecards">${g}</svg></div>`;
+}
+function renderLS(){ const v=+($('#lsRange')?.value||0)/100;
+  const rows=[['Listing','Live, silent','Live with proof points'],['Co-sell','Zero submissions','Active pipeline'],['Field','No relationships','Relationships active'],['MDF','Sitting unclaimed','Unlocked and used'],['Status','Dormant','Operational']];
+  const mix=(a,b)=>v<0.5?a:b;
+  $('#lsOut').innerHTML = `<div class="grid g2" style="margin-top:10px"><div class="card ${v<0.5?'warnc':''}" style="opacity:${1-v*0.6};transition:opacity .2s"><span class="eyebrow">Before</span>${rows.map(r=>`<div class="small"><b>${r[0]}:</b> ${r[1]}</div>`).join('')}</div><div class="card ${v>=0.5?'tint':''}" style="opacity:${0.4+v*0.6};transition:opacity .2s"><span class="eyebrow">After execution</span>${rows.map(r=>`<div class="small"><b>${r[0]}:</b> ${r[2]}</div>`).join('')}</div></div><div class="bar" style="margin-top:8px"><i style="width:${v*100}%"></i></div><p class="small muted">Status now: <b>${mix('Dormant','Operational')}</b>. What moves the slider: PDM relationships, co-sell submissions, field enablement, Private Offers, MDF.</p>`; }
+function renderSelf(){ const box=$('#scList'); if(!box) return; const d=store.get('mpself', []);
+  box.innerHTML = SELFCHECK.map((q,i)=>`<label class="check ${d.includes(i)?'done':''}"><input type="checkbox" id="selfck${i}" data-mps="${i}" ${d.includes(i)?'checked':''}><span>${q}</span></label>`).join('');
+  const n=d.length, st=n>=5?['You have a GTM system','var(--good)']:n>=3?['Partly a system: close the gaps','var(--warn)']:['A listing, not yet a business','var(--bad)'];
+  $('#scRes').innerHTML = `<div class="bar"><i style="width:${n/SELFCHECK.length*100}%;background:${st[1]}"></i></div><span class="pill" style="color:${st[1]};margin-top:6px">${n}/${SELFCHECK.length} · ${st[0]}</span>`; }
+function calcPSQ(){ let s=0, max=PSQL_Q.reduce((a,q)=>a+q[1],0); PSQL_Q.forEach((q,i)=>{ if($('#psq'+i)?.checked) s+=q[1]; });
+  const st = s>=7?['Submit as co-sell (PSQL)','var(--good)','Register in ACE with the use case, services and expected spend; brief the PDM.']:s>=4?['Nurture: not ready yet','var(--warn)','Fill the gaps (cloud fit, sponsor, timeline) before submitting to protect acceptance rates.']:['Keep in your own pipeline','var(--bad)','Submitting weak opportunities hurts credibility with field teams.'];
+  $('#psqOut').innerHTML = `<div class="eyebrow">PSQL score</div><div class="out mono" style="color:${st[1]}">${s} / ${max}</div><div class="bar"><i style="width:${s/max*100}%;background:${st[1]}"></i></div><span class="pill" style="color:${st[1]}">${st[0]}</span><p class="small">${st[2]}</p><p class="small muted">Example scoring only; agree your own PSQL definition with sales and your PDM.</p>`; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -4551,6 +4780,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='hypergtm'){ renderLS(); showMot(motSel); showPsvc(psvcSel); showGcase(gcase); renderSelf(); calcPSQ(); }
   if(id==='playbook'){ renderDay(); scI=0; scScore=0; renderSC(); calcInvoice(); calcFD(); calcVB(); renderACE(false); showWK(wkSel); renderSnip(); }
   if(id==='opsess'){ showLP(0); calcFC(); renderTpl(); renderQ30(); }
   if(id==='reqs'){ showReq(reqSel); showDM(dmSel); }
@@ -4663,6 +4893,10 @@ document.addEventListener('click', e => {
   const wk = t.closest('[data-wk]'); if(wk){ stopPlay(); return showWK(wk.dataset.wk); }
   const sn = t.closest('[data-snip]'); if(sn){ snipSel=sn.dataset.snip; return renderSnip(); }
   if(t.id==='snipCopy' || t.id==='vbCopy'){ const el=$(t.id==='snipCopy'?'#snipOut':'#vbOut'), txt=el.textContent, lbl=t.textContent; try{ navigator.clipboard.writeText(txt).then(()=>{ t.textContent='Copied'; setTimeout(()=>t.textContent=lbl,1500); }, ()=>getSelection().selectAllChildren(el)); }catch(err){ getSelection().selectAllChildren(el); } return; }
+  const mo = t.closest('[data-mot]'); if(mo) return showMot(mo.dataset.mot);
+  const pv = t.closest('[data-psvc]'); if(pv) return showPsvc(+pv.dataset.psvc);
+  const gc = t.closest('[data-gcase]'); if(gc){ stopPlay(); return showGcase(+gc.dataset.gcase); }
+  const my = t.closest('[data-myth]'); if(my){ const i=+my.dataset.myth, b=$('#mythB'+i), flipped=my.classList.toggle('tint'); b.textContent = flipped ? MYTHS[i][1] : 'Click to see the reality.'; b.classList.toggle('muted', !flipped); my.querySelector('.eyebrow').textContent = flipped ? `Reality ${i+1}` : `Myth ${i+1} · click to flip`; if(!RM) my.animate([{transform:'rotateY(90deg)'},{transform:'none'}],{duration:350}); return; }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -4688,6 +4922,8 @@ document.addEventListener('change', e => {
   if(t.dataset.jmlck !== undefined){ let d=store.get('jml-'+jmlSel, []); const i=+t.dataset.jmlck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('jml-'+jmlSel, d); return renderJML(); }
   if(t.dataset.glck !== undefined){ let d=store.get('golive', []); const i=+t.dataset.glck; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('golive', d); return renderGL(); }
   if(t.dataset.q30 !== undefined){ let d=store.get('q30', []); const i=+t.dataset.q30; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('q30', d); return renderQ30(); }
+  if(t.dataset.mps !== undefined){ let d=store.get('mpself', []); const i=+t.dataset.mps; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('mpself', d); return renderSelf(); }
+  if(t.dataset.psq !== undefined) return calcPSQ();
   if(t.dataset.dc !== undefined){ let d = store.get('dealcheck', []); const i=+t.dataset.dc; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('dealcheck', d); t.closest('.check').classList.toggle('done', t.checked); }
   if(t.dataset.cl !== undefined){ let d = store.get('close', []); const i=+t.dataset.cl; d = t.checked ? [...new Set([...d,i])] : d.filter(x=>x!==i); store.set('close', d); t.closest('.check').classList.toggle('done', t.checked); }
 });
@@ -4700,6 +4936,7 @@ document.addEventListener('input', e => {
   if(id.startsWith('mp')) calcMP();
   if(id.startsWith('ds')) calcDSO();
   if(id.startsWith('tc')) calcTCO();
+  if(id==='lsRange') renderLS();
   if(id.startsWith('iv')) calcInvoice();
   if(['fdE','fdW','fdA'].includes(id)) calcFD();
   if(id.startsWith('vb')) calcVB();
@@ -4715,7 +4952,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb], svg [data-mot]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }

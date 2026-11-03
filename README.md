@@ -29,6 +29,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Partner vs AWS roles | Side-by-side counterparts by function, what each is measured on, joint deal handoffs |
 | | Roles & requirements | Animated triangle of agreements (AWS Customer Agreement, APN terms, MSA/SOW, Marketplace), responsibilities/requirements/project roles for AWS, partner and client, three-way responsibility matrix, “Does AWS deliver without partners?” with 5 delivery models and work-share chart, what AWS offers directly, why AWS uses partners, project roles diagram |
 | | GTM & co-sell | ACE stages, motions, MAP phases, plays |
+| | Hyperscaler partner GTM | Listed-vs-selling slider, five-motion hub (partner development, partner marketing, alliance ops, co-sell, Marketplace), activate→drive→convert→prove pipeline, AWS/Azure/Google Cloud comparison, PDMaaS/PMMaaS/PALaaS/PRMaaS/PCMaaS explorer with pillars, PDM/PMM/PAL overlap diagram, stage programs Gantt, three anonymized case studies with playable approach, zombie-listing gaps, Marketplace myths (flip cards) and failure points, self-check, PRM attribution diagram and implementation, console migration, ACE-to-Marketplace workflow, PSQL scorer, operating cadence |
 | | Opportunity lifecycle | Swimlane timelines (customer, AWS, partner, other parties) for 7 scenarios: partner-originated co-sell, AWS referral, MAP migration, Marketplace private offer, non-partner vendor, resale & managed services, BVR expansion; each step with system, output, owner and timing; directory of 29 roles; who-maintains-what table |
 | | Sales essentials | Why change/now/AWS/us, MEDDICC, discovery questions, objection handling, content per deal stage, pricing models |
 | | Business value realisation | Promised vs realised value, 8-stage value lifecycle, value drivers with KPIs and data sources, value tree, editable value scorecard with promised/realised value, ROI and payback, worked example, reporting templates and cadence, roles, pitfalls |
@@ -41,7 +42,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Video & content | Production pipeline, formats, brand rules, measurement |
 | | Digital marketing | Success factors, 8-step process, personas (incl. AWS sellers), platform priorities, content by funnel stage, weekly rhythm, funnel/ROI calculator, metrics, attribution, UTM link builder, 90-day plan, 18 creative ideas |
 | | Sales & success enablement | How video/AdminOps/RevOps help sales, enablement kit, closing checklist, deal accelerators and stallers, ABM, customer success lifecycle, health score, QBR agenda, advocacy ladder |
-| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 40 questions |
+| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 43 questions |
 | Career | Grow & contribute | 30-60-90 plan, use cases, rules, habits, impact metrics |
 | | Recognition & growth | Ownership register with health and review dates, maintenance standards, work log (brag document) with copyable review summary, impact calculators (time, cash from DSO, money recovered), performance factors, visibility habits, 8-step raise/promotion process with phrases, pay structure and compa-ratio, career paths, quarterly self-review |
 
