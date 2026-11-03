@@ -246,7 +246,7 @@ td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-num
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
-svg circle.gc{transform-box:fill-box;transform-origin:center;animation:pop .7s cubic-bezier(.2,.8,.2,1) both}
+svg path.gc,svg circle.gc{transform-box:fill-box;transform-origin:center;animation:pop .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes fw{0%,14%{background:var(--accent-soft);border-color:var(--accent);transform:translateY(-3px)}22%,100%{background:var(--surface);border-color:var(--line);transform:none}}
 .page > *{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 45ms)}
 .card,.step,.svc,.orgnode,.level,.rung,.chip,.opt{transition:transform .18s,box-shadow .18s,border-color .18s,background .18s}
@@ -312,6 +312,7 @@ const CHAPTERS = [
   {id:'tech', t:'Technical essentials', g:'Learn AWS'},
   {id:'solutions', t:'Solution finder', g:'Learn AWS'},
   {id:'economics', t:'Cloud economics', g:'Learn AWS'},
+  {id:'cloudfin', t:'Cloud financials', g:'Learn AWS'},
   {id:'ai', t:'AI on AWS', g:'Learn AWS'},
   {id:'industries', t:'How businesses use AWS', g:'Learn AWS'},
   {id:'ccp', t:'Cloud Practitioner prep', g:'Learn AWS'},
@@ -796,6 +797,13 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Operating income','Revenue minus operating costs (infrastructure, staff, sales, admin): the profit from running the business.'],
+  ['Operating margin','Operating income ÷ revenue. AWS was about 37% in 2024.'],
+  ['Capex','Capital expenditure: money spent up front on long-lived assets like data centers and servers.'],
+  ['Depreciation','Spreading the cost of servers and buildings over their useful life as an expense.'],
+  ['Backlog','Contracted future revenue customers have committed to but not yet used.'],
+  ['Market share','A company’s portion of total spending in a market.'],
+  ['Run rate','Current quarterly revenue × 4: a quick annualized view.'],
   ['PDMaaS','Partner development manager as a service: a fractional, external PDM who runs field engagement, ACE pipeline and funding workflows.'],
   ['PMMaaS','Partner marketing manager as a service: fractional partner marketing for cloud-aligned messaging, field assets and Marketplace copy.'],
   ['PALaaS','Partner alliance lead as a service: fractional alliance leadership for programs, QBRs and executive alignment.'],
@@ -1015,6 +1023,8 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['Roughly what share of Amazon’s 2024 operating income came from AWS?',['About 10%','About 25%','About 58%','About 90%'],2,'AWS made $39.8B of Amazon’s $68.6B operating income in 2024.'],
+  ['Which cloud provider has the largest market share?',['Google Cloud','Microsoft Azure','AWS','Oracle'],2,'AWS holds about 30%, Microsoft about 20%, Google about 13%.'],
   ['What are the three gaps that keep a Marketplace listing silent?',['Price, logo, website','No PDM relationship, no co-sell submissions, no field enablement','Too many reviews','Wrong AWS Region'],1,'Close all three and the listing starts producing introductions and pipeline.'],
   ['Which is NOT one of the PRM attribution signals?',['Marketplace metering','aws-apn-id resource tagging','API call user-agent decoration','Number of LinkedIn followers'],3,'PRM uses metering, tagging and API decoration.'],
   ['How do most large enterprise deals close on cloud marketplaces?',['Public list price checkout','Private Offers with negotiated terms','Gift cards','Free trials only'],1,'Private Offers carry the custom pricing and terms large deals need.'],
@@ -4329,6 +4339,7 @@ const PRACTICE = {
   grow:{t:['Pick one use case from the list and propose it to your manager','Write your 30-60-90 plan in your own words','Track impact metrics monthly'], ex:'You propose the funding tracker in week 2, launch it in week 4, and by month 3 it shows $38k recovered.'},
   recognition:{t:['Add 3 entries to the work log this week','Mark the things you own and their health','Calculate one impact in money with the calculators'], ex:'Every Friday you log 2 wins in 2 minutes. At review time, the exported summary shows 26 wins with numbers.'},
   hypergtm:{t:['Count your co-sell submissions in the last 90 days (target: 3+)','Ask your alliance lead whether PRM attribution is live and validated','Score one live opportunity with the PSQL scorer before it goes into ACE'], ex:'A software partner had a live listing and zero pipeline for six months. After briefing two PDMs, submitting four qualified co-sell opportunities and running two field enablement sessions, the first AWS seller introduction arrived in week seven.'},
+  cloudfin:{t:['Read the AWS segment in Amazon’s latest quarterly results (revenue, operating income, backlog)','Run the money-flow calculator with a real (anonymized) customer’s numbers','Explain to a colleague why AWS funds partner projects'], ex:'A sales colleague asks why AWS gave $60K of migration funding. You show the money-flow calculator: $600K/year of new usage for several years makes the funding a small investment for AWS.'},
   playbook:{t:['Pick your role in the day planner and follow it for one week','Try 5 scenarios','Use the invoice builder before sending your next invoice'], ex:'After one week following the planner, invoices go out the same day as sign-offs and nothing slips past a deadline.'}
 };
 function practicePanel(id){ const p=PRACTICE[id]; if(!p) return '';
@@ -4763,6 +4774,143 @@ function calcPSQ(){ let s=0, max=PSQL_Q.reduce((a,q)=>a+q[1],0); PSQL_Q.forEach(
   const st = s>=7?['Submit as co-sell (PSQL)','var(--good)','Register in ACE with the use case, services and expected spend; brief the PDM.']:s>=4?['Nurture: not ready yet','var(--warn)','Fill the gaps (cloud fit, sponsor, timeline) before submitting to protect acceptance rates.']:['Keep in your own pipeline','var(--bad)','Submitting weak opportunities hurts credibility with field teams.'];
   $('#psqOut').innerHTML = `<div class="eyebrow">PSQL score</div><div class="out mono" style="color:${st[1]}">${s} / ${max}</div><div class="bar"><i style="width:${s/max*100}%;background:${st[1]}"></i></div><span class="pill" style="color:${st[1]}">${st[0]}</span><p class="small">${st[2]}</p><p class="small muted">Example scoring only; agree your own PSQL definition with sales and your PDM.</p>`; }
 
+/* ================= CLOUD FINANCIALS ================= */
+const SHARE = [['AWS',30,'var(--accent)'],['Microsoft',20,'#3b6fd8'],['Google Cloud',13,'var(--good)'],['Others (Alibaba, Oracle, IBM, Salesforce, regional clouds)',37,'var(--muted)']];
+const AWSFIN = [[2019,35.0,9.2],[2020,45.4,13.5],[2021,62.2,18.5],[2022,80.1,22.8],[2023,90.8,24.6],[2024,107.6,39.8]];
+const AWSQ25 = [['Q1 2025','$29.3B','$11.5B','39%'],['Q2 2025','$30.9B','$10.2B','33%'],['Q3 2025','$33.0B','$11.4B','35%']];
+const AWS100 = [['AWS revenue',100,'t'],['Servers & data center depreciation',-22,'c'],['Power, cooling, network, facilities',-14,'c'],['Engineering & operations staff',-13,'c'],['Sales, marketing, partner incentives & credits',-9,'c'],['General & admin',-5,'c'],['Operating profit (2024 actual ≈37%)',37,'t']];
+const DRIVERS = [
+  ['Compute','EC2, containers, Lambda, GPU/AI instances. Widely believed to be the largest share of AWS revenue.','Grows with workloads and AI training/inference'],
+  ['Storage','S3, EBS, backups and archives. Steady, compounding revenue as data grows.','Data never stops growing'],
+  ['Databases & analytics','RDS, Aurora, DynamoDB, Redshift; high-value managed services.','Higher margin than raw infrastructure'],
+  ['Networking & data transfer','Data out to the internet, CloudFront, Direct Connect.','Video and global apps drive it'],
+  ['AI services','Bedrock, SageMaker, Trainium/Inferentia capacity; the fastest-growing area.','Large AI model companies sign multi-year capacity deals'],
+  ['Support & services','Enterprise Support plans, AWS Professional Services, managed services.','Priced as a % of spend'],
+  ['AWS Marketplace','A fee on third-party software and services sold through it.','Small % but huge volume']
+];
+const CUSTOMERS = [
+  ['Large enterprises','Banks, retailers, manufacturers with multi-year spend commitments (EDP/PPA).'],
+  ['Digital natives & SaaS','Streaming, gaming, fintech and software companies built on AWS.'],
+  ['AI model builders','Foundation-model companies buying huge GPU/accelerator capacity under multi-year agreements.'],
+  ['Public sector','Governments, education, healthcare; often through contract vehicles.'],
+  ['Startups & SMB','Millions of smaller accounts; credits early, spend later.'],
+  ['Partners','Resellers and MSPs whose customers’ usage is billed through them.']
+];
+const SUPPLY = [
+  {n:'Chips', items:[['NVIDIA, AMD, Intel','GPUs and CPUs','Bought in massive volume; GPUs are the most expensive part of AI capacity.'],['AWS’s own chips','Graviton, Trainium, Inferentia','Designed by AWS (Annapurna Labs) to lower cost per workload.']]},
+  {n:'Hardware', items:[['Server & network makers','Contract manufacturers','Build AWS-designed servers, racks and switches.']]},
+  {n:'Facilities', items:[['Data center construction','Land, buildings, cooling','Billions per Region; leased and owned sites.'],['Power utilities','Electricity','Long-term power purchase agreements, including renewables.']]},
+  {n:'Connectivity', items:[['Fiber & subsea cables','Global network','AWS backbone links Regions and edge locations.']]},
+  {n:'Ecosystem', items:[['Partners (SIs, MSPs, resellers)','Deliver & sell','Bring and grow customer usage.'],['ISVs on Marketplace','Software','Run on AWS and sell through it.']]}
+];
+const PARTY_ECON = [
+  {p:'Client', earns:'Business value: savings, speed, new revenue (not a cloud revenue line).', pays:'AWS usage bill; partner services; software via Marketplace; support plan.', margin:'Measured as ROI and TCO savings (often 20–40% infrastructure savings when optimized).', levers:'Savings Plans, right-sizing, funding/credits, Marketplace drawdown of commitments.'},
+  {p:'Partner', earns:'Services fees, managed services, resale margin, software, AWS funding and incentives.', pays:'Delivery staff (largest cost), sales & marketing, tools, AWS bill for resale accounts.', margin:'Professional services often 30–50% gross margin; managed services 20–40%; resale low single digits.', levers:'Utilization, packaged offers, funding, Marketplace private offers, recurring managed services.'},
+  {p:'AWS', earns:'Usage of services, support plans, Marketplace fees, ProServe.', pays:'Data centers, servers, chips, power, network, staff, sales, partner programs and credits.', margin:'Operating margin about 37% in 2024 (about 26–30% in 2019–2023).', levers:'Scale, own chips, higher-level managed services, AI capacity, long-term commitments.'}
+];
+const HYPERS = [
+  ['AWS','$107.6B revenue (2024)','$39.8B operating income (≈37%)','Reports AWS as its own segment'],
+  ['Microsoft Azure','Azure surpassed $75B annual revenue (FY2025, to June 2025)','Not reported separately for Azure','Azure sits inside the “Intelligent Cloud” segment'],
+  ['Google Cloud','$43.2B revenue (2024)','$6.1B operating income (≈14%)','Became profitable in 2023 after years of losses']
+];
+V.cloudfin = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Intermediate</span><h1>Cloud financials</h1>
+  <p class="lede">Who leads the cloud market, how big AWS is, where its revenue comes from and where it goes, and how money moves between the client, the partner and AWS. Public figures are from company filings through Q3 2025; check the latest quarterly results for newer numbers.</p></header>
+
+  <section class="section"><header><h2>Who leads the market</h2><p class="muted">Approximate share of cloud infrastructure services spending (mid/late 2025, industry analyst estimates such as Synergy Research). Hover a slice.</p></header>
+  <div class="grid g2"><div class="card chart">${donut()}</div>
+  <div class="card"><h4>What this means</h4><ul class="clean small"><li>AWS has been the largest cloud provider since the market began.</li><li>Microsoft grows fast through enterprise relationships and AI.</li><li>Google Cloud is third and now profitable.</li><li>The top three together hold about two-thirds of the market.</li><li>Total cloud infrastructure spending runs at roughly $100B+ per quarter and keeps growing with AI.</li></ul></div></div></section>
+
+  <section class="section"><header><h2>AWS revenue and operating income</h2><p class="muted">US$ billions per year. The line is operating margin (profit after operating costs ÷ revenue).</p></header>
+  <div class="card chart">${finChart()}</div>
+  <div class="grid g3">${AWSQ25.map(q=>`<div class="card"><span class="eyebrow">${q[0]}</span><div class="out mono">${q[1]}</div><span class="small muted">revenue · operating income ${q[2]} (margin ${q[3]})</span></div>`).join('')}</div>
+  <div class="card tint small"><b>Backlog:</b> AWS reported a contracted backlog of about $200B in Q3 2025: future revenue already committed by customers. AI capacity deals (for example a multi-year agreement with OpenAI announced in November 2025) add to it.</div></section>
+
+  <section class="section"><header><h2>AWS inside Amazon</h2><p class="muted">2024. AWS is a small share of Amazon’s sales but most of its profit.</p></header>
+  <div class="card chart">${amznBars()}</div></section>
+
+  <section class="section"><header><h2>Where every $100 of AWS revenue goes</h2><p class="muted">Only revenue and operating income are reported. The cost split below is an illustrative estimate to show the structure, not reported data.</p></header>
+  <div class="card chart">${aws100()}</div>
+  <div class="grid g4">${[['Capital spending (capex)','Amazon spent roughly $80B+ in 2024 and expected about $125B in 2025, mostly AWS infrastructure and AI capacity.'],['Depreciation','Servers and buildings are bought up front and expensed over several years, so today’s capex becomes tomorrow’s cost.'],['Economies of scale','Huge volume lowers per-unit cost for chips, power and network, which helps margins.'],['Credits & incentives','Startup credits, migration funding and partner programs are investments to win long-term usage.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Who contributes AWS revenue</h2></header>
+  <div class="grid g2">
+    <div class="card"><h4>By type of service</h4><div class="tablewrap"><table><tbody>${DRIVERS.map(d=>`<tr><td><b>${d[0]}</b></td><td class="small">${d[1]}</td><td class="small muted">${d[2]}</td></tr>`).join('')}</tbody></table></div><p class="small muted">AWS doesn’t report revenue by service; this is the general picture.</p></div>
+    <div class="card"><h4>By type of customer</h4><ul class="clean small">${CUSTOMERS.map(c=>`<li><b>${c[0]}:</b> ${c[1]}</li>`).join('')}</ul><p class="small muted">AWS doesn’t disclose revenue by customer.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>Who AWS pays: the supply chain</h2><p class="muted">Trace what it takes to run a cloud.</p></header>
+  ${arch('supply', SUPPLY)}</section>
+
+  <section class="section"><header><h2>How money flows: client, partner, AWS</h2><p class="muted">Change the numbers for a sample client. Dots show money moving.</p></header>
+  <div class="grid g2">
+    <div class="card"><div class="grid g2" style="gap:8px">${[['mfA','Client AWS usage / year $',600000,10000],['mfS','Partner services fees / year $',250000,5000],['mfM','Software bought via Marketplace / year $',120000,5000],['mfL','Marketplace listing fee %',3,0.5],['mfR','Partner resale margin % (if partner bills AWS)',4,0.5],['mfF','AWS funding/credits to the deal $',60000,5000],['mfP','Partner services gross margin %',40,1]].map(f=>`<label class="field">${f[1]}<input type="number" id="${f[0]}" value="${f[2]}" min="0" step="${f[3]}"></label>`).join('')}
+      <label class="field">Who bills the AWS usage?<select id="mfB"><option value="aws">AWS bills the client directly</option><option value="partner">Partner resells (bills the client)</option></select></label></div></div>
+    <div class="card" id="mfOut"></div>
+  </div></section>
+
+  <section class="section"><header><h2>The economics of each party</h2></header>
+  <div class="grid g3">${PARTY_ECON.map((e,i)=>`<div class="card" style="border-top:4px solid ${['var(--good)','var(--signal)','var(--accent)'][i]}"><h3>${e.p}</h3><div class="kv small"><dt>Earns / gains</dt><dd>${e.earns}</dd><dt>Pays for</dt><dd>${e.pays}</dd><dt>Margin</dt><dd>${e.margin}</dd><dt>Levers</dt><dd>${e.levers}</dd></div></div>`).join('')}</div>
+  <p class="small muted">Partner and client margin ranges are typical industry patterns, not reported figures.</p></section>
+
+  <section class="section"><header><h2>The big three compared</h2></header>
+  <div class="tablewrap"><table><thead><tr><th>Provider</th><th>Revenue</th><th>Operating income</th><th>Note</th></tr></thead><tbody>${HYPERS.map(h=>`<tr><td><b>${h[0]}</b></td><td>${h[1]}</td><td>${h[2]}</td><td class="small">${h[3]}</td></tr>`).join('')}</tbody></table></div>
+  <p class="small muted">Sources: Amazon, Microsoft and Alphabet annual and quarterly reports; market share from industry analyst estimates. Companies define cloud segments differently, so compare carefully.</p></section>
+
+  <section class="section"><header><h2>Why this matters in your job</h2></header>
+  <div class="grid g3">
+    <div class="card"><h4>Why AWS funds partners</h4><p class="small">A $60K funding grant that unlocks $600K/year of usage for years is a great investment for AWS. That’s why MAP and POC funding exist.</p></div>
+    <div class="card"><h4>Why resale margins are thin</h4><p class="small">AWS keeps most of the usage value; partners earn real margin on services, managed services and IP, not on reselling.</p></div>
+    <div class="card"><h4>Why commitments matter</h4><p class="small">Customer commitments (EDP/PPA, backlog) make AWS revenue predictable, and Marketplace purchases that draw them down make buying easier.</p></div>
+  </div></section>
+`;
+function donut(){ const W=320,H=260,cx=130,cy=130,R=95,r=58; let a0=-Math.PI/2, g='';
+  SHARE.forEach((s,i)=>{ const a1=a0+2*Math.PI*s[1]/100, large=(a1-a0)>Math.PI?1:0, p=(a,rad)=>[cx+rad*Math.cos(a), cy+rad*Math.sin(a)];
+    const [x0,y0]=p(a0,R),[x1,y1]=p(a1,R),[x2,y2]=p(a1,r),[x3,y3]=p(a0,r);
+    g+=`<path class="gc" style="animation-delay:${i*150}ms;transform-box:view-box;transform-origin:${cx}px ${cy}px" d="M${x0} ${y0} A${R} ${R} 0 ${large} 1 ${x1} ${y1} L${x2} ${y2} A${r} ${r} 0 ${large} 0 ${x3} ${y3} Z" fill="${s[2]}" stroke="var(--surface)" stroke-width="2"><title>${s[0]}: ~${s[1]}%</title></path>`;
+    a0=a1; });
+  g+=`<text x="${cx}" y="${cy-2}" text-anchor="middle" style="font-family:var(--display);font-weight:800;font-size:20px;fill:var(--ink)">~63%</text><text x="${cx}" y="${cy+15}" text-anchor="middle" style="fill:var(--muted);font-size:10.5px">top 3 combined</text>`;
+  g+=SHARE.map((s,i)=>`<rect x="240" y="${60+i*36}" width="12" height="12" rx="3" fill="${s[2]}"/><text x="258" y="${70+i*36}" style="fill:var(--ink);font-size:11.5px;font-weight:600">${s[0].split(' (')[0]} ~${s[1]}%</text>`).join('');
+  return `<svg viewBox="0 0 ${W+60} ${H}" role="img" aria-label="Cloud market share: AWS about 30%, Microsoft about 20%, Google about 13%, others about 37%">${g}</svg>`; }
+function finChart(){ const W=720,H=300,pl=50,pr=50,pt=24,pb=36, n=AWSFIN.length, bw=(W-pl-pr)/n, y=v=>pt+(H-pt-pb)*(1-v/120), ym=m=>pt+(H-pt-pb)*(1-m/50);
+  let g=''; [0,30,60,90,120].forEach(t=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(t)+4}" text-anchor="end">${t}</text>`; });
+  [0,25,50].forEach(m=>g+=`<text x="${W-pr+6}" y="${ym(m)+4}" style="fill:var(--signal)">${m}%</text>`);
+  let line='';
+  AWSFIN.forEach((d,i)=>{ const x=pl+i*bw+bw*.15, w=bw*.33, m=d[2]/d[1]*100, cxm=pl+i*bw+bw/2;
+    g+=`<rect class="gy" style="animation-delay:${i*90}ms" x="${x}" y="${y(d[1])}" width="${w}" height="${y(0)-y(d[1])}" rx="3" fill="var(--accent)"><title>${d[0]} revenue $${d[1]}B</title></rect><rect class="gy" style="animation-delay:${i*90+60}ms" x="${x+w+3}" y="${y(d[2])}" width="${w}" height="${y(0)-y(d[2])}" rx="3" fill="var(--good)"><title>${d[0]} operating income $${d[2]}B</title></rect><text x="${x+w/2}" y="${y(d[1])-5}" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">${d[1]}</text><text x="${x+w*1.5+3}" y="${y(d[2])-5}" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">${d[2]}</text><text x="${cxm}" y="${H-12}" text-anchor="middle">${d[0]}</text>`;
+    line+=(i?'L':'M')+cxm+' '+ym(m); g+=`<circle cx="${cxm}" cy="${ym(m)}" r="4" fill="var(--signal)"><title>${Math.round(m)}% margin</title></circle>`; });
+  g+=`<path class="draw" pathLength="1" d="${line}" fill="none" stroke="var(--signal)" stroke-width="2.5"/>`;
+  g+=`<g transform="translate(${pl} 8)"><rect width="10" height="10" fill="var(--accent)"/><text x="14" y="9">Revenue</text><rect x="80" width="10" height="10" fill="var(--good)"/><text x="94" y="9">Operating income</text><rect x="210" y="4" width="14" height="3" fill="var(--signal)"/><text x="230" y="9">Operating margin</text></g>`;
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="min-width:560px;width:100%" role="img" aria-label="AWS revenue and operating income 2019 to 2024">${g}</svg></div>`; }
+function amznBars(){ const W=640,H=150, rows=[['Revenue',637.96,107.6,'$638B total · AWS $107.6B (17%)'],['Operating income',68.6,39.8,'$68.6B total · AWS $39.8B (58%)']];
+  let g=''; rows.forEach((r,i)=>{ const y=20+i*60, full=W-180, aw=full*r[2]/r[1];
+    g+=`<text x="10" y="${y+18}" style="fill:var(--ink);font-weight:600">${r[0]}</text><rect x="140" y="${y}" width="${full}" height="26" rx="5" fill="var(--sunk)"/><rect class="gx" style="animation-delay:${i*200}ms" x="140" y="${y}" width="${aw}" height="26" rx="5" fill="var(--accent)"/><text x="140" y="${y+44}" style="fill:var(--muted);font-size:11px">${r[3]}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="AWS share of Amazon revenue and operating income in 2024">${g}</svg>`; }
+function aws100(){ const W=820,H=300,pl=10,pb=60,pt=20, n=AWS100.length, bw=(W-pl*2)/n, y=v=>pt+(H-pt-pb)*(1-v/100); let run=0,g='';
+  AWS100.forEach((p,i)=>{ let top,bot,col; if(p[2]==='t'){ top=y(p[1]); bot=y(0); col='var(--accent)'; run=p[1]; } else { const nr=run+p[1]; top=y(run); bot=y(nr); col='var(--signal)'; run=nr; }
+    const x=pl+i*bw+bw*.15, w=bw*.7, [a,b]=wrap2(p[0],16);
+    g+=`<rect class="gy" style="animation-delay:${i*100}ms" x="${x}" y="${top}" width="${w}" height="${Math.max(bot-top,1)}" rx="3" fill="${col}"/><text x="${x+w/2}" y="${top-5}" text-anchor="middle" style="fill:var(--ink);font-weight:600">${p[1]>0&&p[2]!=='t'?'+':''}${p[1]}</text><text x="${x+w/2}" y="${H-pb+16}" text-anchor="middle" style="font-size:10.5px">${a}</text><text x="${x+w/2}" y="${H-pb+30}" text-anchor="middle" style="font-size:10.5px">${b}</text>`; });
+  g+=`<line x1="${pl}" x2="${W-pl}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)"/>`;
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="min-width:600px;width:100%" role="img" aria-label="Illustrative split of every 100 dollars of AWS revenue">${g}</svg></div>`; }
+function calcMF(){ const v=id=>+($('#'+id)?.value||0), resale=$('#mfB')?.value==='partner';
+  const A=v('mfA'), S=v('mfS'), M=v('mfM'), L=v('mfL')/100, R=v('mfR')/100, F=v('mfF'), P=v('mfP')/100;
+  const clientPays = A*(resale?1+R:1) + S + M;
+  const awsGets = A + M*L - F;               // usage + marketplace fee - funding given
+  const partnerRev = S + (resale?A*R:0) + F*0.5; // assume half of funding flows to partner as cash, half as client credits
+  const partnerProfit = S*P + (resale?A*R:0) + F*0.5;
+  const isvGets = M*(1-L);
+  const clientNet = clientPays - F*0.5;
+  const W=640,H=250, nodes={C:[80,125],P:[330,45],A:[330,205],I:[560,125]};
+  const edge=(a,b,label,amt,col,i)=>{ const p=`M${nodes[a][0]} ${nodes[a][1]} L${nodes[b][0]} ${nodes[b][1]}`, mx=(nodes[a][0]+nodes[b][0])/2, my=(nodes[a][1]+nodes[b][1])/2;
+    return `<path d="${p}" stroke="${col}" stroke-width="${Math.max(2,Math.min(12,amt/80000))}" stroke-opacity=".35" fill="none"/>${RM?'':`<circle r="5" fill="${col}" opacity="0"><set attributeName="opacity" to="1" begin="${i*0.4}s"/><animateMotion dur="2.6s" begin="${i*0.4}s" repeatCount="indefinite" path="${p}"/></circle>`}<rect x="${mx-60}" y="${my-11}" width="120" height="20" rx="10" fill="var(--surface)" stroke="var(--line)"/><text x="${mx}" y="${my+3}" text-anchor="middle" style="font-size:10.5px;fill:var(--ink)">${label} ${money(amt)}</text>`; };
+  let g='';
+  g+= resale ? edge('C','P','Usage + services',A*(1+R)+S,'var(--signal)',0)+edge('P','A','AWS usage',A,'var(--accent)',1) : edge('C','A','AWS usage',A,'var(--accent)',0)+edge('C','P','Services',S,'var(--signal)',1);
+  g+= edge('C','A','Marketplace',M,'#c0398a',2)+edge('A','I','Payout',isvGets,'#c0398a',3)+(F?edge('A','P','Funding',F,'var(--good)',4):'');
+  Object.entries(nodes).forEach(([k,p])=>{ const lab={C:'Client',P:'Partner',A:'AWS',I:'Software vendor'}[k]; g+=`<circle cx="${p[0]}" cy="${p[1]}" r="32" fill="${{C:'var(--good)',P:'var(--signal)',A:'var(--accent)',I:'#c0398a'}[k]}"/><text x="${p[0]}" y="${p[1]+4}" text-anchor="middle" style="fill:var(--surface);font-weight:700;font-size:11px">${lab}</text>`; });
+  $('#mfOut').innerHTML = `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:400px" role="img" aria-label="Money flow between client, partner, AWS and software vendor">${g}</svg></div>
+  <div class="kv small" style="grid-template-columns:minmax(0,1fr) auto"><dt>Client pays per year</dt><dd class="mono">${money(clientPays)}</dd><dt>AWS keeps (usage + Marketplace fee − funding)</dt><dd class="mono">${money(awsGets)}</dd><dt>Partner revenue (services${resale?' + resale margin':''} + funding share)</dt><dd class="mono">${money(partnerRev)}</dd><dt>Partner gross profit (estimate)</dt><dd class="mono">${money(partnerProfit)}</dd><dt>Software vendor receives</dt><dd class="mono">${money(isvGets)}</dd></div>
+  <p class="small muted">Simplified model: assumes half the funding is cash to the partner and half is credits to the client. Real programs vary.</p>`; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -4787,6 +4935,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='cloudfin') calcMF();
   if(id==='hypergtm'){ renderLS(); showMot(motSel); showPsvc(psvcSel); showGcase(gcase); renderSelf(); calcPSQ(); }
   if(id==='playbook'){ renderDay(); scI=0; scScore=0; renderSC(); calcInvoice(); calcFD(); calcVB(); renderACE(false); showWK(wkSel); renderSnip(); }
   if(id==='opsess'){ showLP(0); calcFC(); renderTpl(); renderQ30(); }
@@ -4943,6 +5092,7 @@ document.addEventListener('input', e => {
   if(id.startsWith('mp')) calcMP();
   if(id.startsWith('ds')) calcDSO();
   if(id.startsWith('tc')) calcTCO();
+  if(id.startsWith('mf')) calcMF();
   if(id==='lsRange') renderLS();
   if(id.startsWith('iv')) calcInvoice();
   if(['fdE','fdW','fdA'].includes(id)) calcFD();

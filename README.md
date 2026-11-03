@@ -15,6 +15,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Technical essentials | Clickable architecture diagrams (web app, serverless, data pipeline, video pipeline), compute/database/storage decision guides, disaster recovery (RPO/RTO), security checklist, DevOps |
 | | Solution finder | 20 scenarios (static site, WordPress, web app, mobile backend, e-commerce, SaaS, migration, backup/DR, SAP, virtual desktops, contact center, data lake, GenAI assistant, school, university, healthcare, SMB, government, media, startup) each with a clickable architecture, deployment steps, criteria, cost/complexity and partner opportunity; challenge-to-solution map (14 business challenges); hosting chooser; deployment lifecycle and methods |
 | | Cloud economics | CapEx vs OpEx, six advantages, Cloud Value Framework, 3-year TCO calculator, cost-lever chart, FinOps lifecycle |
+| | Cloud financials | Cloud market share donut, AWS revenue/operating income/margin 2019–2024, 2025 quarterly results and backlog, AWS share of Amazon, illustrative where-$100-goes waterfall, capex and depreciation, revenue contributors by service and customer, supply chain diagram, interactive client–partner–AWS–software-vendor money flow, each party’s economics, AWS vs Azure vs Google Cloud |
 | | AI on AWS | AI vocabulary, the AWS GenAI stack, RAG flow, value-vs-feasibility use-case matrix, GenAI cost estimator, responsible AI |
 | | How businesses use AWS | Nine industries with workloads, services, outcomes and buying criteria; common workloads; buying triggers; how customers choose |
 | | Cloud Practitioner prep | Exam facts and domain weights (also AI Practitioner), flashcards, 7 Rs, support plans, cost tools, 4-week plan |
@@ -42,7 +43,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Video & content | Production pipeline, formats, brand rules, measurement |
 | | Digital marketing | Success factors, 8-step process, personas (incl. AWS sellers), platform priorities, content by funnel stage, weekly rhythm, funnel/ROI calculator, metrics, attribution, UTM link builder, 90-day plan, 18 creative ideas |
 | | Sales & success enablement | How video/AdminOps/RevOps help sales, enablement kit, closing checklist, deal accelerators and stallers, ABM, customer success lifecycle, health score, QBR agenda, advocacy ladder |
-| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 43 questions |
+| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 130+ terms, 45 questions |
 | Career | Grow & contribute | 30-60-90 plan, use cases, rules, habits, impact metrics |
 | | Recognition & growth | Ownership register with health and review dates, maintenance standards, work log (brag document) with copyable review summary, impact calculators (time, cash from DSO, money recovered), performance factors, visibility habits, 8-step raise/promotion process with phrases, pay structure and compa-ratio, career paths, quarterly self-review |
 
