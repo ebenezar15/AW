@@ -2,26 +2,37 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a field-manual app. Fixed chapter rail on the left (top tabs on phones), one chapter on screen at a time, routed by #hash. */
+/* Layout: a "cloud observatory": glowing left rail of chapters (top scroller on phones), a hero home with a living network and a constellation map of every chapter, and one chapter room at a time with a pager. Dark-first. */
 :root{
-  --bg:#f3f5f7; --surface:#ffffff; --sunk:#e8ecf0; --line:#d3dae1;
-  --ink:#14202b; --muted:#56656f; --accent:#0b7a75; --accent-ink:#ffffff; --accent-soft:#d6efec;
-  --signal:#c2571a; --signal-soft:#fbe6d8; --good:#2e7d32; --warn:#a36b00; --bad:#b3261e;
-  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --bg:#0a1517; --surface:#0f1d20; --sunk:#15282c; --line:#23393d;
+  --ink:#e7efe9; --muted:#93a8a3;
+  --accent:#5cc8b8; --accent-ink:#06201c; --accent-soft:rgba(92,200,184,.14);
+  --signal:#e8b65a; --signal-ink:#1b1406; --signal-soft:rgba(232,182,90,.14);
+  --violet:#a99bf0; --violet-soft:rgba(169,155,240,.14);
+  --good:#7fd19b; --warn:#e8b65a; --bad:#ef7a63; --bad-soft:rgba(239,122,99,.14);
+  --shadow:0 18px 50px rgba(0,0,0,.35);
+  --display:"Gloock", Georgia, "Times New Roman", serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-  --r:10px;
+  --r:14px;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0e161d; --surface:#15212b; --sunk:#1b2a36; --line:#2a3b49;
-  --ink:#e4ecf1; --muted:#97a8b4; --accent:#3fc1b8; --accent-ink:#06201e; --accent-soft:#163a39;
-  --signal:#f0915a; --signal-soft:#3b2416; --good:#6cc070; --warn:#e2b34a; --bad:#ef7b72; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0e161d; --surface:#15212b; --sunk:#1b2a36; --line:#2a3b49;
-  --ink:#e4ecf1; --muted:#97a8b4; --accent:#3fc1b8; --accent-ink:#06201e; --accent-soft:#163a39;
-  --signal:#f0915a; --signal-soft:#3b2416; --good:#6cc070; --warn:#e2b34a; --bad:#ef7b72; color-scheme:dark}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#eef3f1; --surface:#ffffff; --sunk:#e3ebe8; --line:#cfdcd8; --ink:#10211e; --muted:#4e6560;
+  --accent:#0f7a6c; --accent-ink:#ffffff; --accent-soft:rgba(15,122,108,.10);
+  --signal:#a3680c; --signal-ink:#ffffff; --signal-soft:rgba(163,104,12,.10);
+  --violet:#5a48c4; --violet-soft:rgba(90,72,196,.10);
+  --good:#2e7d4f; --warn:#a3680c; --bad:#c2452c; --bad-soft:rgba(194,69,44,.10);
+  --shadow:0 14px 40px rgba(16,33,30,.10); color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#eef3f1; --surface:#ffffff; --sunk:#e3ebe8; --line:#cfdcd8; --ink:#10211e; --muted:#4e6560;
+  --accent:#0f7a6c; --accent-ink:#ffffff; --accent-soft:rgba(15,122,108,.10);
+  --signal:#a3680c; --signal-ink:#ffffff; --signal-soft:rgba(163,104,12,.10);
+  --violet:#5a48c4; --violet-soft:rgba(90,72,196,.10);
+  --good:#2e7d4f; --warn:#a3680c; --bad:#c2452c; --bad-soft:rgba(194,69,44,.10);
+  --shadow:0 14px 40px rgba(16,33,30,.10); color-scheme:light}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
@@ -271,20 +282,146 @@ path.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.4s ease forwar
 .lane{transition:background .25s,box-shadow .25s}
 .lane.lit{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
 .bar > i,.kbar i{transition:width .6s cubic-bezier(.2,.8,.2,1)}
+/* ===== REDESIGN LAYER ===== */
+[hidden]{display:none!important}
+body{font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;background:radial-gradient(1100px 620px at 92% -8%,var(--signal-soft),transparent 60%),radial-gradient(900px 640px at -12% 108%,var(--accent-soft),transparent 60%),var(--bg);background-attachment:fixed}
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:-.005em}
+h1{font-size:clamp(2.1rem,5vw,3.5rem);line-height:1.08}
+h2{font-size:clamp(1.5rem,2.6vw,2.05rem)}
+h3{font-size:1.32rem}
+h4{font-family:var(--body);font-weight:700;font-size:1.02rem}
+.small{font-size:.86rem}
+.eyebrow{font-size:.7rem;letter-spacing:.12em}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:6px}
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent),var(--signal),var(--violet));z-index:90;box-shadow:0 0 12px var(--signal)}
+/* rail */
+.shell{grid-template-columns:270px minmax(0,1fr)}
+.rail{display:flex;flex-direction:column;gap:16px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border-right:1px solid var(--line);padding:22px 14px}
+.brand{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--ink);padding:0 6px}
+.brand svg{flex:none}
+.brand b{font-family:var(--display);font-weight:400;font-size:1.32rem;display:block;line-height:1.1}
+.brand small{display:block;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+.searchbtn{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:10px;padding:8px 10px;font-size:.86rem;text-align:left}
+.searchbtn span{flex:1}
+.searchbtn kbd,.cmd kbd{font-family:var(--mono);font-size:.66rem;border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:var(--muted)}
+.searchbtn:hover{border-color:var(--signal);color:var(--ink)}
+.railprog{display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.railprog svg{flex:none}
+.railprog b{font-family:var(--display);font-weight:400;font-size:1.15rem;display:block;line-height:1.1}
+.navgroup{font-size:.64rem;letter-spacing:.14em;opacity:.7;margin:14px 10px 4px}
+.navlink{grid-template-columns:30px 1fr 12px;border-radius:9px;color:var(--muted);font-size:.9rem;padding:7px 10px;transition:background .2s,color .2s}
+.navlink:hover{background:var(--sunk);color:var(--ink)}
+.navlink[aria-current="page"]{background:var(--signal-soft);color:var(--ink);font-weight:600}
+.navlink[aria-current="page"] .num{color:var(--signal)}
+.navlink .dn{width:8px;height:8px;border-radius:50%;justify-self:end}
+.navlink .dn.on{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.rail-foot{margin-top:auto;display:flex;gap:8px;align-items:center;font-size:.78rem;color:var(--muted);padding:0 6px}
+.chipbtn{border:1px solid var(--line);background:transparent;border-radius:99px;padding:5px 11px;font-size:.8rem;color:var(--muted)}
+.chipbtn:hover{color:var(--ink);border-color:var(--muted)}
+main{padding-block:30px 90px;overflow-x:clip}
+.page{max-width:1120px;gap:44px}
+/* chapter header */
+#view > header.section{position:relative;gap:14px;padding:6px 0 4px;max-width:880px}
+#view > header.section > .eyebrow:first-child{color:var(--signal)}
+#view > header.section::before{content:"";position:absolute;right:-180px;top:-60px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,var(--violet-soft),transparent 65%);pointer-events:none;animation:floaty 9s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,20px)}}
+.lede{font-size:1.18rem;line-height:1.55;max-width:66ch}
+.section{gap:16px}
+.section > header h2{position:relative;padding-left:16px}
+.section > header h2::before{content:"";position:absolute;left:0;top:.28em;bottom:.22em;width:4px;border-radius:4px;background:linear-gradient(var(--signal),var(--accent))}
+/* surfaces */
+.card{border-radius:var(--r);padding:18px;background:var(--surface)}
+.card.flat{background:transparent}
+.detail{border-radius:var(--r);border-left-color:var(--signal);background:var(--surface);box-shadow:var(--shadow)}
+.tablewrap{border-radius:var(--r);background:var(--surface)}
+th{background:var(--sunk)}
+.tag{border-radius:99px;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px}
+.tag.a{background:var(--accent-soft);color:var(--accent)}
+.tag.s{background:var(--signal-soft);color:var(--signal)}
+/* controls */
+.chip{border-radius:99px;padding:7px 14px;font-size:.88rem;color:var(--muted);background:var(--surface);transition:all .2s}
+.chip:hover{color:var(--ink);border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--signal-soft);border-color:var(--signal);color:var(--ink)}
+.btn{background:var(--signal);border-color:var(--signal);color:var(--signal-ink);border-radius:10px;padding:9px 16px;transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px -10px var(--signal)}
+.btn.ghost{background:transparent;color:var(--signal)}
+.playbtn{border-color:var(--signal);color:var(--signal)}
+.playbtn:hover,.playbtn[aria-pressed="true"]{background:var(--signal);color:var(--signal-ink)}
+.step{border-radius:12px;background:var(--surface)}
+.step[aria-pressed="true"]{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 70%,var(--violet)));border-color:transparent}
+.practice{border:1px solid var(--line);border-left:4px solid var(--signal);background:linear-gradient(120deg,var(--signal-soft),transparent 55%),var(--surface)}
+input[type=search],input[type=number],input[type=text],input[type=date],select,textarea{background:var(--bg)!important;border-color:var(--line)!important;border-radius:10px!important}
+/* hero home */
+.hero2{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(120% 90% at 85% 5%,var(--signal-soft),transparent 55%),radial-gradient(100% 80% at 0% 100%,var(--accent-soft),transparent 60%),var(--surface);box-shadow:var(--shadow)}
+.hero2 canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero2-in{position:relative;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;padding:clamp(22px,4vw,46px);align-items:center}
+.hero2-in .copy{display:grid;gap:16px}
+.hero2-in .copy p{font-size:1.15rem;color:var(--muted);max-width:52ch}
+.hero2 .glass{background:color-mix(in srgb,var(--surface) 70%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--surface)}
+.stat .out{font-size:30px}
+.bigq{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.bigq a{display:grid;gap:4px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-decoration:none;color:var(--ink);transition:border-color .2s,transform .2s,box-shadow .2s}
+.bigq a:hover{border-color:var(--signal);transform:translateY(-3px);box-shadow:0 12px 30px -16px var(--signal)}
+.bigq a b{font-weight:600;line-height:1.3}
+.bigq a span{font-size:.84rem;color:var(--muted)}
+.bigq a i{font-style:normal;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--signal);text-transform:uppercase}
+.constel svg{width:100%;height:auto;display:block}
+.constel a circle{transition:r .2s}
+.constel a:hover circle.cn{r:9}
+/* pager */
+.pager{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:22px}
+.pager a{text-decoration:none}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.donebtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+/* command palette & toast */
+.cmd{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:grid;place-items:start center;padding:12vh 16px 16px}
+.cmd-box{width:min(620px,100%);background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:14px;display:grid;gap:10px;animation:rise .25s ease both}
+.cmd-res{display:grid;gap:4px;max-height:52vh;overflow:auto}
+.cmd-res a{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:9px 10px;border-radius:10px;text-decoration:none;color:var(--ink)}
+.cmd-res a:hover,.cmd-res a.sel{background:var(--signal-soft)}
+.cmd-res a span{font-size:.82rem;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:96;transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.confetti{position:fixed;width:8px;height:12px;border-radius:2px;z-index:97;pointer-events:none;animation:conf 1.1s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes conf{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}
+/* storefront race, ecosystem */
+.faq details{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px}
+.faq summary{cursor:pointer;font-weight:600}
+.faq details[open] summary{color:var(--signal)}
+.faq details p{margin-top:8px;color:var(--muted)}
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);height:auto;flex-direction:row;align-items:center;gap:10px;padding:10px max(12px,env(safe-area-inset-left,0px));overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid var(--line);z-index:50}
+  .brand span,.railprog,.navgroup,.rail-foot span,.searchbtn span,.searchbtn kbd{display:none}
+  .searchbtn{flex:none;padding:8px}
+  .rail-foot{margin:0;flex:none;order:5;padding:0}
+  .rail nav{display:flex;flex-direction:row;gap:4px;overflow:visible}
+  .navlink{white-space:nowrap;grid-template-columns:auto auto auto}
+  .hero2-in{grid-template-columns:1fr}
+  #view > header.section::before{display:none}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}path.draw{stroke-dasharray:none;stroke-dashoffset:0}}
 </style>
 
+<div class="readbar" id="readbar" aria-hidden="true"></div>
 <div class="shell">
-  <aside class="rail">
-    <div class="brand">
-      <b>Partner Field Guide</b>
-      <span class="muted small">AWS for partner teams, from day one to expert</span>
-    </div>
+  <aside class="rail" aria-label="Chapters">
+    <a class="brand" href="#start" aria-label="Partner Field Guide home">
+      <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="var(--signal)" stroke-width="1.5"/><path d="M9 22c2-6 6-9 9-9 4 0 5 4 9 4" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/><circle cx="18" cy="13" r="2.6" fill="var(--signal)"/><circle cx="9" cy="22" r="1.8" fill="var(--accent)"/><circle cx="27" cy="17" r="1.8" fill="var(--accent)"/></svg>
+      <span><b>Partner Field Guide</b><small>AWS · partners · growth</small></span>
+    </a>
+    <button class="searchbtn" id="cmdBtn" type="button" aria-label="Search chapters and terms"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Search chapters &amp; terms</span><kbd>Ctrl K</kbd></button>
+    <div class="railprog" id="railProg"></div>
     <nav id="nav" aria-label="Chapters"></nav>
-    <button class="themebtn side" id="themeBtn" type="button">Switch theme</button>
+    <div class="rail-foot"><button class="chipbtn" id="themeBtn" type="button">Theme</button><span id="railXp"></span></div>
   </aside>
   <main><div class="page" id="view"></div></main>
 </div>
+<div class="cmd" id="cmd" hidden><div class="cmd-box" role="dialog" aria-modal="true" aria-label="Search"><input id="cmdQ" type="search" placeholder="Search chapters, glossary terms…" autocomplete="off" aria-label="Search"><div id="cmdRes" class="cmd-res"></div><div class="small muted cmd-hint">Enter to open · Esc to close</div></div></div>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
 /* ---------- helpers ---------- */
@@ -345,7 +482,7 @@ function renderNav(active){
   let html = '', last = '';
   CHAPTERS.forEach(c => {
     if(c.g !== last){ html += `<div class="navgroup eyebrow">${c.g}</div>`; last = c.g; }
-    html += `<a class="navlink" href="#${c.id}" ${c.id===active?'aria-current="page"':''}><span class="num">${c.n}</span><span>${c.t}</span></a>`;
+    html += `<a class="navlink" href="#${c.id}" ${c.id===active?'aria-current="page"':''}><span class="num">${c.n}</span><span>${c.t}</span><span class="dn ${isDone(c.id)?'on':''}" title="${isDone(c.id)?'Completed':''}"></span></a>`;
   });
   $('#nav').innerHTML = html;
   const cur = $('#nav [aria-current]'); if(cur && window.innerWidth < 860) cur.scrollIntoView({block:'nearest', inline:'center'});
@@ -790,6 +927,9 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Marketplace Storefront','A vendor’s branded buying experience inside AWS Marketplace (opened June 16, 2026), where buyers pick offerings and use private offers on their existing AWS account.'],
+  ['3PI partner','Third-party infrastructure partner: tooling for listings, private offers and co-sell automation.'],
+  ['Starter bundle','A packaged 4-week engagement that makes an ISV Marketplace- and co-sell-ready by running strategy and technical setup in parallel.'],
   ['Operating income','Revenue minus operating costs (infrastructure, staff, sales, admin): the profit from running the business.'],
   ['Operating margin','Operating income ÷ revenue. AWS was about 37% in 2024.'],
   ['Capex','Capital expenditure: money spent up front on long-lived assets like data centers and servers.'],
@@ -1016,6 +1156,7 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['What does a Marketplace Storefront let a buyer do?',['Avoid AWS entirely','Buy a vendor’s offerings through their existing AWS account and committed spend, often via a private offer','Get free software','Skip security forever'],1,'Storefronts turn months of procurement into days by using the buyer’s existing AWS relationship.'],
   ['Roughly what share of Amazon’s 2024 operating income came from AWS?',['About 10%','About 25%','About 58%','About 90%'],2,'AWS made $39.8B of Amazon’s $68.6B operating income in 2024.'],
   ['Which cloud provider has the largest market share?',['Google Cloud','Microsoft Azure','AWS','Oracle'],2,'AWS holds about 30%, Microsoft about 20%, Google about 13%.'],
   ['What are the three gaps that keep a Marketplace listing silent?',['Price, logo, website','No PDM relationship, no co-sell submissions, no field enablement','Too many reviews','Wrong AWS Region'],1,'Close all three and the listing starts producing introductions and pipeline.'],
@@ -1110,16 +1251,46 @@ const PLAN = [
 
 const V = {};
 
+const BIGQ = [
+  ['What does AWS actually sell?','200+ services in plain English','services','Learn AWS'],
+  ['How does a partner make money?','Revenue streams, margins, the flywheel','business','Business'],
+  ['How does a deal move between us, AWS and the client?','Swimlane timelines, step by step','opps','Deals'],
+  ['How do we get AWS funding?','MAP, POC, MDF, BVR: request to payout','funding','Money'],
+  ['How do I invoice and get paid?','QuickBooks, AR, close, reconciliation','adminops','AdminOps'],
+  ['How do marketplaces and co-sell create pipeline?','Five motions across three clouds','hypergtm','GTM'],
+  ['What do I do today?','Day planner, scenarios, practice tools','playbook','Practice'],
+  ['How do I grow and get recognized?','Ownership, work log, raise playbook','recognition','Career']
+];
 V.start = () => {
   const done = store.get('check', []);
+  const dl = doneList(), nDone = dl.filter(id=>CHAPTERS.some(c=>c.id===id)).length;
+  const last = store.get('lastch','start'), resume = CHAPTERS.find(c=>c.id===last) || CHAPTERS[0];
+  const nextUp = CHAPTERS.filter(c=>c.id!=='start' && !dl.includes(c.id)).slice(0,3);
   const pct = Math.round(done.length / CHECKLIST.length * 100);
   return `
-  <section class="hero">
-    <div class="section">
-      <span class="eyebrow">Orientation</span>
+  <section class="hero2"><canvas id="heroNet" aria-hidden="true"></canvas><div class="hero2-in">
+    <div class="copy">
+      <span class="eyebrow" style="color:var(--signal)">Orientation · your AWS partner universe</span>
       <h1>How a cloud partner business actually works</h1>
-      <p class="lede">You edit the videos, run the invoices, keep AdminOps and RevOps tidy. This guide connects those jobs to the bigger picture: what AWS sells, how partners earn money with AWS, and where your work moves the numbers.</p>
+      <p>You edit the videos, run the invoices, keep AdminOps and RevOps tidy. This guide connects those jobs to the bigger picture: what AWS sells, how partners earn money with AWS, and where your work moves the numbers.</p>
+      <div class="flowbar"><a class="btn" href="#${resume.id}">${resume.id==='start'?'Begin the journey':'Continue: '+resume.t} →</a><a class="btn ghost" href="#playbook">Today’s playbook</a><button class="chipbtn" type="button" id="heroSearch">Search · Ctrl K</button></div>
     </div>
+    <div class="glass">
+      <div style="display:flex;gap:14px;align-items:center">${ring(nDone/CHAPTERS.length, 84, 9)}<div><div class="eyebrow">Your progress</div><div class="out mono">${nDone} / ${CHAPTERS.length}</div><span class="small muted">chapters complete</span></div></div>
+      <div class="eyebrow">Suggested next</div>
+      ${nextUp.map(c=>`<a href="#${c.id}" class="chip" style="text-decoration:none;display:flex;justify-content:space-between;gap:8px"><span>${c.t}</span><span class="mono small">${c.n}</span></a>`).join('')}
+    </div>
+  </div></section>
+
+  <section class="section"><div class="stats">${[[CHAPTERS.length,'chapters'],[GLOSSARY.length,'glossary terms'],[QUIZ.length,'quiz questions'],[SCEN.length,'real-life scenarios'],[18,'calculators & tools']].map(x=>`<div class="stat"><div class="out mono">${x[0]}</div><span class="small muted">${x[1]}</span></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Start with a big question</h2><p class="muted">Pick what you want to understand; each card opens the chapter that answers it.</p></header>
+  <div class="bigq">${BIGQ.map(q=>`<a href="#${q[2]}"><i>${q[3]}</i><b>${q[0]}</b><span>${q[1]}</span></a>`).join('')}</div></section>
+
+  <section class="section"><header><h2>The constellation: every chapter on one map</h2><p class="muted">Each star is a chapter, colored by section. Completed chapters glow gold. Click any star.</p></header>
+  <div class="card constel">${constelSVG()}</div></section>
+
+  <section class="section"><header><h2>Your learning levels</h2></header>
     <div class="levels">${LEVELS.map(l=>`<a class="level" href="#${l.go}"><span class="lv">${l.lv}</span><span><b>${l.t}</b><br><span class="muted small">${l.d}</span></span></a>`).join('')}</div>
   </section>
 
@@ -4569,15 +4740,15 @@ const MOTIONS = [
 ];
 const PSVC = [
   {n:'PDMaaS', full:'Partner Development Manager as a Service', role:'Your fractional PDM', gap:['Ad-hoc co-selling with unpredictable field cadence','Eligible funding expires unused every quarter','Hyperscaler sellers shift focus to better-managed ISVs','Engineers pulled into partner admin'], pillars:[['Partner strategy & field alignment',['Partner plan aligned to cloud priorities','Map field teams, sellers, SAs, industry pods','Weekly field engagement and follow-ups']],['Pipeline development & co-sell',['Validate co-sell eligibility','Progress deals in ACE / Partner Center','Weekly pipeline movement reports']],['PRM, Marketplace & readiness',['PRM activation and tagging hygiene','Funding workflow support','Marketplace and Private Offer support']]], out:['Partner plan','Weekly co-sell pipeline progression','Monthly funding program status','Portal hygiene score','Weekly governance summary'], impact:['Faster co-sell activation','Shorter time to first opportunity','Funding captured instead of expiring','Higher Marketplace conversion']},
-  {n:'PMMaaS', full:'Partner Marketing Manager as a Service', role:'Your fractional partner marketer', gap:['Sellers can’t grasp the use case quickly','Generic messaging without hyperscaler context','Listings don’t resonate with enterprise buyers','No bandwidth to build battlecards'], pillars:[['Cloud messaging & positioning',['Cloud-aligned value propositions','Industry and persona messaging','Better Together narratives']],['Field assets & sales readiness',['Use cases by vertical','Solution briefs and one-pagers','Co-sell decks per cloud, talk tracks, objection handling']],['Marketplace & launch optimization',['Listing optimization','Private Offer packaging','Launch support and attribution setup']]], out:['Marketing execution plan','Better Together narratives','Co-sell decks and field assets','Solution briefs and use cases','Weekly execution summary'], impact:['Higher co-sell conversion','Faster capability-to-positioning','Consistent Marketplace visibility','Faster ACE stage progression']},
+  {n:'PMMaaS', full:'Partner / Product Marketing Manager as a Service', role:'Your fractional partner marketer', gap:['Sellers can’t grasp the use case quickly','Generic messaging without hyperscaler context','Listings don’t resonate with enterprise buyers','No bandwidth to build battlecards'], pillars:[['Cloud messaging & positioning',['Cloud-aligned value propositions','Industry and persona messaging','Better Together narratives']],['Field assets & sales readiness',['Use cases by vertical','Solution briefs and one-pagers','Co-sell decks per cloud, talk tracks, objection handling']],['Marketplace & launch optimization',['Listing optimization','Private Offer packaging','Launch support and attribution setup']]], out:['Marketing execution plan','Better Together narratives','Co-sell decks and field assets','Solution briefs and use cases','Weekly execution summary'], impact:['Higher co-sell conversion','Faster capability-to-positioning','Consistent Marketplace visibility','Faster ACE stage progression']},
   {n:'PALaaS', full:'Partner Alliance Lead as a Service', role:'Your fractional alliance leader', gap:['Executive relationships go cold after intros','Multi-cloud strategy only on paper','Tier and program deadlines missed','Founders stuck in operational partner meetings'], pillars:[['Alliance leadership & field coordination',['Multi-cloud alliance strategy','Executive relationship map (BD, PDM, industry)','Weekly alliance engagement rhythm']],['Program navigation & designations',['APN, ISV Accelerate, commit alignment','Competencies and designations timeline','Track MDF, MAP, OLA funding; Private Offer workflows']],['QBR prep & executive alignment',['Data-driven QBRs','Internal alignment: sales, product, finance','Board reporting on cloud-attributed ARR']]], out:['Alliance strategy','QBR materials and action logs','Program compliance tracking','Funding milestone tracking','Monthly executive pipeline report'], impact:['Faster deals through field alignment','No “ghosting” of relationships','Funding used to offset acquisition cost','No lost designations from missed deadlines']},
-  {n:'PRMaaS', full:'Partner Revenue Measurement as a Service', role:'Attribution infrastructure', gap:['Broken attribution across regions','Incomplete tagging → unreliable Partner Central reporting','Missed MDF due to low visibility','Engineering friction from manual tagging'], pillars:[['Architecture & tagging strategy',['Resource and architecture assessment','Verify Marketplace product codes','Cross-account IAM design']],['IaC integration & deployment',['Terraform / CloudFormation / CDK modules','Tag all supported resources','Partner, Customer or Hybrid deployment patterns']],['Validation & governance',['Validate signals in Partner Analytics','Ongoing compliance governance','Audit-ready documentation']]], out:['Tagging plan across accounts','IaC PRM modules','Compliance documentation','Attribution verification plan','Standard tagging rules'], impact:['Revenue attribution visible to cloud leaders','Funding eligibility protected','Tier progression supported','No silent attribution drops']},
+  {n:'PRMaaS', full:'Partner Revenue Measurement as a Service (AWS-first, now extended to Azure and Google Cloud attribution)', role:'Attribution infrastructure', gap:['Broken attribution across regions','Incomplete tagging → unreliable Partner Central reporting','Missed MDF due to low visibility','Engineering friction from manual tagging'], pillars:[['Architecture & tagging strategy',['Resource and architecture assessment','Verify Marketplace product codes','Cross-account IAM design']],['IaC integration & deployment',['Terraform / CloudFormation / CDK modules','Tag all supported resources','Partner, Customer or Hybrid deployment patterns']],['Validation & governance',['Validate signals in Partner Analytics','Ongoing compliance governance','Audit-ready documentation']]], out:['Tagging plan across accounts','IaC PRM modules','Compliance documentation','Attribution verification plan','Standard tagging rules'], impact:['Revenue attribution visible to cloud leaders','Funding eligibility protected','Tier progression supported','No silent attribution drops']},
   {n:'PCMaaS', full:'Partner Central Migration readiness', role:'Console migration readiness', gap:['Duplicate registrations blocking co-sell tracking','Access failures during live deals','Billing and funding workflow disruption','Confusion about IAM, SSO, Entra ID linking'], pillars:[['IAM, SSO & account linking',['Prepare for IAM-based authentication','Align SSO and permissions','Validate AWS account linking']],['Unified console workflows',['Update opportunity routing','Align co-sell initiation logic','Check Marketplace portal parity']],['Cross-functional preparation',['Align GTM, ops and partner teams','Define ownership in the new console','Update sales expectations']]], out:['Verified migration to the unified console','IAM access mapped to roles','Documented steps','Partner portal ↔ Marketplace portal linkage'], impact:['No disruption to co-sell or Marketplace','No duplicate registrations','Clear ownership']}
 ];
 const STAGES_GTM = [
-  {n:'Stage 1 · Activate', dur:'about 1–3 months', fit:'Pre-Series A → Series A: listing needed, or listed with little traction', get:['Optimized Marketplace listing','Better Together messaging','Partner portal readiness and ACE/PRM hygiene','Early co-sell activation','90-day roadmap and evidence package'], impact:['Baseline alignment','Foundational messaging','Early co-sell activation','Marketplace foundation'], w:[0,3]},
-  {n:'Stage 2 · Market entry', dur:'about 4 months', fit:'Series A → B: global ISVs expanding into the US with cloud traction', get:['Verified co-sell opportunities in the new market','First cloud-attributable signal','PRM with consumption data','Partner and channel map (incl. CPPO)','ISV Accelerate progression proof'], impact:['2–4× stronger field engagement*','40–60% fewer co-sell rejections*','1–2 quarters earlier visibility*'], w:[3,7]},
-  {n:'Stage 3 · Multi-cloud scale', dur:'about 6 months', fit:'Series A → C: multi-cloud ISVs building repeatable global revenue', get:['Co-sell across AWS, Azure, Google Cloud','Scalable attribution model','Marketplace hygiene on all three','PRM partner-lifecycle automation','SI/GSI engagement map'], impact:['3–5× attributable cloud revenue*','2–3× stronger SI/GSI alignment*','25–40% Marketplace lift*'], w:[7,13]}
+  {n:'Stage 1 · Activate', dur:'1 month', fit:'Pre-Series A → Series A: unlisted, or listed with no pipeline; ready to activate early co-sell', get:['Optimized Marketplace listing','Better Together messaging','Partner portal readiness and ACE/PRM hygiene','Early co-sell activation','90-day roadmap and evidence package'], impact:['Baseline alignment','Foundational messaging','Early co-sell activation','Marketplace foundation'], w:[0,1]},
+  {n:'Stage 2 · Market entry', dur:'4 months · most popular', fit:'Series A → B: APAC and EMEA ISVs entering the US; navigating US channel partners and CPPO', get:['Verified co-sell opportunities in the new market','First cloud-attributable signal','PRM with consumption data','Partner and channel map (incl. CPPO)','ISV Accelerate progression proof'], impact:['2–4× stronger field engagement*','40–60% fewer co-sell rejections*','1–2 quarters earlier visibility*'], w:[1,5]},
+  {n:'Stage 3 · Multi-cloud scale', dur:'6 months', fit:'Series B → C: moving from single-cloud to multi-cloud; automating PRM lifecycle workflows; board-level alliance reporting', get:['Co-sell across AWS, Azure, Google Cloud','Scalable attribution model','Marketplace hygiene on all three','PRM partner-lifecycle automation','SI/GSI engagement map'], impact:['3–5× attributable cloud revenue*','2–3× stronger SI/GSI alignment*','25–40% Marketplace lift*'], w:[5,11]}
 ];
 const CLOUDS = [
   ['Co-sell system','ACE in AWS Partner Central','Partner Center co-sell','Partner Advantage portal'],
@@ -4641,6 +4812,8 @@ V.hypergtm = () => `
   <div class="card chart">${stageGantt()}</div>
   <div class="grid g3">${STAGES_GTM.map(s=>`<div class="card"><span class="eyebrow">${s.dur}</span><h3>${s.n}</h3><p class="small muted">${s.fit}</p><div class="eyebrow">What you get</div><ul class="clean small">${s.get.map(x=>`<li>${x}</li>`).join('')}</ul><div class="eyebrow">Impact</div><div class="tags">${s.impact.map(x=>`<span class="tag a" style="white-space:normal">${x}</span>`).join('')}</div></div>`).join('')}</div></section>
 
+  ${hyperUpdatesHTML()}
+
   <section class="section"><header><h2>Case studies</h2><p class="muted">Customer names withheld. Pick one, then play the approach.</p></header>
   <div class="chips">${CASES_GTM.map((c,i)=>`<button class="chip" type="button" data-gcase="${i}" aria-pressed="${i===gcase}">${c.n}</button>`).join('')}</div>
   <div id="gcaseD" class="section"></div></section>
@@ -4673,6 +4846,8 @@ V.hypergtm = () => `
   <section class="section"><header><h2>Lesson 4: Moving to the new Partner Central console</h2><p class="muted">AWS unified its Partner and Marketplace consoles. A messy migration can lock teams out of co-sell during live deals.</p></header>
   <div class="grid g3">${[['IAM, SSO & account linking','Prepare for IAM-based sign-in (including Entra ID / SSO) and validate the AWS account link.'],['Zero duplicate registrations','Clean legacy permissions and IDs so the company isn’t registered twice.'],['Workflow modernization','Update opportunity routing, co-sell initiation and Marketplace parity; define owners.']].map(x=>`<div class="card"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div>
   <p class="small muted">See the Identity, access & certs chapter for IAM Identity Center basics.</p></section>
+
+  ${storefrontHTML()}
 
   <section class="section"><header><h2>The ACE-to-Marketplace workflow</h2><p class="muted">The path both case studies built so co-sell turns into transactions.</p></header>
   ${flow('ace2mp', FLOWS.ace2mp = [
@@ -4725,7 +4900,7 @@ function roleVenn(){
   g+=`<text x="320" y="128" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">Field enablement</text><text x="262" y="205" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">Funding</text><text x="378" y="205" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">Co-marketing</text><text x="320" y="172" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:11px">Co-sell pipeline</text>`;
   return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:480px" role="img" aria-label="Overlap of PDM, PMM and PAL responsibilities">${g}</svg></div>`;
 }
-function stageGantt(){ const W=760, lh=40, pl=190, H=STAGES_GTM.length*lh+40, max=13, x=v=>pl+(W-pl-20)*v/max;
+function stageGantt(){ const W=760, lh=40, pl=190, H=STAGES_GTM.length*lh+40, max=12, x=v=>pl+(W-pl-20)*v/max;
   let g=''; for(let m=0;m<=13;m++){ g+=`<line x1="${x(m)}" x2="${x(m)}" y1="10" y2="${H-24}" stroke="var(--line)" stroke-dasharray="${m%3?'2 4':'0'}"/>${m%3===0?`<text x="${x(m)}" y="${H-8}" text-anchor="middle">${m} mo</text>`:''}`; }
   STAGES_GTM.forEach((s,i)=>{ const y=i*lh+16; g+=`<text x="${pl-8}" y="${y+16}" text-anchor="end" style="fill:var(--ink);font-weight:600">${s.n}</text><rect class="gx" style="animation-delay:${i*180}ms" x="${x(s.w[0])}" y="${y}" width="${x(s.w[1])-x(s.w[0])}" height="24" rx="6" fill="var(--accent)" fill-opacity="${0.5+i*0.2}"/>`; });
   return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="min-width:620px;width:100%" role="img" aria-label="Stage programs laid out over about a year">${g}</svg></div><p class="small muted">Stages can run one after another as a company matures.</p>`; }
@@ -4904,6 +5079,159 @@ function calcMF(){ const v=id=>+($('#'+id)?.value||0), resale=$('#mfB')?.value==
   <div class="kv small" style="grid-template-columns:minmax(0,1fr) auto"><dt>Client pays per year</dt><dd class="mono">${money(clientPays)}</dd><dt>AWS keeps (usage + Marketplace fee − funding)</dt><dd class="mono">${money(awsGets)}</dd><dt>Partner revenue (services${resale?' + resale margin':''} + funding share)</dt><dd class="mono">${money(partnerRev)}</dd><dt>Partner gross profit (estimate)</dt><dd class="mono">${money(partnerProfit)}</dd><dt>Software vendor receives</dt><dd class="mono">${money(isvGets)}</dd></div>
   <p class="small muted">Simplified model: assumes half the funding is cash to the partner and half is credits to the client. Real programs vary.</p>`; }
 
+/* ================= SHELL: progress, search palette, toast, hero network, constellation ================= */
+const doneList = () => store.get('done', []);
+const isDone = id => doneList().includes(id);
+function toast(msg){ const t=$('#toast'); if(!t) return; t.textContent=msg; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2200); }
+function confetti(x,y){ if(RM) return; const cols=['var(--signal)','var(--accent)','var(--violet)','var(--bad)'];
+  for(let i=0;i<26;i++){ const c=document.createElement('span'); c.className='confetti'; c.style.left=x+'px'; c.style.top=y+'px'; c.style.background=cols[i%4];
+    const a=Math.random()*Math.PI*2, d=60+Math.random()*120; c.style.setProperty('--dx', Math.cos(a)*d+'px'); c.style.setProperty('--dy', (Math.sin(a)*d-40)+'px'); c.style.setProperty('--rot', (Math.random()*720-360)+'deg');
+    document.body.appendChild(c); setTimeout(()=>c.remove(),1200); } }
+function ring(p, size=54, stroke=6){ const r=(size-stroke)/2, c=2*Math.PI*r;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--sunk)" stroke-width="${stroke}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#ringGrad${size})" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-p)}" transform="rotate(-90 ${size/2} ${size/2})" style="transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1)"/><defs><linearGradient id="ringGrad${size}" x1="0" x2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--signal)"/></linearGradient></defs></svg>`; }
+function renderRailProg(){ const box=$('#railProg'); if(!box) return; const n=doneList().filter(id=>CHAPTERS.some(c=>c.id===id)).length, N=CHAPTERS.length;
+  box.innerHTML = `${ring(n/N)}<div><b>${n} / ${N}</b><span class="small muted">chapters complete</span></div>`;
+  const xp=$('#railXp'); if(xp) xp.textContent = `${n*100 + (store.get('best',0))*10} XP`; }
+/* search palette */
+let cmdSel=0, cmdItems=[];
+function openCmd(){ const c=$('#cmd'); c.hidden=false; const q=$('#cmdQ'); q.value=''; renderCmd(''); setTimeout(()=>q.focus(),30); }
+function closeCmd(){ $('#cmd').hidden=true; }
+function renderCmd(q){ q=q.toLowerCase().trim();
+  const ch = CHAPTERS.filter(c=>!q||c.t.toLowerCase().includes(q)||c.g.toLowerCase().includes(q)).map(c=>({href:'#'+c.id, t:c.t, s:c.g, k:'Chapter '+c.n}));
+  const gl = q ? GLOSSARY.filter(g=>(g[0]+' '+g[1]).toLowerCase().includes(q)).slice(0,12).map(g=>({href:'#glossary', t:g[0], s:g[1], k:'Term', term:g[0]})) : [];
+  cmdItems = [...ch.slice(0, q?12:46), ...gl]; cmdSel=0;
+  $('#cmdRes').innerHTML = cmdItems.length ? cmdItems.map((it,i)=>`<a href="${it.href}" data-cmd="${i}" class="${i===0?'sel':''}"><span class="tag ${it.k==='Term'?'s':'a'}">${it.k}</span><div><b>${esc(it.t)}</b><br><span>${esc(it.s)}</span></div></a>`).join('') : '<p class="muted small" style="padding:10px">Nothing found. Try another word.</p>'; }
+function pickCmd(i){ const it=cmdItems[i]; if(!it) return; closeCmd(); if(it.term){ store.set('glq', it.term); } location.hash = it.href.slice(1); if(location.hash===it.href) route(); }
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); $('#cmd').hidden?openCmd():closeCmd(); return; }
+  if($('#cmd') && !$('#cmd').hidden){
+    if(e.key==='Escape'){ closeCmd(); return; }
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); cmdSel=Math.max(0,Math.min(cmdItems.length-1,cmdSel+(e.key==='ArrowDown'?1:-1))); document.querySelectorAll('#cmdRes a').forEach((a,i)=>a.classList.toggle('sel',i===cmdSel)); document.querySelector('#cmdRes a.sel')?.scrollIntoView({block:'nearest'}); }
+    if(e.key==='Enter'){ e.preventDefault(); pickCmd(cmdSel); } } });
+/* reading progress */
+window.addEventListener('scroll', ()=>{ const h=document.documentElement, max=h.scrollHeight-h.clientHeight; const b=$('#readbar'); if(b) b.style.width = (max>0? h.scrollTop/max*100 : 0)+'%'; }, {passive:true});
+/* hero network canvas */
+let heroRAF=null;
+function heroNet(cv){
+  if(heroRAF) cancelAnimationFrame(heroRAF); if(!cv) return;
+  const ctx=cv.getContext('2d'), css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  let w,h,dpr=Math.min(2,devicePixelRatio||1),nodes=[],pulses=[];
+  function size(){ const r=cv.getBoundingClientRect(); w=r.width; h=r.height; cv.width=w*dpr; cv.height=h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n=Math.round(Math.min(70,w*h/9000)); nodes=Array.from({length:n},(_,i)=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,big:i<5})); }
+  size();
+  const gold=css('--signal'), teal=css('--accent'), violet=css('--violet'), line=css('--line');
+  function frame(){
+    ctx.clearRect(0,0,w,h);
+    for(const n of nodes){ n.x+=n.vx; n.y+=n.vy; if(n.x<0||n.x>w) n.vx*=-1; if(n.y<0||n.y>h) n.vy*=-1; }
+    for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){ const a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<120){ ctx.globalAlpha=(1-d/120)*.6; ctx.strokeStyle=line; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        if(Math.random()<.0012 && pulses.length<30) pulses.push({a,b,t:0,c:[gold,teal,violet][Math.floor(Math.random()*3)]}); } }
+    ctx.globalAlpha=1;
+    for(const n of nodes){ ctx.fillStyle=n.big?gold:line; ctx.beginPath(); ctx.arc(n.x,n.y,n.big?3.2:1.7,0,7); ctx.fill(); }
+    pulses=pulses.filter(p=>p.t<=1);
+    for(const p of pulses){ p.t+=.016; const x=p.a.x+(p.b.x-p.a.x)*p.t, y=p.a.y+(p.b.y-p.a.y)*p.t; ctx.fillStyle=p.c; ctx.shadowColor=p.c; ctx.shadowBlur=12; ctx.beginPath(); ctx.arc(x,y,2.6,0,7); ctx.fill(); ctx.shadowBlur=0; }
+    if(!RM && document.body.contains(cv)) heroRAF=requestAnimationFrame(frame);
+  }
+  frame();
+  if(!heroNet._r){ heroNet._r=true; window.addEventListener('resize',()=>{ const c=$('#heroNet'); if(c) heroNet(c); },{passive:true}); }
+}
+/* constellation of all chapters */
+function constelSVG(){
+  const W=1000,H=330, groups=[...new Set(CHAPTERS.map(c=>c.g))], cols={'Orientation':'var(--signal)','Learn AWS':'var(--accent)','Partner business':'var(--violet)','Your job':'var(--bad)','Reference':'var(--muted)','Career':'var(--good)'};
+  const n=CHAPTERS.length, pts=CHAPTERS.map((c,i)=>{ const x=40+i*(W-80)/(n-1), y=H/2+Math.sin(i*0.55)*95+Math.cos(i*1.7)*22; return [x,y]; });
+  const path=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  let g=`<path d="${path}" fill="none" stroke="var(--line)" stroke-width="2"/><path class="draw" pathLength="1" d="${path}" fill="none" stroke="url(#cgrad)" stroke-width="2.5" style="animation-duration:3s"/>`;
+  g+=`<defs><linearGradient id="cgrad" x1="0" x2="1"><stop offset="0" stop-color="var(--signal)"/><stop offset=".5" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--violet)"/></linearGradient></defs>`;
+  let last=''; CHAPTERS.forEach((c,i)=>{ const [x,y]=pts[i], d=isDone(c.id), col=cols[c.g]||'var(--accent)';
+    if(c.g!==last){ last=c.g; g+=`<text x="${x}" y="${y<H/2?y+42:y-28}" text-anchor="start" style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;fill:${col};text-transform:uppercase">${c.g}</text>`; }
+    g+=`<a href="#${c.id}" aria-label="${c.t}"><title>${c.n} · ${c.t}${d?' (completed)':''}</title>${d?`<circle cx="${x}" cy="${y}" r="14" fill="${col}" opacity=".18"/>`:''}<circle class="cn" cx="${x}" cy="${y}" r="${d?7:5.5}" fill="${d?'var(--signal)':'var(--surface)'}" stroke="${col}" stroke-width="2.2"/></a>`; });
+  if(!RM) g+=`<circle r="5" fill="var(--signal)" style="filter:drop-shadow(0 0 6px var(--signal))"><animateMotion dur="22s" repeatCount="indefinite" path="${path}"/></circle>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:720px" role="img" aria-label="Map of all ${n} chapters; completed chapters glow gold">${g}</svg></div>`;
+}
+function pager(id){ const i=CHAPTERS.findIndex(c=>c.id===id), p=CHAPTERS[i-1], n=CHAPTERS[i+1], d=isDone(id);
+  return `<nav class="pager" aria-label="Chapter navigation">${p?`<a class="btn ghost" href="#${p.id}">← ${p.t}</a>`:'<span></span>'}<button type="button" class="btn ghost donebtn" id="doneBtn" aria-pressed="${d}">${d?'✓ Completed':'Mark chapter complete'}</button>${n?`<a class="btn" href="#${n.id}">${n.t} →</a>`:'<span></span>'}</nav>`; }
+
+/* ===== Hyperscaler GTM: updated content (programs vs services, starter bundle, storefronts, ecosystem) ===== */
+const MATRIX = {
+  'Programs':{cols:['Stage 1 · Activate','Stage 2 · Market entry','Stage 3 · Multi-cloud scale'], rows:[['Timeline','1 month','4 months (most popular)','6 months'],['Target stage','Unlisted or listed with no pipeline (pre-Series A → A)','Series A → B','Series B → C'],['Cloud mix','AWS, Azure, Google Cloud','Any cloud','Any cloud'],['Primary goal','Marketplace activation','US market penetration','Global scale & automation'],['Channel & SI/GSI','Partner Central readiness','US partner mapping incl. CPPO','Global SI/GSI pipeline scale'],['Field enablement','Early co-sell activation','Targeted US field activation','Sustained multi-cloud execution']]},
+  'Managed services':{cols:['PDMaaS','PMMaaS','PALaaS'], rows:[['Core focus','Co-sell pipeline execution','Cloud messaging & optimization','Alliance coordination & QBRs'],['Cloud mix','AWS, Azure, Google Cloud','AWS, Azure, Google Cloud','AWS, Azure, Google Cloud'],['Primary output','Validated pipeline & funding (MDF)','Pitch decks & Marketplace copy','Partnership plan & executive syncs'],['Engagement model','Weekly field syncs','Continuous asset creation','Executive mapping & syncs']]},
+  'Ops & infrastructure':{cols:['PRMaaS','PCMaaS'], rows:[['Core focus','Revenue attribution & IaC tagging','Portal migration & IAM readiness'],['Cloud mix','AWS, Azure, Google Cloud','AWS, Azure, Google Cloud'],['Primary output','Compliant PRM implementation','Verified partner console access'],['Engagement model','Technical deployment','Readiness validation (free for eligible partners)']]}
+};
+const GFAQ = [
+  ['Program or managed service: which do I need?','Programs are 1–6 month sprints to hit a milestone, like activating a first Marketplace listing or breaking into the US market. Managed services provide an ongoing fractional team that runs day-to-day multi-cloud alliance operations without full-time headcount.'],
+  ['Does an external GTM team actually talk to cloud field sellers?','Operator-led teams map target accounts, pitch the solution to AWS, Microsoft and Google Cloud sellers, run weekly co-sell syncs, and manage opportunities directly in ACE, Partner Center and Partner Advantage.'],
+  ['Are Marketplace listings and funding applications included?','Listing optimization and portal readiness are foundational. Teams also identify, apply for and manage funding (e.g. MDF, MAP) to offset GTM cost and speed up deals.'],
+  ['Single cloud or multi-cloud?','Depending on stage and traction, either go deep on one cloud first, or run a multi-cloud co-sell engine across AWS, Azure and Google Cloud at once.']
+];
+const BUNDLE_WEEKS = [
+  {t:'Week 1 · Enterprise visibility', d:'Marketplace listing architecture goes live, and the CRM is connected to AWS data so deals can be routed automatically.', do:['Listing deployed','CRM ↔ Partner Central connection'], check:['Listing live; data flowing'], tools:['Listing infrastructure partner, CRM']},
+  {t:'Week 2 · Sales ready for co-sell', d:'Reps stop pitching features and start pitching joint AWS value with field-tested Better Together narratives mapped to what AWS sellers are measured on.', do:['Better Together narrative','Talk tracks'], check:['Reps trained'], tools:['Messaging kit']},
+  {t:'Week 3 · Frictionless procurement', d:'Demand paths activated; enterprise buyers can execute Private Offers directly through the listing and skip internal procurement red tape.', do:['Private Offer guardrails','Buyer collateral'], check:['First private offer possible'], tools:['Marketplace portal']},
+  {t:'Week 4 · Sustained deal flow', d:'Marketplace, co-sell and CRM workflows fully operational; pipeline generation active and repeatable.', do:['Operating cadence handed over'], check:['Repeatable pipeline'], tools:['ACE, CRM, Marketplace']}
+];
+const BUNDLE_UNLOCKS = [
+  ['Marketplace optimization','A full overhaul of the listing and buyer-facing collateral.','Buyers can apply existing AWS committed spend immediately, bypassing procurement friction.'],
+  ['Co-sell data automation','A bi-directional API connection between the CRM and AWS.','Every qualified lead is visible to AWS reps, so the deal gets field attention.'],
+  ['Targeted account mapping','Target pipeline mapped against active AWS strategic priorities.','Sales focuses on accounts primed to transact; fewer wasted cycles.'],
+  ['Field enablement playbooks','ICP and joint value proposition written for field consumption.','AWS account managers get the exact narrative to introduce the software to their best clients.']
+];
+const ECO = [
+  {n:'Hyperscaler field', items:[['AWS sellers & SMEs','Account managers, PDMs, specialists','Co-sell enablement sessions, ISV advisory panels, Marketplace workshops, speaking at events.'],['Microsoft field & Azure SMEs','Partner Center co-sell','ISV co-sell enablement and Marketplace GTM sessions.'],['Google Cloud field','Partner Advantage','Co-sell workshops and ISV advisory events.']]},
+  {n:'Third-party infrastructure', items:[['Listing infrastructure','Marketplace operations & automation','Deploys listings, private offer workflows and CRM integration.'],['Co-sell automation','Partner opportunity management','Keeps CRM and cloud co-sell portals in sync; one workflow for all clouds.']]},
+  {n:'Systems integrators', items:[['SI / GSI partners','Enterprise deployment','Co-execute Marketplace GTM with ISVs and extend reach into enterprise accounts.']]},
+  {n:'Distribution', items:[['Distributors','Public sector & channel','Reach government buyers and resellers via contract vehicles and CPPO.']]},
+  {n:'Outcome', items:[['ISV pipeline','Attributable cloud revenue','All layers working together turn a listing into deal flow.']]}
+];
+let matSel='Programs';
+function hyperUpdatesHTML(){ return `
+  <section class="section"><header><h2>Programs or managed services?</h2><p class="muted">Two ways to buy operator-led execution, plus the three reasons companies use it.</p></header>
+  <div class="grid g3">${[['Execution, not advisory','An embedded alliance team handles pipeline progression, funding workflows and real field alignment instead of slide decks.','var(--signal)'],['Native hyperscaler DNA','Messaging and pipeline structures mapped to how AWS, Azure and Google Cloud field teams actually operate.','var(--accent)'],['Fractional cost, enterprise scale','The output of an alliance director, PDM and PMM without hiring three full-time roles.','var(--violet)']].map(x=>`<div class="card" style="border-top:3px solid ${x[2]}"><h4>${x[0]}</h4><p class="small muted">${x[1]}</p></div>`).join('')}</div>
+  <div class="grid g2"><div class="card tint"><span class="eyebrow">Programs</span><h3>Milestone sprints</h3><p class="small">1 to 6 months, timeline-driven, designed to hit a specific goal: first Marketplace activation, US market entry, or multi-cloud scale.</p></div><div class="card warnc"><span class="eyebrow">Managed services</span><h3>Fractional team</h3><p class="small">Month-over-month PDM, PMM and alliance lead capacity for ISVs that already have a motion but lack people to run it.</p></div></div>
+  <h3>Solutions matrix</h3>
+  <div class="chips">${Object.keys(MATRIX).map(k=>`<button class="chip" type="button" data-mat="${k}" aria-pressed="${k===matSel}">${k}</button>`).join('')}</div>
+  <div id="matD"></div>
+  <h3>Common questions</h3>
+  <div class="faq" style="display:grid;gap:8px">${GFAQ.map((f,i)=>`<details ${i===0?'open':''}><summary>${f[0]}</summary><p class="small">${f[1]}</p></details>`).join('')}</div></section>
+
+  <section class="section"><header><h2>The 4-week partner starter bundle</h2><p class="muted">A newer offer pairs a GTM strategy team with a listing-infrastructure partner so an ISV goes Marketplace- and co-sell-ready in 28 days instead of quarters.</p></header>
+  <div class="grid g3">${[['Fragmented deployment','Piecemeal vendor setups can lose 2–3 quarters aligning CRM mapping with Partner Central compliance.'],['Pipeline throttling','Without a two-way CRM integration, reps don’t share data, and AWS reps ignore partners who don’t share.'],['Procurement friction','Enterprise buyers want to burn committed cloud spend; a clumsy private-offer process sends them to a competitor.']].map(x=>`<div class="card warnc"><h4>${x[0]}</h4><p class="small">${x[1]}</p></div>`).join('')}</div>
+  <div class="card">${engineSVG()}</div>
+  ${flow('bundle', FLOWS.bundle = BUNDLE_WEEKS, {label:'Week', pipe:true})}
+  <h3>Deliverables and what they unlock</h3>
+  <div class="grid g4">${BUNDLE_UNLOCKS.map((u,i)=>`<button type="button" class="card" data-unlock="${i}" style="text-align:left;font:inherit;color:inherit;cursor:pointer"><span class="eyebrow">Deliverable · tap to flip</span><h4>${u[0]}</h4><p class="small muted" id="unl${i}">${u[1]}</p></button>`).join('')}</div>
+  <p class="small muted">Built for seed to Series C cloud-native ISVs seeking AWS channel revenue, partners stuck converting tier status into deals, and teams selling direct without co-sell data automation.</p></section>
+
+  <section class="section"><header><h2>The partner ecosystem around an ISV</h2><p class="muted">No single firm does it all. Trace how the layers connect.</p></header>
+  ${arch('eco', ECO)}</section>`; }
+function storefrontHTML(){ return `
+  <section class="section"><header><h2>Lesson 5: AWS Marketplace Storefronts</h2><p class="muted">AWS opened Marketplace Storefronts on June 16, 2026: a branded buying experience for a vendor inside AWS Marketplace. A first wave of 50 vendors was invited to build them.</p></header>
+  <div class="card">${raceSVG2()}</div>
+  <div class="grid g3">${[['Choose the right offering','Buyers browse offerings grouped by use case (for example media & entertainment or security) and find their fit fast.'],['Custom price, existing account','A private offer gives custom pricing; the charge lands on the AWS bill already in place and draws down committed spend. No new budget line, no new master services agreement.'],['Days, not quarters','Because the deal runs on the account and commitment the buyer already has, procurement shrinks from months to days.']].map(x=>`<div class="card tint"><h4>${x[0]}</h4><p class="small">${x[1]}</p></div>`).join('')}</div>
+  <div class="card small"><b>Real example (anonymized):</b> a real-time data platform ISV launched its storefront in the first wave. Its GTM partner built the storefront, automated the deal workflow behind it, and aligned AWS field teams to put it in front of the right buyers. Partners now offer “storefront strategy” as a service.</div></section>`; }
+function showMat(k){ matSel=k; const m=MATRIX[k];
+  $('#matD').innerHTML = `<div class="tablewrap"><table><thead><tr><th>Capability</th>${m.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${m.rows.map((r,i)=>`<tr><td><b>${r[0]}</b></td>${r.slice(1).map((c,j)=>`<td class="small"><span style="display:inline-block;animation:rise .35s ${(i*3+j)*40}ms both">${c}</span></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  document.querySelectorAll('[data-mat]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.mat===k)); }
+function engineSVG(){
+  const W=760,H=240; const top=[['ICP & targets',105],['Value → seller priorities',305],['Field enablement',505]], bot=[['Listing deployed',105],['Private offer guardrails',305],['CRM ↔ Partner Central',505]];
+  let g=`<text x="20" y="40" style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;fill:var(--signal)">STRATEGY LAYER</text><text x="20" y="225" style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;fill:var(--accent)">TECHNICAL BACKBONE</text>`;
+  const pathT='M20 75 L600 75 C 620 75, 615 120, 638 120', pathB='M20 175 L600 175 C 620 175, 615 120, 638 120';
+  g+=`<path d="${pathT}" stroke="var(--signal)" stroke-width="3" fill="none" class="pipe-flow" stroke-dasharray="5 8"/><path d="${pathB}" stroke="var(--accent)" stroke-width="3" fill="none" class="pipe-flow" stroke-dasharray="5 8"/>`;
+  top.forEach(t=>g+=`<rect x="${t[1]-92}" y="58" width="184" height="34" rx="17" fill="var(--surface)" stroke="var(--signal)" stroke-width="2"/><text x="${t[1]}" y="80" text-anchor="middle" style="fill:var(--ink);font-size:11.5px;font-weight:600">${t[0]}</text>`);
+  bot.forEach(t=>g+=`<rect x="${t[1]-92}" y="158" width="184" height="34" rx="17" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/><text x="${t[1]}" y="180" text-anchor="middle" style="fill:var(--ink);font-size:11.5px;font-weight:600">${t[0]}</text>`);
+  g+=`<circle cx="690" cy="120" r="52" fill="var(--signal)"/><g class="spin"><circle cx="690" cy="120" r="62" fill="none" stroke="var(--signal)" stroke-dasharray="4 6"/></g><text x="690" y="116" text-anchor="middle" style="fill:var(--signal-ink);font-family:var(--display);font-size:15px">Live motion</text><text x="690" y="134" text-anchor="middle" style="fill:var(--signal-ink);font-size:10.5px">in 28 days</text>`;
+  if(!RM) g+=`<circle r="6" fill="var(--signal)"><animateMotion dur="3.4s" repeatCount="indefinite" path="${pathT}"/></circle><circle r="6" fill="var(--accent)"><animateMotion dur="3.4s" begin="1.7s" repeatCount="indefinite" path="${pathB}"/></circle>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:600px" role="img" aria-label="Strategy layer and technical backbone run in parallel and merge into a live co-sell motion">${g}</svg></div>`; }
+function raceSVG2(){
+  const W=760,H=240, A=[['Security review',150],['Procurement',290],['New contract (MSA)',430],['Purchase order',570]], B=[['Pick offering',150],['Private offer',330],['Accept on AWS account',530]];
+  const pa='M40 80 L700 80', pb='M40 180 L700 180';
+  let g=`<text x="40" y="50" style="font-weight:700;fill:var(--bad);font-size:13px">The 2015 way</text><text x="700" y="50" text-anchor="end" style="fill:var(--bad);font-family:var(--mono);font-size:11px">≈ a quarter</text><text x="40" y="150" style="font-weight:700;fill:var(--accent);font-size:13px">Storefront + private offer</text><text x="700" y="150" text-anchor="end" style="fill:var(--accent);font-family:var(--mono);font-size:11px">days</text>`;
+  g+=`<path d="${pa}" stroke="var(--bad-soft)" stroke-width="12" stroke-linecap="round"/><path d="${pb}" stroke="var(--accent-soft)" stroke-width="12" stroke-linecap="round"/>`;
+  A.forEach(a=>g+=`<rect x="${a[1]-7}" y="73" width="14" height="14" rx="3" fill="var(--surface)" stroke="var(--bad)" stroke-width="2"/><text x="${a[1]}" y="110" text-anchor="middle" style="fill:var(--ink);font-size:11px">${a[0]}</text>`);
+  B.forEach(b=>g+=`<circle cx="${b[1]}" cy="180" r="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/><text x="${b[1]}" y="210" text-anchor="middle" style="fill:var(--ink);font-size:11px">${b[0]}</text>`);
+  [80,180].forEach(y=>g+=`<path d="M712 ${y+12} V${y-14} l16 6 -16 6" fill="var(--signal)" stroke="var(--signal)" stroke-width="2"/>`);
+  if(!RM) g+=`<circle r="9" fill="var(--bad)"><animateMotion dur="12s" repeatCount="indefinite" path="${pa}"/></circle><circle r="9" fill="var(--accent)" style="filter:drop-shadow(0 0 6px var(--accent))"><animateMotion dur="12s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.22;1" calcMode="linear" path="${pb}"/></circle>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:600px" role="img" aria-label="Race: traditional procurement takes about a quarter, a storefront private offer takes days">${g}</svg></div>`; }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -4915,6 +5243,10 @@ function route(){
   Array.from($('#view').children).forEach((c,i)=>c.style.setProperty('--i', Math.min(i,10)));
   const eb = $('#view .eyebrow'), ch = CHAPTERS.find(c=>c.id===id);
   if(eb && /^Chapter \d+/.test(eb.textContent)) eb.textContent = eb.textContent.replace(/^Chapter \d+/, 'Chapter '+ch.n);
+  $('#view').insertAdjacentHTML('beforeend', pager(id));
+  if(id!=='start') store.set('lastch', id);
+  renderRailProg();
+  if(id==='start') heroNet($('#heroNet'));
   window.scrollTo(0,0);
   if(id==='cloud'){ showInfra('region'); showSR(Object.keys(SR.models)[0]); }
   if(id==='services') renderSvc();
@@ -4923,13 +5255,13 @@ function route(){
   if(id==='people') showOrg('aws-0');
   if(id==='revops') calcWP();
   if(id==='adminops'){ calcMP(); calcDSO(); }
-  if(id==='glossary') renderGl();
+  if(id==='glossary'){ const gq=store.get('glq',''); if(gq){ $('#glQ').value=gq; store.set('glq',''); } renderGl(); }
   if(id==='quiz'){ qi=0; qscore=0; renderQuiz(); }
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
   if(id==='cloudfin') calcMF();
-  if(id==='hypergtm'){ renderLS(); showMot(motSel); showPsvc(psvcSel); showGcase(gcase); renderSelf(); calcPSQ(); }
+  if(id==='hypergtm'){ showMat(matSel); renderLS(); showMot(motSel); showPsvc(psvcSel); showGcase(gcase); renderSelf(); calcPSQ(); }
   if(id==='playbook'){ renderDay(); scI=0; scScore=0; renderSC(); calcInvoice(); calcFD(); calcVB(); renderACE(false); showWK(wkSel); renderSnip(); }
   if(id==='opsess'){ showLP(0); calcFC(); renderTpl(); renderQ30(); }
   if(id==='reqs'){ showReq(reqSel); showDM(dmSel); }
@@ -5046,6 +5378,8 @@ document.addEventListener('click', e => {
   const pv = t.closest('[data-psvc]'); if(pv) return showPsvc(+pv.dataset.psvc);
   const gc = t.closest('[data-gcase]'); if(gc){ stopPlay(); return showGcase(+gc.dataset.gcase); }
   const my = t.closest('[data-myth]'); if(my){ const i=+my.dataset.myth, b=$('#mythB'+i), flipped=my.classList.toggle('tint'); b.textContent = flipped ? MYTHS[i][1] : 'Click to see the reality.'; b.classList.toggle('muted', !flipped); my.querySelector('.eyebrow').textContent = flipped ? `Reality ${i+1}` : `Myth ${i+1} · click to flip`; if(!RM) my.animate([{transform:'rotateY(90deg)'},{transform:'none'}],{duration:350}); return; }
+  const mt = t.closest('[data-mat]'); if(mt) return showMat(mt.dataset.mat);
+  const ul = t.closest('[data-unlock]'); if(ul){ const i=+ul.dataset.unlock, el=$('#unl'+i), on=ul.classList.toggle('tint'); el.innerHTML = on ? `<b>Unlocks:</b> ${BUNDLE_UNLOCKS[i][2]}` : BUNDLE_UNLOCKS[i][1]; el.classList.toggle('muted', !on); if(!RM) ul.animate([{transform:'rotateY(90deg)'},{transform:'none'}],{duration:350}); return; }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -5060,7 +5394,13 @@ document.addEventListener('click', e => {
   if(t.id==='qNext'){ qi++; return renderQuiz(); }
   if(t.id==='qRestart'){ qi=0; qscore=0; return renderQuiz(); }
   if(t.id==='closeReset'){ store.set('close', []); return route(); }
-  if(t.id==='themeBtn'){ const cur = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'); document.documentElement.dataset.theme = cur==='dark'?'light':'dark'; }
+  if(t.id==='themeBtn'){ const cur = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'); const nx = cur==='dark'?'light':'dark'; document.documentElement.dataset.theme = nx; store.set('theme', nx); toast(nx==='dark'?'Dark theme':'Light theme'); if((location.hash||'#start')==='#start') heroNet($('#heroNet')); }
+  if(t.closest('#cmdBtn') || t.id==='heroSearch'){ openCmd(); return; }
+  if(t.id==='cmd'){ closeCmd(); return; }
+  const cmdA = t.closest('[data-cmd]'); if(cmdA){ e.preventDefault(); pickCmd(+cmdA.dataset.cmd); return; }
+  if(t.id==='doneBtn'){ const id=(location.hash||'#start').slice(1)||'start'; let d=doneList(); const was=d.includes(id); d = was ? d.filter(x=>x!==id) : [...d,id]; store.set('done', d);
+    t.setAttribute('aria-pressed', !was); t.textContent = was ? 'Mark chapter complete' : '✓ Completed'; renderNav(id); renderRailProg();
+    if(!was){ const r=t.getBoundingClientRect(); confetti(r.left+r.width/2, r.top); toast(`Chapter complete · ${d.filter(x=>CHAPTERS.some(c=>c.id===x)).length}/${CHAPTERS.length}`); } else toast('Marked as not complete'); return; }
 });
 
 document.addEventListener('change', e => {
@@ -5080,6 +5420,7 @@ document.addEventListener('input', e => {
   const id = e.target.id||'';
   if(id==='svcQ') renderSvc();
   if(id==='glQ') renderGl();
+  if(id==='cmdQ') renderCmd(e.target.value);
   if(id==='chQ') renderCh();
   if(id.startsWith('wp')) calcWP();
   if(id.startsWith('mp')) calcMP();
@@ -5107,5 +5448,6 @@ document.addEventListener('keydown', e => { const sv = e.target.closest && e.tar
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
 
+try{ const th=store.get('theme',null); if(th) document.documentElement.dataset.theme=th; }catch(e){}
 route();
 </script>
