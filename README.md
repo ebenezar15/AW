@@ -28,6 +28,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Cloud migration | Why migrate, MAP phases, 7 Rs effort/benefit chart, 7R decision helper, migration factory, wave plan Gantt, workload types, roles, risks, 4 use cases with before/after, success metrics, what comes next |
 | | Partner Network | Partner Paths, tier ladder, programs |
 | | Portals & programs | Partner Central, ACE, APFP, AMMP, PSF and more; deal journey; lead sources; certifications |
+| | Partner Central hands-on | Simulated Partner Central console tour (every menu: what, who, how often, how to use well), how CRM/ACE/Marketplace/funding connect, 7-step access setup (Alliance Lead, IAM, Payee Central, CRM/API), ACE metro map (leads, partner-originated, AWS referrals, review, stages), review-status diagram, opportunity quality builder with gauge, fund request lifecycle by program (POC, MAP, MDF, credits), statuses & attachments, funding date planner, golden-thread ID matching with spot-the-mismatch, daily–quarterly routines and pre-flight checklists (saved locally), troubleshooter, agents/API/bulk tools, flip-card terms, inbox triage game |
 | | Who's who & RACI | AWS, partner and customer roles; RACI matrix |
 | | Identity, access, Zero Trust & certs | Identity big picture, animated AWS Organizations tree (root, OUs, accounts, SCPs), root users (root-only tasks, best practices, sign-in alert pipeline), IAM Identity Center (concepts, identity sources, sign-in pipeline, group × account permission matrix, comparison with IAM users/roles), Zero Trust (perimeter vs Zero Trust animation, 8 principles, access-decision pipeline, AWS building blocks, maturity path, use cases), Partner Central roles and linking, certification lifecycle and tracker with expiry alerts, joiner/mover/leaver checklists, internal access matrix, quarterly access review, incident response |
 | | Partner vs AWS roles | Side-by-side counterparts by function, what each is measured on, joint deal handoffs |
@@ -47,7 +48,7 @@ Open `index.html` in any browser. No install or build step needed.
 | | Video & content | Production pipeline, formats, brand rules, measurement |
 | | Digital marketing | Success factors, 8-step process, personas (incl. AWS sellers), platform priorities, content by funnel stage, weekly rhythm, funnel/ROI calculator, metrics, attribution, UTM link builder, 90-day plan, 18 creative ideas |
 | | Sales & success enablement | How video/AdminOps/RevOps help sales, enablement kit, closing checklist, deal accelerators and stallers, ABM, customer success lifecycle, health score, QBR agenda, advocacy ladder |
-| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 140+ terms, 51 questions |
+| Reference | Calendar & history, Glossary, Quiz | Annual AWS calendar, milestones, revenue chart, 150+ terms, 54 questions |
 | Career | Grow & contribute | 30-60-90 plan, use cases, rules, habits, impact metrics |
 | | Recognition & growth | Ownership register with health and review dates, maintenance standards, work log (brag document) with copyable review summary, impact calculators (time, cash from DSO, money recovered), performance factors, visibility habits, 8-step raise/promotion process with phrases, pay structure and compa-ratio, career paths, quarterly self-review |
 

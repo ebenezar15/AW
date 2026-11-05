@@ -414,6 +414,32 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .code .ln:hover{background:var(--sunk)}
 .code .ln.on{background:var(--signal-soft);border-left-color:var(--signal)}
 /* storefront race, ecosystem */
+.pcapp{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+.pcbar{display:flex;gap:12px;align-items:center;padding:9px 14px;background:var(--sunk);border-bottom:1px solid var(--line);min-width:0}
+.pcbar .mono{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.pcbar .dots{display:flex;gap:5px}.pcbar .dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.pcbody{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:420px}
+.pcside{border-right:1px solid var(--line);padding:10px;display:grid;align-content:start;gap:2px;background:color-mix(in srgb,var(--sunk) 50%,var(--surface))}
+.pcside .pcg{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:8px 6px 2px}
+.pcside button{text-align:left;border:0;background:transparent;color:var(--ink);padding:6px 10px;border-radius:8px;font-size:13.5px}
+.pcside button:hover{background:var(--sunk)}
+.pcside button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.pcmain{padding:18px 22px;display:grid;gap:10px;align-content:start}
+@media (max-width:700px){.pcbody{grid-template-columns:1fr}.pcside{display:flex;flex-wrap:nowrap;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.pcside .pcg{display:none}.pcside button{white-space:nowrap;flex:0 0 auto}}
+.tline{position:relative;height:34px;margin:6px 8px 14px;border-bottom:3px solid var(--line)}
+.tdot{position:absolute;bottom:-9px;width:15px;height:15px;margin-left:-7px;border-radius:50%;background:var(--tc);box-shadow:0 0 0 3px var(--surface);animation:rise .4s both}
+.tnow{position:absolute;top:-4px;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--bad)}
+.kvrow{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:start}
+.threadrow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:6px 2px}
+.tnode{flex:0 0 auto;border:2px solid var(--accent);background:var(--surface);color:var(--ink);border-radius:999px;padding:9px 16px;font-weight:700;font-size:13.5px}
+.tnode[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.tarrow{flex:1 0 26px;height:3px;min-width:26px;background:repeating-linear-gradient(90deg,var(--accent) 0 6px,transparent 6px 12px);background-size:24px 3px;animation:tflow 1s linear infinite}
+@keyframes tflow{to{background-position:24px 0}}
+.flip{position:relative;min-height:120px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:0;perspective:800px;text-align:left}
+.flip .fr,.flip .bk{position:absolute;inset:0;padding:14px;display:grid;align-content:center;gap:4px;border-radius:14px;backface-visibility:hidden;transition:transform .5s}
+.flip .bk{transform:rotateY(180deg);background:var(--accent-soft)}
+.flip.on .fr{transform:rotateY(-180deg)}.flip.on .bk{transform:none}
+@media (prefers-reduced-motion:reduce){.tarrow{animation:none}.flip .fr,.flip .bk{transition:none}}
 .lstack{display:grid;gap:5px}
 .lay{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);border-left:6px solid var(--lc);border-radius:10px;padding:9px 12px;background:color-mix(in srgb,var(--lc) 12%,var(--surface));transition:background .5s,border-color .5s;color:var(--ink)}
 .lay[aria-pressed="true"]{outline:2px solid var(--lc);outline-offset:1px}
@@ -495,6 +521,7 @@ const CHAPTERS = [
   {id:'migration', t:'Cloud migration', g:'Partner business'},
   {id:'partner', t:'Partner Network', g:'Partner business'},
   {id:'portals', t:'Portals & programs', g:'Partner business'},
+  {id:'pcentral', t:'Partner Central hands-on', g:'Partner business'},
   {id:'people', t:'Who\u2019s who & RACI', g:'Partner business'},
   {id:'identity', t:'Identity, access & certs', g:'Partner business'},
   {id:'roles', t:'Partner vs AWS roles', g:'Partner business'},
@@ -971,6 +998,14 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Opportunity invitation','An AWS-originated referral waiting in Partner Central. Must be accepted or rejected within 5 business days.'],
+  ['Opportunity Quality Score','A 0–100 score AWS gives approved opportunities based on business problem, next steps, primary need and solution fields.'],
+  ['Co-sell motion','How AWS engages on an opportunity: AWS field-engaged, agent-engaged or partner-led.'],
+  ['Action Required (ACE)','Review status meaning AWS needs more information before approving an opportunity.'],
+  ['Fund request stages','Created → (AWS Review → Tech Approval) → Business Approval → Finance Approval → Pre-Approval → Cash Claim → Completed.'],
+  ['Proof of performance','Evidence that a funded activity happened, attached to a cash claim.'],
+  ['Payee Central','Amazon’s payee portal where partners set bank and tax details and submit funding invoices.'],
+  ['Alliance Lead','The partner’s primary owner of the Partner Central account.'],
   ['Incident','An unplanned event that disrupts or degrades a service, handled with a set process: detect, triage, mitigate, communicate, resolve, review.'],
   ['Sev1 / severity level','How serious an incident is. Sev1 means business stopped; Sev4 a minor question. Decides who is paged and how fast.'],
   ['Incident commander','The one person who coordinates an incident: assigns tasks, decides, and keeps updates on schedule.'],
@@ -1221,6 +1256,9 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['How long do you have to accept or reject an AWS opportunity invitation?',['24 hours','5 business days','30 days','No limit'],1,'Unanswered invitations are removed after 5 business days.'],
+  ['A fund request attachment is Quarantined. What usually fixes it?',['Upload it again','Remove spreadsheet formulas or convert it to PDF','Email AWS','Delete the fund request'],1,'Files with formulas often fail the security scan.'],
+  ['When does a fund request expire?',['On approval','30 days after the delivery end date','After one year','Never'],1,'You can self-extend the end date once, up to 90 days, if delivery slips.'],
   ['A partner’s release breaks a client’s website. Who leads the fix?',['AWS Support','The partner that made the change','The client’s CFO','Nobody, it will recover'],1,'Whoever changed it rolls it back. Inside the SOW warranty, it’s non-billable.'],
   ['The AWS Health Dashboard shows an AWS service event. What should the client and partner do?',['Wait and do nothing','Fail over if the design allows, keep customers updated, then check the SLA for credits','Debug AWS’s servers','Delete and rebuild the account'],1,'AWS fixes its service; you keep the business running and communicate.'],
   ['Are AWS service credits paid automatically?',['Yes, always','No, the account owner claims them through a Support case within the claim window','Only in cash','Only for Basic Support'],1,'Credits must be requested, with incident details, usually by the end of the second billing cycle after the incident.'],
@@ -4574,6 +4612,7 @@ const PRACTICE = {
   recognition:{t:['Add 3 entries to the work log this week','Mark the things you own and their health','Calculate one impact in money with the calculators'], ex:'Every Friday you log 2 wins in 2 minutes. At review time, the exported summary shows 26 wins with numbers.'},
   hypergtm:{t:['Count your co-sell submissions in the last 90 days (target: 3+)','Ask your alliance lead whether PRM attribution is live and validated','Score one live opportunity with the PSQL scorer before it goes into ACE'], ex:'A software partner had a live listing and zero pipeline for six months. After briefing two PDMs, submitting four qualified co-sell opportunities and running two field enablement sessions, the first AWS seller introduction arrived in week seven.'},
   cloudfin:{t:['Read the AWS segment in Amazon’s latest quarterly results (revenue, operating income, backlog)','Run the money-flow calculator with a real (anonymized) customer’s numbers','Explain to a colleague why AWS funds partner projects'], ex:'A sales colleague asks why AWS gave $60K of migration funding. You show the money-flow calculator: $600K/year of new usage for several years makes the funding a small investment for AWS.'},
+  pcentral:{t:['Log in to Partner Central and find the invitations list: is anything older than 3 business days?','Export your open opportunities and mark every one with no update in 30 days','Open the funding dashboard and list each fund request’s stage, expiry date and next action'], ex:'Monday 9 a.m.: you find two AWS referrals expiring tomorrow, one opportunity on Action Required since last week, and an MDF claim 5 days from expiry. Fifteen minutes in Partner Central saves two deals and a few thousand dollars.'},
   incidents:{t:['Find out which support setup each of your top 5 clients has: direct, resold, MSP, SOW or SaaS','Ask for (or start) the contact sheet: on-call numbers, AWS Support plan per account, root email and MFA holder','Save the four comms templates from this chapter where the team can find them at 2 a.m.'], ex:'A client calls at 8 a.m.: “our site was down overnight, who pays?” You check: their account is resold, the outage was an AWS service event, the partner’s MSP fee covers response. You help claim the AWS credit via a Support case and pass it through as a QuickBooks credit memo.'},
   whouses:{t:['Open three companies in your customers’ industries and note which AWS services they use','Ask your sales team which pattern (all-in, hybrid, multi-cloud, specific workloads) fits your top 5 customers','Find one customer whose app could “add AWS through code” (e.g. Bedrock or S3) without migrating'], ex:'A manufacturing prospect says “we’ll never move to the cloud”. You show the Volkswagen pattern: keep factories and core systems, put the factory data platform on AWS. The conversation moves from “migration” to “one high-value workload”.'},
   playbook:{t:['Pick your role in the day planner and follow it for one week','Try 5 scenarios','Use the invoice builder before sending your next invoice'], ex:'After one week following the planner, invoices go out the same day as sign-offs and nothing slips past a deadline.'}
@@ -5857,6 +5896,325 @@ document.addEventListener('click', e=>{ const t=e.target; if(!t.closest) return;
   if(t.id==='incTplCopy'){ const el=$('#incTplOut'); try{ navigator.clipboard.writeText(el.textContent).then(()=>{ t.textContent='Copied'; setTimeout(()=>t.textContent='Copy template',1500); }, ()=>getSelection().selectAllChildren(el)); }catch(err){ getSelection().selectAllChildren(el); } return; }
 });
 
+/* ================= PARTNER CENTRAL HANDS-ON (console, ACE customer engagements, funding) ================= */
+const PCNAV = [
+  {g:'Home', k:'home', t:'Home & dashboard', what:'Your starting page: tasks waiting for you, alerts, program status and shortcuts. AI agents can answer questions about your pipeline here.', who:'Everyone', use:['Start every day here: clear the task list first','Check alerts for expiring referrals and Action Required items','Ask the agent “which opportunities need updates this week?”'], freq:'Daily'},
+  {g:'Sell', k:'leads', t:'Leads', what:'Early interest that isn’t a real opportunity yet: event sign-ups, campaign responses, AWS lead invitations. Statuses: Unqualified, Qualified, Disqualified.', who:'SalesOps, sales reps', use:['Qualify or disqualify within days, not weeks','Convert a Qualified lead with “Create draft opportunity”','Bulk import from events by CSV (up to 100 leads per file)'], freq:'Daily / weekly'},
+  {g:'Sell', k:'opps', t:'Opportunities (ACE pipeline)', what:'The heart of ACE: every customer deal you co-sell with AWS. You create them (partner-originated) or receive them (AWS referrals).', who:'Sales reps, ACE manager, RevOps', use:['Fill the customer business problem in full sentences with numbers','Update stage and next steps every week','Mark Launched with the AWS account ID, or Closed Lost with a reason'], freq:'Weekly per deal'},
+  {g:'Sell', k:'invites', t:'Opportunity & lead invitations', what:'AWS-originated referrals waiting for you. You must accept or reject within 5 business days or they disappear.', who:'ACE manager (and a backup!)', use:['Check every business day','Accept only what you can really pursue','Reject with a clear reason: it builds trust with AWS sellers'], freq:'Daily'},
+  {g:'Sell', k:'mkt', t:'Marketplace: offers & agreements', what:'Private offers, resale authorizations and agreements for products listed on AWS Marketplace. Links to the Marketplace Management Portal.', who:'Alliance ops, deal desk', use:['Confirm the buyer’s AWS account ID before creating an offer','Watch offer expiry dates','Link the offer to the ACE opportunity'], freq:'Per deal'},
+  {g:'Build', k:'sol', t:'Solutions & offerings', what:'The services and products you register so AWS can recommend them and attach them to opportunities.', who:'Alliance lead, product marketing', use:['Keep descriptions short and outcome-based','Attach the right solution to every opportunity','Retire old offerings'], freq:'Quarterly'},
+  {g:'Programs', k:'prog', t:'Programs, tiers & Specializations', what:'Your path progress: tier requirements, Specializations, validations and their evidence (certifications, launched opportunities, case studies).', who:'Alliance lead, AdminOps', use:['Track the gap to the next tier monthly','Store case-study evidence as soon as a deal launches','Calendar renewal dates for every Specialization'], freq:'Monthly'},
+  {g:'Funding', k:'fund', t:'Funding dashboard (formerly APFP)', what:'Create, track and claim fund requests: MAP, POC, MDF, training and credits. Filter by stage, status or program.', who:'Finance/AdminOps, alliance lead', use:['Link every fund request to its ACE opportunity','Get approval before the activity starts','Claim with proof of performance within the window'], freq:'Weekly'},
+  {g:'Funding', k:'ben', t:'Benefits catalog', what:'Every benefit your tier unlocks: funding programs, credits, training discounts, marketing benefits.', who:'Alliance lead', use:['Review once a quarter: unused benefits are lost value','Match benefits to the pipeline you actually have'], freq:'Quarterly'},
+  {g:'Insights', k:'ana', t:'Analytics & performance insights', what:'Dashboards on pipeline, launched revenue, certifications and partner performance metrics.', who:'RevOps, leadership', use:['Export the pipeline for the weekly review','Compare your data with your CRM: fix differences','Use trends in the QBR with your Partner Development Manager'], freq:'Weekly / quarterly'},
+  {g:'Account', k:'prof', t:'Company profile & listing', what:'How AWS and customers see you: description, locations, industries, the Partner Solutions Finder listing.', who:'Marketing, alliance lead', use:['Refresh after every new Specialization or case study','Use the same wording as your website'], freq:'Quarterly'},
+  {g:'Account', k:'users', t:'Users, roles & connections', what:'Who can do what. Partner Central now lives in the AWS console: access is controlled by AWS IAM permissions and managed policies. Connections let you work with other partners on multi-partner opportunities.', who:'Alliance lead, AdminOps, cloud admin', use:['Least privilege: funding access only for people who file funding','Remove leavers the same day','Review all users every quarter'], freq:'Monthly'},
+  {g:'Learn', k:'train', t:'Training & certification', what:'Links to AWS Skill Builder, accreditations and certification tracking that count toward tier requirements.', who:'Everyone, AdminOps tracks', use:['Map each certification to the requirement it fills','Remind people 60 days before certifications expire'], freq:'Monthly'},
+  {g:'Help', k:'sup', t:'Support cases', what:'Partner Central support for access, ACE, funding and program questions (separate from AWS technical support).', who:'Anyone with access', use:['Include IDs: opportunity ID, fund request ID, screenshots','Log the case number in your tracker'], freq:'As needed'}
+];
+let pcNav='opps';
+function renderPcApp(){ const box=$('#pcApp'); if(!box) return; const groups=[...new Set(PCNAV.map(n=>n.g))], n=PCNAV.find(x=>x.k===pcNav);
+  box.innerHTML = `<div class="pcbar"><span class="dots"><i></i><i></i><i></i></span><span class="mono small">console › partner central › ${n.g.toLowerCase()} › ${n.t.toLowerCase()}</span></div>
+  <div class="pcbody"><nav class="pcside" aria-label="Simulated Partner Central menu">${groups.map(g=>`<div class="pcg">${g}</div>${PCNAV.filter(x=>x.g===g).map(x=>`<button type="button" data-pcnav="${x.k}" aria-pressed="${x.k===pcNav}">${x.t}</button>`).join('')}`).join('')}</nav>
+  <div class="pcmain" style="animation:rise .35s both"><span class="eyebrow">${n.g}</span><h3>${n.t}</h3><p>${n.what}</p><div class="cols"><div><div class="eyebrow">Use it well</div><ul class="clean">${n.use.map(u=>`<li>${u}</li>`).join('')}</ul></div><div><div class="eyebrow">Who uses it</div><p class="small">${n.who}</p><div class="eyebrow">How often</div><p class="small"><span class="tag s">${n.freq}</span></p></div></div></div></div>`; }
+
+/* Setup & access */
+const PCSETUP = [
+  {t:'Register / link', d:'The company joins the AWS Partner Network and links Partner Central to one AWS account that represents the partnership (on a paid plan, in good standing).', do:['Pick the AWS account carefully: it becomes the partnership’s home','The person registering usually becomes Alliance Lead'], check:['Account owned by the company, not a person'], tools:['Partner Central in the AWS console']},
+  {t:'Alliance Lead', d:'The primary contact who owns the partnership: accepts program terms and manages who gets access.', do:['Name a backup Alliance Lead','Use a role mailbox for notifications'], check:['Two people can administer access'], tools:['Account settings']},
+  {t:'Users & permissions', d:'People sign in through the AWS console. What they can see (opportunities, funding, Marketplace) comes from IAM permissions and AWS-managed Partner Central policies.', do:['Give funding permissions only to funding owners','Use IAM Identity Center groups, not personal IAM users'], check:['Can each person do their job, and no more?'], tools:['IAM Identity Center, managed policies']},
+  {t:'Company profile', d:'Description, industries, locations and solutions that AWS sellers and customers see.', do:['Same positioning as your website','Add solutions so they can be attached to deals'], check:['Profile reviewed this quarter'], tools:['Profile, Solutions']},
+  {t:'ACE terms', d:'Accept the APN Customer Engagements terms to share and receive opportunities.', do:['Read the data-sharing terms: customer info is shared with AWS'], check:['Terms accepted; ACE eligibility checked'], tools:['Sell menu']},
+  {t:'Payee Central', d:'Needed to receive cash funding (MDF, POC, MAP). Bank details and a tax interview live in Amazon Payee Central.', do:['Finish bank registration and the tax interview before your first claim'], check:['Test that you can open Payee Central'], tools:['payeecentral.amazon.com']},
+  {t:'Connect your CRM', d:'Sync opportunities with your CRM instead of typing twice: Partner Central Selling API, CRM connectors, an MCP server for AI tools, or CSV bulk import.', do:['Decide the system of record','Map CRM fields to ACE fields'], check:['No duplicate opportunities after sync'], tools:['Selling API, connectors, CSV']}
+];
+
+/* ACE metro map stations */
+const PCMETRO = [
+  {t:'Lead', l:'lead', d:'Early interest: an event badge scan, a webinar sign-up, an AWS lead invitation. Statuses: Unqualified → Qualified (or Disqualified).', tips:['Qualify fast: is there a real project, budget and timeline?','Convert with “Create draft opportunity”']},
+  {t:'AWS referral', l:'aws', d:'AWS sellers send you an opportunity invitation. You have 5 business days to accept or reject, or it is removed.', tips:['Check invitations every business day','Name a backup for holidays']},
+  {t:'Draft', l:'partner', d:'Partner-originated opportunity being written: customer, website, industry, country, business problem, solution, use case, monthly AWS revenue, target close date, primary need from AWS.', tips:['Write the business problem as a short story with numbers','Pick the primary need from AWS honestly (e.g. architecture validation, pricing help)']},
+  {t:'Submitted', l:'review', d:'You submitted it to AWS. Review status moves Pending Submission → Submitted → In review.', tips:['Don’t edit while it’s in review','Duplicates get rejected: search first']},
+  {t:'Action required', l:'review', d:'AWS needs more information. Only some fields are editable (address, website, business problem, target close date, expected monthly AWS revenue, your own ID). Fix and resubmit.', tips:['Read the review comment, fix exactly that','Answer within days, or the deal goes cold']},
+  {t:'Approved', l:'review', d:'AWS validated it. It gets an Opportunity Quality Score and a co-sell motion: AWS field-engaged, agent-engaged or partner-led.', tips:['A higher quality score improves the chance an AWS seller engages, but doesn’t guarantee it']},
+  {t:'Prospect', l:'stage', d:'Customer opportunity identified.', tips:['Next step and date always filled in']},
+  {t:'Qualified', l:'stage', d:'Customer agrees there’s a real need; requirements discussed.', tips:['Capture decision makers and budget']},
+  {t:'Technical validation', l:'stage', d:'Solution validated through architecture sessions, demos or a POC.', tips:['Good moment for POC funding']},
+  {t:'Business validation', l:'stage', d:'Business stakeholders agree it makes financial sense.', tips:['Proposal / business case sent']},
+  {t:'Committed', l:'stage', d:'Customer commits to the solution and economics: SOW or PO signed.', tips:['Create the customer and project in QuickBooks']},
+  {t:'Launched', l:'stage', d:'Billing has begun on AWS. Enter the AWS account ID and close date. Counts toward tier and Specializations.', tips:['Request a case study the same week']},
+  {t:'Closed lost', l:'lost', d:'Customer chose another provider, delayed, or wasn’t ready. Pick a reason (price, competitor, delay, technical limits…).', tips:['Honest reasons help AWS and your win/loss library']}
+];
+let pcStation=2;
+function metroSVG(){ const W=1100,H=330;
+  const pos=[[70,70],[70,250],[230,160],[370,160],[470,70],[570,160],[690,160],[770,160],[850,160],[930,160],[1010,160],[1060,70],[1060,250]];
+  const lines=[
+    ['lead','var(--signal)','M70 70 C 150 70, 160 160, 230 160'],
+    ['aws','var(--accent)','M70 250 C 300 250, 480 250, 570 160'],
+    ['partner','var(--violet)','M230 160 H 370'],
+    ['review','var(--violet)','M370 160 H 570'],
+    ['fix','var(--warn)','M370 160 C 400 70, 440 70, 470 70 C 500 70, 520 70, 370 160'],
+    ['stage','var(--good)','M570 160 H 1010'],
+    ['launch','var(--good)','M1010 160 C 1040 160, 1060 120, 1060 70'],
+    ['lost','var(--bad)','M1010 160 C 1040 160, 1060 200, 1060 250']];
+  let g='';
+  lines.forEach(([k,c,d],i)=>{ g+=`<path d="${d}" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round" opacity=".85"/>`; if(!RM && k!=='fix') g+=`<circle r="5" fill="var(--surface)" stroke="${c}" stroke-width="2" opacity="0"><set attributeName="opacity" to="1" begin="${i*.4}s"/><animateMotion dur="${3+i*.3}s" begin="${i*.4}s" repeatCount="indefinite" path="${d}"/></circle>`; });
+  g+=`<text x="420" y="40" text-anchor="middle" style="fill:var(--warn);font-size:10.5px;font-family:var(--mono)">FIX &amp; RESUBMIT LOOP</text><text x="300" y="275" style="fill:var(--accent);font-size:10.5px;font-family:var(--mono)">ACCEPT WITHIN 5 BUSINESS DAYS</text><text x="790" y="232" text-anchor="middle" style="fill:var(--good);font-size:10.5px;font-family:var(--mono)">SALES STAGES · UPDATE WEEKLY</text>`;
+  PCMETRO.forEach((s,i)=>{ const [x,y]=pos[i], sel=i===pcStation, below = y>=160 && i>=6 && i<=10 ? (i%2? -22 : 34) : (y<160?-18:30);
+    g+=`<g data-pcm="${i}" role="button" tabindex="0" aria-label="${s.t}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="20" fill="transparent"/><circle cx="${x}" cy="${y}" r="${sel?12:9}" fill="${sel?'var(--signal)':'var(--surface)'}" stroke="var(--ink)" stroke-width="3">${sel&&!RM?'<animate attributeName="r" values="11;14;11" dur="1.4s" repeatCount="indefinite"/>':''}</circle><text x="${x}" y="${y+below}" text-anchor="middle" style="fill:var(--ink);font-weight:${sel?800:600};font-size:12px">${s.t}</text></g>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:860px" role="img" aria-label="Metro map: leads and AWS referrals join partner drafts, pass AWS review, then travel the sales stages to Launched or Closed lost">${g}</svg></div>`; }
+function showStation(i){ pcStation=i; const s=PCMETRO[i]; const m=$('#metroSvg'); if(m) m.innerHTML=metroSVG();
+  const lineN={lead:'Lead line',aws:'AWS referral line',partner:'Partner-originated line',review:'AWS review',stage:'Sales stage',lost:'Terminal stage'}[s.l];
+  $('#metroD').innerHTML=`<span class="eyebrow">${lineN}</span><h3>${s.t}</h3><p>${s.d}</p><ul class="clean small">${s.tips.map(t=>`<li>${t}</li>`).join('')}</ul>`; }
+
+/* Opportunity quality builder */
+const OQS = [
+  ['bp','Customer business problem is complete','Who the customer is, the pain, numbers and timeline. Example: “Retailer with 40 stores; on-prem POS database fails at peak; wants to move to Aurora before Black Friday; ~$6k/month AWS.”'],
+  ['ns','Next steps are specific and dated','“Architecture workshop with CTO on 12 May” beats “follow up”.'],
+  ['pn','Primary need from AWS is chosen','e.g. technical consultation, architecture validation, pricing assistance, business presentation.'],
+  ['sp','Solution and AWS products are attached','Your registered solution plus the main AWS services.']
+];
+function renderOqs(){ const box=$('#oqsOut'); if(!box) return; const on=OQS.filter(o=>$('#oq-'+o[0])?.checked).length, sc=on*25;
+  const mot = sc>=75?['Strong: likely to get AWS seller attention','var(--good)']:sc>=50?['Fair: improve the missing fields','var(--warn)']:['Weak: AWS sellers will probably pass','var(--bad)'];
+  box.innerHTML=`<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">${gauge(Math.max(1,Math.round(sc/20)), mot[1]).replace(/>(Minimal|Small part|Specific workloads|Large share|Most \/ all)</,`>${sc} / 100<`)}<div><b style="color:${mot[1]}">${mot[0]}</b><p class="small muted">Illustrative scoring with four equal parts. AWS scores out of 100 using these four factors; the exact weights aren’t published.</p></div></div>`; }
+
+/* Review state machine */
+const PCREV = [
+  ['Pending Submission','Saved as draft; AWS can’t see it yet.'],
+  ['Submitted','Sent to AWS; waiting in the queue.'],
+  ['In review','AWS checks deal size, solution fit, customer engagement and duplicates.'],
+  ['Action Required','AWS needs fixes. Edit the allowed fields and resubmit.'],
+  ['Approved','Validated: quality score and co-sell motion assigned.'],
+  ['Rejected','Not accepted (for example a duplicate or not a real AWS opportunity). Read the reason.']
+];
+function revSVG(){ const W=860,H=230, P=[[80,115],[230,115],[390,115],[560,40],[700,115],[560,190]];
+  let g=`<defs><marker id="rarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs>`;
+  const E=[[0,1,'M150 115 H160'],[1,2,'M300 115 H316'],[2,4,'M460 115 H628'],[2,3,'M440 95 L500 52'],[3,1,'M490 32 C 360 0, 260 40, 236 88'],[2,5,'M440 135 L500 178']];
+  E.forEach(e=>g+=`<path d="${e[2]}" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rarr)" class="pipe-flow" stroke-dasharray="5 6"/>`);
+  g+=`<text x="330" y="22" style="fill:var(--warn);font-size:10.5px;font-family:var(--mono)">FIX &amp; RESUBMIT</text>`;
+  const col=['var(--muted)','var(--accent)','var(--accent)','var(--warn)','var(--good)','var(--bad)'];
+  PCREV.forEach((r,i)=>{ const [x,y]=P[i]; g+=`<g data-pcrev="${i}" role="button" tabindex="0" aria-label="${r[0]}" style="cursor:pointer"><rect x="${x-70}" y="${y-20}" width="140" height="40" rx="20" fill="var(--surface)" stroke="${col[i]}" stroke-width="2.5"/><text x="${x}" y="${y+5}" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">${r[0]}</text></g>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:680px" role="img" aria-label="Review status flow from Pending Submission to Approved, Action Required or Rejected">${g}</svg></div>`; }
+
+/* Funding lifecycle */
+const FRSTAGES = [
+  ['Created','Draft, or returned after rejection for you to fix and resubmit.'],
+  ['AWS Review','An AWS reviewer checks it. Only for POC (sell) and some other programs.'],
+  ['Tech Approval','A Partner Solutions Architect checks the project plan is technically sound. POC only.'],
+  ['Business Approval','The program’s business approver decides.'],
+  ['Finance Approval','AWS operations raises a purchase order (cash) or generates credit codes.'],
+  ['Pre-Approval','All approvals done: you may start the activity. (MAP skips this and goes straight to Cash Claim.)'],
+  ['Cash Claim','Activity done: submit actuals and proof of performance. Once approved, invoice through Payee Central.'],
+  ['Completed','Credits redeemed and/or cash paid. Nothing left to do.']
+];
+const FRPROG = {
+  POC:{n:'POC (sell)', s:[1,1,1,1,1,1,1,1], d:'Proof of concept funding for a customer opportunity. Has the extra AWS review and technical approval.'},
+  MAP:{n:'MAP (migration)', s:[1,0,0,1,1,0,1,1], d:'Migration Acceleration Program. No separate Pre-Approval stage: reaching Cash Claim means it’s pre-approved.'},
+  MDF:{n:'MDF (marketing)', s:[1,0,0,1,1,1,1,1], d:'Marketing Development Funds for demand-generation activities like events, campaigns and webinars.'},
+  CR:{n:'Credits only', s:[1,0,0,1,1,1,0,1], d:'Promotional credits (for example Innovation Sandbox). No cash claim: codes are issued and redeemed.'}
+};
+let frProg='POC', frStep=0;
+function frSVG(){ const p=FRPROG[frProg], idx=FRSTAGES.map((_,i)=>i).filter(i=>p.s[i]), n=idx.length, W=Math.max(640,n*120+80), H=150, y=58, x=k=>50+k*((W-100)/(n-1));
+  const path=`M${x(0)} ${y} L${x(n-1)} ${y}`;
+  let g=`<path d="${path}" stroke="var(--sunk)" stroke-width="14" stroke-linecap="round"/><path d="${path}" class="pipe-flow" stroke="var(--signal)" stroke-width="3" stroke-dasharray="3 9"/>`;
+  if(!RM) g+=`<g><rect x="-14" y="-10" width="28" height="20" rx="4" fill="var(--signal)"/><text y="4" text-anchor="middle" style="fill:var(--signal-ink);font-size:11px;font-weight:800">$</text><animateMotion dur="${n*1.1}s" repeatCount="indefinite" path="${path}"/></g>`;
+  idx.forEach((si,k)=>{ const on=si===frStep, [a,b]=wrap2(FRSTAGES[si][0],12);
+    g+=`<g data-frs="${si}" role="button" tabindex="0" aria-label="${FRSTAGES[si][0]}" style="cursor:pointer"><path d="M${x(k)-50} ${y-30} h100 v100 h-100 Z" fill="transparent"/><circle cx="${x(k)}" cy="${y}" r="${on?22:18}" fill="${on?'var(--signal)':'var(--surface)'}" stroke="var(--signal)" stroke-width="2.5"/><text x="${x(k)}" y="${y+5}" text-anchor="middle" style="font-weight:700;fill:${on?'var(--signal-ink)':'var(--ink)'};font-size:12px">${k+1}</text><text x="${x(k)}" y="${y+42}" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:600">${a}</text><text x="${x(k)}" y="${y+57}" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:600">${b}</text></g>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W,620)}px" role="img" aria-label="Fund request stages for ${p.n}">${g}</svg></div>`; }
+function renderFr(){ const p=FRPROG[frProg]; if(!p.s[frStep]) frStep=0; const box=$('#frSvg'); if(!box) return; box.innerHTML=frSVG();
+  $('#frD').innerHTML=`<span class="eyebrow">${p.n}</span><h3>${FRSTAGES[frStep][0]}</h3><p>${FRSTAGES[frStep][1]}</p><p class="small muted">${p.d}</p>`;
+  document.querySelectorAll('[data-frp]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.frp===frProg)); }
+
+/* Funding date calculator */
+function calcFrDates(){ const s=$('#frStart')?.value, e=$('#frEnd')?.value, out=$('#frDates'); if(!out) return;
+  if(!s||!e){ out.innerHTML='<p class="small muted">Pick both dates.</p>'; return; }
+  const d=x=>new Date(x+'T00:00:00'), add=(x,n)=>{ const r=new Date(x); r.setDate(r.getDate()+n); return r; }, f=x=>x.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+  const S=d(s), E=d(e); if(E<S){ out.innerHTML='<p class="small" style="color:var(--bad)">The end date is before the start date.</p>'; return; }
+  const sub=add(S,-21), exp=add(E,30), ext=add(E,90), extExp=add(ext,30), today=new Date(); today.setHours(0,0,0,0);
+  const rows=[[sub,'Aim to submit by','Leave about 3 weeks for approvals (a habit, not an AWS rule). Approval must come before work starts.','var(--accent)'],[S,'Activity starts','Only start once the request is pre-approved.','var(--signal)'],[E,'Delivery ends','Collect proof of performance as you go: attendee lists, reports, sign-offs.','var(--violet)'],[exp,'Request expires','30 days after the delivery end date. Submit your claim before this.','var(--bad)'],[ext,'If extended','One self-service extension of up to 90 days on the end date (then expiry moves to '+f(extExp)+').','var(--muted)']];
+  const min=sub.getTime(), max=extExp.getTime(), pct=t=>((t-min)/(max-min)*100).toFixed(1);
+  out.innerHTML=`<div class="tline">${rows.map(r=>`<span class="tdot" style="left:${pct(r[0].getTime())}%;--tc:${r[3]}" title="${r[1]}"></span>`).join('')}${today.getTime()>=min&&today.getTime()<=max?`<span class="tnow" style="left:${pct(today.getTime())}%">today</span>`:''}</div>
+  <div class="grid" style="gap:6px">${rows.map(r=>`<div class="kvrow"><span class="tag" style="color:${r[3]};border-color:transparent;background:color-mix(in srgb,${r[3]} 14%,transparent)">${f(r[0])}</span><span class="small"><b>${r[1]}.</b> ${r[2]}</span></div>`).join('')}</div>`; }
+
+/* Golden thread */
+const THREAD = [
+  {t:'CRM deal', f:['Deal name','Customer legal name','Amount & close date','ACE opportunity ID field'], tip:'Your system of record. Store the ACE ID here so everything else can be matched.'},
+  {t:'ACE opportunity', f:['Opportunity ID (O-…)','Customer name & website','Stage, next steps','AWS account ID at Launch'], tip:'The co-sell record AWS sees. Must match the CRM on customer and stage.'},
+  {t:'Fund request', f:['Fund request ID','Linked opportunity ID','Activity dates','Approved amount'], tip:'Linked to the opportunity. Dates and amounts drive what you can claim.'},
+  {t:'Marketplace offer', f:['Offer ID','Buyer AWS account ID','Price & expiry','Linked opportunity'], tip:'Buyer account ID must match the customer’s real AWS account.'},
+  {t:'QuickBooks', f:['Customer (same legal name)','Project / class with ACE ID','Invoice & PO number','Funding receivable'], tip:'Put the ACE and fund request IDs in the memo or a custom field: reconciliation becomes a search.'}
+];
+const MISMATCH = { recs:[['CRM','Customer: Northwind Foods Ltd · Stage: Committed · ACE: O-48213'],['ACE','Customer: Northwind Foods Ltd · Stage: Technical validation · ID: O-48213'],['Fund request','Linked opp: O-48213 · Dates: 1 Mar–30 Apr'],['QuickBooks','Customer: Northwind Foods Ltd · Memo: ACE O-48213']], bad:1, why:'The CRM says Committed but ACE still says Technical validation. Update ACE: AWS sellers and funding reviewers only see ACE.' };
+
+/* Routines */
+const PCROUT = {
+  Daily:['Accept or reject every invitation (5-business-day window)','Answer any opportunity marked Action Required','Clear Partner Central home tasks and alerts'],
+  Weekly:['Update stage, next steps and target close date on every open opportunity','Close stale deals (no change in 30+ days) as Closed Lost with a reason','Check fund request stages; chase anything stuck','Compare the ACE pipeline export with the CRM'],
+  Monthly:['Mark launches: AWS account ID and close date','Submit cash claims for finished activities; send Payee Central invoices','Review users and permissions; remove leavers','Track tier and Specialization gaps'],
+  Quarterly:['Review the benefits catalog: what did we not use?','Refresh company profile, solutions and Partner Solutions Finder listing','Pipeline and funding review with your Partner Development Manager','Plan next quarter’s MDF activities and request them early']
+};
+let pcRoutTab='Daily';
+function renderPcRout(){ const box=$('#pcRout'); if(!box) return; const done=store.get('pcrout',{}), items=PCROUT[pcRoutTab], n=items.filter((_,i)=>done[pcRoutTab+i]).length;
+  box.innerHTML=`<div style="display:flex;gap:12px;align-items:center">${ring(n/items.length,54,6)}<div><b>${n} / ${items.length}</b><br><span class="small muted">${pcRoutTab.toLowerCase()} routine done</span></div></div>${items.map((x,i)=>`<label class="check"><input type="checkbox" data-pcr="${pcRoutTab+i}" ${done[pcRoutTab+i]?'checked':''}> <span>${x}</span></label>`).join('')}<button class="btn ghost" type="button" id="pcRoutReset" style="justify-self:start">Reset ${pcRoutTab.toLowerCase()} list</button>`;
+  document.querySelectorAll('[data-pcrt]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.pcrt===pcRoutTab)); }
+
+/* Pre-flight checks */
+const PREFLIGHT = {
+  'Opportunity':['Searched for duplicates first','Customer legal name, website, country and postal code correct','Business problem: who, pain, numbers, timeline','Primary need from AWS chosen','Solution and AWS products attached','Expected monthly AWS revenue is realistic','Target close date in the future','Next step has a date'],
+  'Fund request':['Linked to the right ACE opportunity','Program fits the activity (POC vs MAP vs MDF)','Activity start date after expected approval','Budget and quote attached','Attachments are PDFs (no spreadsheet formulas)','Success criteria and customer sign-off plan written','Payee Central set up for cash'],
+  'Cash claim':['Activity actually finished','Proof of performance attached (report, attendee list, customer sign-off)','Actual spend ≤ approved amount','Submitted before the expiry date (30 days after delivery end)','Invoice ready for Payee Central once actuals are approved']
+};
+let pfSel='Opportunity';
+function renderPf(){ const box=$('#pfBox'); if(!box) return; const items=PREFLIGHT[pfSel], st=store.get('pf_'+pfSel,{}), n=items.filter((_,i)=>st[i]).length;
+  box.innerHTML=`<div style="display:flex;gap:12px;align-items:center">${ring(n/items.length,64,7)}<div><b>${n===items.length?'Ready to submit':`${items.length-n} check${items.length-n>1?'s':''} left`}</b><br><span class="small muted">${pfSel} pre-flight</span></div></div>${items.map((x,i)=>`<label class="check"><input type="checkbox" data-pf="${i}" ${st[i]?'checked':''}> <span>${x}</span></label>`).join('')}`;
+  document.querySelectorAll('[data-pfs]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.pfs===pfSel)); }
+
+/* Troubleshooter */
+const PCFIX = [
+  ['A referral disappeared','It wasn’t accepted within 5 business days, so it was removed.','Ask your Partner Development Manager if it can be re-sent. Add a daily invitation check and a backup person.'],
+  ['Opportunity rejected','Usually a duplicate, missing details, or not a real AWS-consumption opportunity.','Read the reason. Search for an existing record, add detail, and create a corrected opportunity if allowed.'],
+  ['Stuck on Action Required','AWS asked for more info and nobody answered.','Read the review comment; edit only the allowed fields (address, website, business problem, close date, monthly revenue) and resubmit.'],
+  ['Can’t see the funding dashboard','Your user lacks funding permissions, or there’s no fund request yet.','Ask the Alliance Lead / cloud admin for the right Partner Central funding policy.'],
+  ['Attachment “Quarantined”','The file failed the security scan, often because of spreadsheet formulas.','Remove formulas or save as PDF, then reattach.'],
+  ['Fund request expired','The claim wasn’t made within 30 days of the delivery end date.','Expired requests can’t be actioned. Next time, extend (once, up to 90 days) before the end date if delivery slips.'],
+  ['Claim approved but no money','The invoice step in Payee Central isn’t done, or bank/tax setup is incomplete.','Open Payee Central, finish the tax interview and bank details, and submit the invoice from the link on the fund request.'],
+  ['Someone left the company','Their access is still active.','Remove their permissions the same day; reassign their opportunities and fund requests.'],
+  ['CRM and ACE disagree','Two systems updated by hand.','Pick a system of record, use the API/connector, and run a weekly comparison.']
+];
+
+/* Inbox triage game */
+const PCGAME = [
+  {s:'Thursday: an AWS referral invitation arrived on Monday. Your rep is on holiday.', o:[['Leave it for the rep next week',0,'It will vanish: the 5-business-day window ends tomorrow.'],['Review it now; accept and assign a backup owner, or reject with a reason',2,'Exactly. Invitations are time-boxed.'],['Forward the email to sales and hope',1,'Better than nothing, but someone must act in Partner Central.']]},
+  {s:'An opportunity shows Action Required: “business problem lacks detail”.', o:[['Rewrite the business problem with who, pain, numbers and timeline, then resubmit',2,'Fix exactly what was asked.'],['Create a new duplicate opportunity',0,'Duplicates get rejected and confuse AWS sellers.'],['Ignore it, AWS will approve eventually',0,'It won’t move until you respond.']]},
+  {s:'A POC fund request attachment says “Quarantined”.', o:[['Resubmit the same file',0,'It will fail the scan again.'],['Save the budget spreadsheet as PDF and reattach',2,'Formulas are the usual cause. PDFs pass.'],['Email the file to AWS',1,'The record still needs a clean attachment.']]},
+  {s:'An MDF webinar ended 25 days ago. The claim isn’t filed.', o:[['File the claim today with attendee list and results',2,'Five days left before expiry at 30 days.'],['Wait for the month-end close',0,'The request may expire first.'],['Extend the request by 90 days',1,'Extensions are for delivery that slips, and should be done before the end date.']]},
+  {s:'The pipeline review shows 14 opportunities untouched for 60 days.', o:[['Update the live ones; close the dead ones as Closed Lost with reasons',2,'Clean pipelines build trust with AWS sellers.'],['Leave them: a bigger pipeline looks better',0,'Stale pipeline hurts your credibility and reports.'],['Delete them',1,'Closing with a reason keeps history and win/loss data.']]},
+  {s:'A deal is marked Launched in the CRM but not in ACE.', o:[['Mark Launched in ACE with the AWS account ID and close date',2,'Launches count toward tiers and Specializations only when recorded in ACE.'],['Nothing, the CRM is enough',0,'AWS can’t see your CRM.'],['Ask AWS to update it',1,'It’s the partner’s job to update its opportunities.']]}
+];
+let pcgI=0, pcgScore=0, pcgDone=false;
+function renderPcg(){ const box=$('#pcgBox'); if(!box) return;
+  if(pcgI>=PCGAME.length){ const max=PCGAME.length*2; box.innerHTML=`<span class="eyebrow">Inbox cleared</span><div class="out">${pcgScore} / ${max}</div><p>${pcgScore>=10?'Partner Central pro: your PDM will love your pipeline.':pcgScore>=7?'Good. Re-read the routines and the troubleshooter.':'Walk through the metro map and funding lifecycle again, then retry.'}</p><div><button class="btn" type="button" id="pcgRestart">Play again</button></div>`; return; }
+  const q=PCGAME[pcgI]; pcgDone=false;
+  box.innerHTML=`<div style="display:flex;justify-content:space-between"><span class="eyebrow">Item ${pcgI+1} of ${PCGAME.length}</span><span class="eyebrow">Score ${pcgScore}</span></div><div class="bar"><i style="width:${pcgI/PCGAME.length*100}%"></i></div><p style="margin:0">${q.s}</p><div class="grid" style="gap:8px">${q.o.map((o,i)=>`<button type="button" class="opt" data-pcg="${i}">${o[0]}</button>`).join('')}</div><div id="pcgFb"></div>`; }
+
+/* Terms flip cards */
+const PCTERMS = [
+  ['ACE','APN Customer Engagements: the program for sharing and co-selling opportunities with AWS.'],
+  ['Partner-originated','An opportunity you found and shared with AWS.'],
+  ['AWS-originated / referral','An opportunity AWS sends you. Accept or reject within 5 business days.'],
+  ['Opportunity Quality Score','A 0–100 score from the business problem, next steps, primary need and solution fields.'],
+  ['Co-sell motion','How AWS engages: field-engaged, agent-engaged or partner-led.'],
+  ['Primary need from AWS','What you want from AWS on the deal, such as architecture validation or pricing help.'],
+  ['Launched','Billing has started on AWS. Requires the AWS account ID.'],
+  ['Fund request (FR)','A request for funding linked to an activity and usually an opportunity.'],
+  ['Pre-approval','All approvals done; you may start the funded work.'],
+  ['Proof of performance (POP)','Evidence the funded activity happened: reports, attendee lists, sign-offs.'],
+  ['Payee Central','Amazon’s payee portal where bank, tax and funding invoices live.'],
+  ['Alliance Lead','The partner’s primary Partner Central owner and contact.']
+];
+
+V.pcentral = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Hands-on</span><h1>Partner Central, ACE &amp; Funding: hands-on</h1>
+  <p class="lede">The tools you’ll touch every week: <b>AWS Partner Central</b> (now inside the AWS console), <b>APN Customer Engagements (ACE)</b> for co-selling opportunities, and the <b>funding dashboard</b> (formerly the AWS Partner Funding Portal, APFP). How each one works, the terms, the routines, the checks, and how to use every feature well.</p></header>
+
+  <section class="section"><header><h2>Tour the app</h2><p class="muted">A simplified map of the Partner Central menu. Click any item to see what it’s for, who uses it and how to use it well. Menu names move around; the jobs stay the same.</p></header>
+  <div class="pcapp" id="pcApp"></div></section>
+
+  <section class="section"><header><h2>How the three tools connect</h2><p class="muted">One customer deal flows through all of them.</p></header>
+  <div class="card">${hubFlowSVG()}</div></section>
+
+  <section class="section"><header><h2>Set up access the right way</h2><p class="muted">Seven setup steps, done once and reviewed often. Press play.</p></header>
+  ${flow('pcsetup', FLOWS.pcsetup = PCSETUP, {pipe:true, label:'Step'})}</section>
+
+  <section class="section"><header><h2>Customer engagements: the ACE metro map</h2><p class="muted">Three lines feed one track: leads, your own opportunities and AWS referrals. Click a station.</p></header>
+  <div class="card" id="metroSvg"></div><div class="detail" id="metroD"></div></section>
+
+  <section class="section"><header><h2>AWS review statuses</h2><p class="muted">Separate from the sales stage: this is AWS checking your submission. Click a status.</p></header>
+  <div class="card">${revSVG()}</div><div class="detail" id="revD"><p class="small muted">Click a status in the diagram.</p></div></section>
+
+  <section class="section"><header><h2>Build a high-quality opportunity</h2><p class="muted">Tick what your opportunity has. The gauge shows how AWS sellers will see it.</p></header>
+  <div class="grid g2"><div class="card">${OQS.map(o=>`<label class="check"><input type="checkbox" id="oq-${o[0]}" data-oqs="1"> <span><b>${o[1]}</b><br><span class="small muted">${o[2]}</span></span></label>`).join('')}</div><div class="card" id="oqsOut"></div></div>
+  <div class="grid g2"><div class="card warnc"><h4>Weak</h4><p class="small mono">“Customer wants to move to cloud. Follow up.”</p></div><div class="card tint"><h4>Strong</h4><p class="small mono">“Regional retailer (40 stores) runs POS on a 9-year-old on-prem SQL Server that crashed twice last holiday season. Wants Aurora + DMS migration live before 1 Nov; est. $6k/month AWS. Next: architecture workshop with CTO 12 May. Need from AWS: architecture validation.”</p></div></div></section>
+
+  <section class="section"><header><h2>The funding dashboard: fund request lifecycle</h2><p class="muted">Stages differ by program. Pick one and watch the money travel.</p></header>
+  <div class="chips">${Object.entries(FRPROG).map(([k,p])=>`<button class="chip" type="button" data-frp="${k}" aria-pressed="${k===frProg}">${p.n}</button>`).join('')}</div>
+  <div class="card" id="frSvg"></div><div class="detail" id="frD"></div>
+  <div class="grid g3">
+    <div class="card"><h4>Statuses</h4><ul class="clean small"><li><b>Active</b>: normal, most of the life</li><li><b>Pending</b>: syncing, wait</li><li><b>Terminated</b>: you cancelled, can’t reactivate</li><li><b>Expired</b>: 30 days past delivery end</li><li><b>Completed</b>: all paid or redeemed</li><li><b>Deleted</b>: only possible in Created</li></ul></div>
+    <div class="card"><h4>Attachments</h4><ul class="clean small"><li><b>PendingUpload</b>: uploading</li><li><b>Scanning</b>: security scan (you can still submit)</li><li><b>ScannedClean</b>: good</li><li><b>Quarantined</b>: failed; usually spreadsheet formulas. Convert to PDF and reattach</li></ul></div>
+    <div class="card"><h4>Golden rules</h4><ul class="clean small"><li>Approved <b>before</b> work starts</li><li>One self-extension, up to 90 days</li><li>Claim with proof of performance</li><li>Cash arrives via a Payee Central invoice</li><li>AI agents can draft fund requests from an opportunity: always check them</li></ul></div>
+  </div></section>
+
+  <section class="section"><header><h2>Funding date planner</h2><p class="muted">Enter the activity dates to see your key deadlines on a timeline.</p></header>
+  <div class="grid g2"><div class="card"><label class="field">Activity start<input type="date" id="frStart"></label><label class="field">Delivery end<input type="date" id="frEnd"></label></div><div class="card" id="frDates"></div></div></section>
+
+  <section class="section"><header><h2>The golden thread: one ID everywhere</h2><p class="muted">Most reconciliation pain comes from records that don’t match. Click a system to see what must match.</p></header>
+  <div class="threadrow">${THREAD.map((t,i)=>`${i?'<span class="tarrow" aria-hidden="true"></span>':''}<button type="button" class="tnode" data-thr="${i}" aria-pressed="${i===0}">${t.t}</button>`).join('')}</div>
+  <div class="detail" id="thrD"></div>
+  <div class="card"><h4>Spot the mismatch</h4><p class="small muted">One of these records is wrong. Click it.</p><div class="grid" style="gap:6px">${MISMATCH.recs.map((r,i)=>`<button type="button" class="opt" data-mm="${i}"><b>${r[0]}</b> · <span class="small mono">${r[1]}</span></button>`).join('')}</div><div id="mmFb"></div></div></section>
+
+  <section class="section"><header><h2>Routines that keep you out of trouble</h2><p class="muted">Tick them off; your progress is saved in this browser.</p></header>
+  <div class="chips">${Object.keys(PCROUT).map(k=>`<button class="chip" type="button" data-pcrt="${k}" aria-pressed="${k===pcRoutTab}">${k}</button>`).join('')}</div>
+  <div class="card" id="pcRout" style="max-width:720px"></div></section>
+
+  <section class="section"><header><h2>Pre-flight checks before you press submit</h2></header>
+  <div class="chips">${Object.keys(PREFLIGHT).map(k=>`<button class="chip" type="button" data-pfs="${k}" aria-pressed="${k===pfSel}">${k}</button>`).join('')}</div>
+  <div class="card" id="pfBox" style="max-width:720px"></div></section>
+
+  <section class="section"><header><h2>Troubleshooter</h2><p class="muted">The problems everyone hits, with the cause and the fix.</p></header>
+  <div class="grid" style="gap:8px">${PCFIX.map(f=>`<details class="faq"><summary>${f[0]}</summary><div class="cols" style="margin-top:8px"><div><div class="eyebrow">Why</div><p class="small">${f[1]}</p></div><div><div class="eyebrow">Fix</div><p class="small">${f[2]}</p></div></div></details>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Work faster: agents, API and bulk tools</h2></header>
+  <div class="grid g3">
+    <div class="card"><span class="tag a" style="justify-self:start">AI agents</span><p class="small">Create opportunities by conversation, get next-step and solution recommendations, sales plays, outreach emails, stage updates and fund request drafts. AI-powered lead prospecting and enrichment were added in 2026 for ACE-eligible partners.</p><p class="small muted">Always review what an agent writes before it reaches AWS.</p></div>
+    <div class="card"><span class="tag a" style="justify-self:start">API &amp; MCP</span><p class="small">The Partner Central Selling API, CRM connectors and an MCP server let your CRM or AI tools create and update opportunities, so nobody types twice.</p></div>
+    <div class="card"><span class="tag a" style="justify-self:start">Bulk</span><p class="small">CSV import for leads (up to 100 per file) and bulk export/update of opportunities for pipeline clean-ups.</p></div>
+  </div></section>
+
+  <section class="section"><header><h2>Key terms</h2><p class="muted">Click a card to flip it.</p></header>
+  <div class="grid g4">${PCTERMS.map((t,i)=>`<button type="button" class="flip" data-flip="${i}"><span class="fr"><b>${t[0]}</b><span class="small muted">tap to reveal</span></span><span class="bk small">${t[1]}</span></button>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Game: clear the Partner Central inbox</h2><p class="muted">Six real situations. Pick the best action.</p></header>
+  <div class="card" id="pcgBox" style="max-width:720px"></div></section>
+
+  <p class="small muted">Based on the AWS Partner Central documentation (2025–2026). Menu names, fields and policies change; check the in-app help and your Partner Development Manager for current rules.</p>
+`;
+function hubFlowSVG(){ const W=900,H=260; const N=[[110,130,'CRM / pipeline','your system of record','var(--muted)'],[340,60,'ACE opportunity','co-sell with AWS','var(--accent)'],[340,200,'Marketplace offer','buyer purchases via AWS','var(--violet)'],[580,130,'Fund request','MAP · POC · MDF','var(--signal)'],[800,130,'Claim → cash','Payee Central → QuickBooks','var(--good)']];
+  const E=[[0,1],[0,2],[1,3],[2,3],[3,4],[1,2]]; let g='';
+  E.forEach(([a,b],i)=>{ const p=`M${N[a][0]} ${N[a][1]} C ${(N[a][0]+N[b][0])/2} ${N[a][1]}, ${(N[a][0]+N[b][0])/2} ${N[b][1]}, ${N[b][0]} ${N[b][1]}`; g+=`<path d="${p}" fill="none" stroke="var(--line)" stroke-width="2.5"/>`; if(!RM) g+=`<circle r="5" fill="${N[b][4]}" opacity="0"><set attributeName="opacity" to="1" begin="${i*.5}s"/><animateMotion dur="2.4s" begin="${i*.5}s" repeatCount="indefinite" path="${p}"/></circle>`; });
+  N.forEach(n=>{ g+=`<rect x="${n[0]-88}" y="${n[1]-28}" width="176" height="56" rx="14" fill="var(--surface)" stroke="${n[4]}" stroke-width="2.5"/><text x="${n[0]}" y="${n[1]-3}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:13px">${n[2]}</text><text x="${n[0]}" y="${n[1]+15}" text-anchor="middle" style="fill:var(--muted);font-size:10.5px">${n[3]}</text>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:680px" role="img" aria-label="CRM feeds ACE and Marketplace, which feed fund requests, which lead to claims and cash">${g}</svg></div>`; }
+function showThr(i){ const t=THREAD[i]; $('#thrD').innerHTML=`<h3>${t.t}</h3><div class="tags">${t.f.map(x=>`<span class="tag a">${x}</span>`).join('')}</div><p class="small">${t.tip}</p>`; document.querySelectorAll('[data-thr]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.thr===i)); }
+function initPc(){ renderPcApp(); showStation(pcStation); renderOqs(); renderFr();
+  const s=$('#frStart'), e=$('#frEnd'); if(s&&!s.value){ const t=new Date(); t.setDate(t.getDate()+28); const t2=new Date(t); t2.setDate(t2.getDate()+45); const iso=d=>d.toISOString().slice(0,10); s.value=iso(t); e.value=iso(t2); } calcFrDates();
+  showThr(0); renderPcRout(); renderPf(); pcgI=0; pcgScore=0; renderPcg(); }
+
+document.addEventListener('click', e=>{ const t=e.target; if(!t.closest) return;
+  const nv=t.closest('[data-pcnav]'); if(nv){ pcNav=nv.dataset.pcnav; renderPcApp(); return; }
+  const st=t.closest('[data-pcm]'); if(st){ showStation(+st.dataset.pcm); return; }
+  const rv=t.closest('[data-pcrev]'); if(rv){ const r=PCREV[+rv.dataset.pcrev]; $('#revD').innerHTML=`<h3>${r[0]}</h3><p>${r[1]}</p>`; return; }
+  const fp=t.closest('[data-frp]'); if(fp){ frProg=fp.dataset.frp; renderFr(); return; }
+  const fs=t.closest('[data-frs]'); if(fs){ frStep=+fs.dataset.frs; renderFr(); return; }
+  const th=t.closest('[data-thr]'); if(th){ showThr(+th.dataset.thr); return; }
+  const mm=t.closest('[data-mm]'); if(mm){ const i=+mm.dataset.mm, ok=i===MISMATCH.bad; document.querySelectorAll('[data-mm]').forEach((b,k)=>{ b.classList.remove('right','wrong'); if(k===MISMATCH.bad) b.classList.add('right'); else if(k===i) b.classList.add('wrong'); }); $('#mmFb').innerHTML=`<p class="small">${ok?'<b style="color:var(--good)">Found it.</b>':'<b style="color:var(--bad)">Not that one.</b>'} ${MISMATCH.why}</p>`; return; }
+  const rt=t.closest('[data-pcrt]'); if(rt){ pcRoutTab=rt.dataset.pcrt; renderPcRout(); return; }
+  if(t.id==='pcRoutReset'){ const d=store.get('pcrout',{}); Object.keys(d).forEach(k=>{ if(k.startsWith(pcRoutTab)) delete d[k]; }); store.set('pcrout',d); renderPcRout(); return; }
+  const pfs=t.closest('[data-pfs]'); if(pfs){ pfSel=pfs.dataset.pfs; renderPf(); return; }
+  const fl=t.closest('[data-flip]'); if(fl){ fl.classList.toggle('on'); return; }
+  const pg=t.closest('[data-pcg]'); if(pg && !pcgDone){ pcgDone=true; const q=PCGAME[pcgI], o=q.o[+pg.dataset.pcg], best=q.o.findIndex(x=>x[1]===2); pcgScore+=o[1];
+    document.querySelectorAll('[data-pcg]').forEach((b,i)=>{ b.disabled=true; if(i===best) b.classList.add('right'); else if(b===pg) b.classList.add('wrong'); });
+    $('#pcgFb').innerHTML=`<p class="small" style="margin:8px 0">${o[1]===2?'<b style="color:var(--good)">Best move.</b>':o[1]===1?'<b style="color:var(--warn)">Partly.</b>':'<b style="color:var(--bad)">Risky.</b>'} ${o[2]}</p><button class="btn" type="button" id="pcgNext">${pcgI<PCGAME.length-1?'Next →':'See result'}</button>`; return; }
+  if(t.id==='pcgNext'){ pcgI++; renderPcg(); return; }
+  if(t.id==='pcgRestart'){ pcgI=0; pcgScore=0; renderPcg(); return; }
+});
+document.addEventListener('change', e=>{ const t=e.target;
+  if(t.dataset && t.dataset.oqs){ renderOqs(); return; }
+  if(t.dataset && t.dataset.pcr!=null){ const d=store.get('pcrout',{}); if(t.checked) d[t.dataset.pcr]=1; else delete d[t.dataset.pcr]; store.set('pcrout',d); renderPcRout(); return; }
+  if(t.dataset && t.dataset.pf!=null){ const d=store.get('pf_'+pfSel,{}); if(t.checked) d[t.dataset.pf]=1; else delete d[t.dataset.pf]; store.set('pf_'+pfSel,d); renderPf(); return; }
+  if(t.id==='frStart'||t.id==='frEnd') calcFrDates();
+});
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -5886,6 +6244,7 @@ function route(){
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
   if(id==='incidents') initIncidents();
+  if(id==='pcentral') initPc();
   if(id==='whouses'){ showPipeSel(pipeSel); renderCos(); gameI=0; gameScore=0; renderGame(); }
   if(id==='cloudfin') calcMF();
   if(id==='hypergtm'){ showMat(matSel); renderLS(); showMot(motSel); showPsvc(psvcSel); showGcase(gcase); renderSelf(); calcPSQ(); }
@@ -6081,7 +6440,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb], svg [data-mot], svg [data-co], svg [data-inc]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb], svg [data-mot], svg [data-co], svg [data-inc], svg [data-pcm], svg [data-pcrev], svg [data-frs]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
