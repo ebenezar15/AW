@@ -407,6 +407,19 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .code .ln:hover{background:var(--sunk)}
 .code .ln.on{background:var(--signal-soft);border-left-color:var(--signal)}
 /* storefront race, ecosystem */
+.lstack{display:grid;gap:5px}
+.lay{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);border-left:6px solid var(--lc);border-radius:10px;padding:9px 12px;background:color-mix(in srgb,var(--lc) 12%,var(--surface));transition:background .5s,border-color .5s;color:var(--ink)}
+.lay[aria-pressed="true"]{outline:2px solid var(--lc);outline-offset:1px}
+.lay .lname{display:grid;min-width:0}.lay small{color:var(--muted);font-size:12px}
+.lay .lown{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--lc);white-space:nowrap;transition:color .5s}
+.sevrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.sevb{display:grid;gap:2px;text-align:left;border:1px solid var(--line);border-top:4px solid var(--sc);border-radius:10px;padding:10px 12px;background:var(--surface);color:var(--ink)}
+.sevb b{color:var(--sc);font-family:var(--display);font-size:1.3rem}
+.sevb[aria-pressed="true"]{background:color-mix(in srgb,var(--sc) 14%,var(--surface))}
+.card.plan{align-content:start}
+.tplout{white-space:pre-wrap;margin:0;background:var(--sunk);padding:12px;border-radius:8px;font-family:var(--mono);font-size:13px;user-select:all}
+table.raci th{vertical-align:bottom}table.raci td,table.raci th{padding:7px 8px}
+.clockbadge{font-family:var(--mono);font-weight:700;background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:8px 10px;white-space:nowrap}
 .pipehead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}
 .faq details{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px}
 .faq summary{cursor:pointer;font-weight:600}
@@ -479,6 +492,7 @@ const CHAPTERS = [
   {id:'identity', t:'Identity, access & certs', g:'Partner business'},
   {id:'roles', t:'Partner vs AWS roles', g:'Partner business'},
   {id:'reqs', t:'Roles & requirements', g:'Partner business'},
+  {id:'incidents', t:'When things go wrong', g:'Partner business'},
   {id:'gtm', t:'GTM & co-sell', g:'Partner business'},
   {id:'hypergtm', t:'Hyperscaler partner GTM', g:'Partner business'},
   {id:'opps', t:'Opportunity lifecycle', g:'Partner business'},
@@ -950,6 +964,20 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['Incident','An unplanned event that disrupts or degrades a service, handled with a set process: detect, triage, mitigate, communicate, resolve, review.'],
+  ['Sev1 / severity level','How serious an incident is. Sev1 means business stopped; Sev4 a minor question. Decides who is paged and how fast.'],
+  ['Incident commander','The one person who coordinates an incident: assigns tasks, decides, and keeps updates on schedule.'],
+  ['War room','A dedicated call and channel where everyone working on a major incident meets.'],
+  ['Post-incident review (postmortem)','A blameless write-up after an incident: timeline, root cause, and owned action items.'],
+  ['Escalation','Moving a problem to a higher level of expertise or authority when the current level can’t solve it fast enough.'],
+  ['AWS Health Dashboard','AWS’s page and API showing service events and scheduled changes affecting your accounts.'],
+  ['Service credit','A discount on a future bill when a provider misses its SLA. AWS credits must be claimed through a Support case.'],
+  ['Business Support+','AWS Support plan from $29/month per account with AI-assisted help and 24/7 access to experts; replaces Developer and Business from 2027.'],
+  ['Unified Operations','AWS’s top support tier, with around 5-minute critical response from engineers who know your workloads.'],
+  ['Partner-Led Support','Support model where a reselling partner is the first line of support for AWS accounts it bills, backed by AWS.'],
+  ['Hypercare','A period right after go-live when the delivery team watches closely and fixes problems quickly, often as warranty work.'],
+  ['Runbook','Step-by-step instructions for handling a known alarm or task, so anyone on call can follow them.'],
+  ['Credit memo','A QuickBooks document that reduces what a customer owes, used for SLA credits instead of editing a sent invoice.'],
   ['All-in','Running essentially all of a company’s workloads on one cloud provider.'],
   ['Hybrid cloud','Combining a company’s own data centers with public cloud services.'],
   ['Multi-cloud','Using more than one cloud provider, choosing each for specific strengths.'],
@@ -1186,6 +1214,9 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['A partner’s release breaks a client’s website. Who leads the fix?',['AWS Support','The partner that made the change','The client’s CFO','Nobody, it will recover'],1,'Whoever changed it rolls it back. Inside the SOW warranty, it’s non-billable.'],
+  ['The AWS Health Dashboard shows an AWS service event. What should the client and partner do?',['Wait and do nothing','Fail over if the design allows, keep customers updated, then check the SLA for credits','Debug AWS’s servers','Delete and rebuild the account'],1,'AWS fixes its service; you keep the business running and communicate.'],
+  ['Are AWS service credits paid automatically?',['Yes, always','No, the account owner claims them through a Support case within the claim window','Only in cash','Only for Basic Support'],1,'Credits must be requested, with incident details, usually by the end of the second billing cycle after the incident.'],
   ['Do Facebook and Instagram mainly run on AWS?',['Yes, entirely','No, mainly in Meta’s own data centers; AWS is used for selected workloads','Only Instagram','Only in Europe'],1,'Instagram started on AWS but moved to Facebook’s data centers in 2014.'],
   ['An app running on another cloud needs AI summaries. What’s the lightest way to use AWS?',['Migrate the whole app','Call Amazon Bedrock from its code via the SDK','Buy a data center','Use Outposts'],1,'Apps can add AWS capabilities through APIs without moving.'],
   ['What does a Marketplace Storefront let a buyer do?',['Avoid AWS entirely','Buy a vendor’s offerings through their existing AWS account and committed spend, often via a private offer','Get free software','Skip security forever'],1,'Storefronts turn months of procurement into days by using the buyer’s existing AWS relationship.'],
@@ -4536,6 +4567,7 @@ const PRACTICE = {
   recognition:{t:['Add 3 entries to the work log this week','Mark the things you own and their health','Calculate one impact in money with the calculators'], ex:'Every Friday you log 2 wins in 2 minutes. At review time, the exported summary shows 26 wins with numbers.'},
   hypergtm:{t:['Count your co-sell submissions in the last 90 days (target: 3+)','Ask your alliance lead whether PRM attribution is live and validated','Score one live opportunity with the PSQL scorer before it goes into ACE'], ex:'A software partner had a live listing and zero pipeline for six months. After briefing two PDMs, submitting four qualified co-sell opportunities and running two field enablement sessions, the first AWS seller introduction arrived in week seven.'},
   cloudfin:{t:['Read the AWS segment in Amazon’s latest quarterly results (revenue, operating income, backlog)','Run the money-flow calculator with a real (anonymized) customer’s numbers','Explain to a colleague why AWS funds partner projects'], ex:'A sales colleague asks why AWS gave $60K of migration funding. You show the money-flow calculator: $600K/year of new usage for several years makes the funding a small investment for AWS.'},
+  incidents:{t:['Find out which support setup each of your top 5 clients has: direct, resold, MSP, SOW or SaaS','Ask for (or start) the contact sheet: on-call numbers, AWS Support plan per account, root email and MFA holder','Save the four comms templates from this chapter where the team can find them at 2 a.m.'], ex:'A client calls at 8 a.m.: “our site was down overnight, who pays?” You check: their account is resold, the outage was an AWS service event, the partner’s MSP fee covers response. You help claim the AWS credit via a Support case and pass it through as a QuickBooks credit memo.'},
   whouses:{t:['Open three companies in your customers’ industries and note which AWS services they use','Ask your sales team which pattern (all-in, hybrid, multi-cloud, specific workloads) fits your top 5 customers','Find one customer whose app could “add AWS through code” (e.g. Bedrock or S3) without migrating'], ex:'A manufacturing prospect says “we’ll never move to the cloud”. You show the Volkswagen pattern: keep factories and core systems, put the factory data platform on AWS. The conversation moves from “migration” to “one high-value workload”.'},
   playbook:{t:['Pick your role in the day planner and follow it for one week','Try 5 scenarios','Use the invoice builder before sending your next invoice'], ex:'After one week following the planner, invoices go out the same day as sign-offs and nothing slips past a deadline.'}
 };
@@ -5441,6 +5473,383 @@ function showPipeSel(name){ pipeSel=name; stopPlay(); const c=COMPANIES.find(x=>
   $('#pipeD').innerHTML = `<div class="card tint" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span class="mono-badge big" style="--pc:${p.c}">${initials(name)}</span><div><h3>${name}</h3><p class="small muted">${c.what} · <span style="color:${p.c}">${p.n}</span></p></div></div>${coPipelines(name,'pp')}`;
   document.querySelectorAll('[data-pipesel]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.pipesel===name)); }
 
+/* ================= WHEN THINGS GO WRONG (incidents, support & escalation) ================= */
+const WHO = {
+  C:{n:'Client tech team', s:'Client', c:'var(--signal)'},
+  P:{n:'Partner engineers / MSP', s:'Partner', c:'var(--violet)'},
+  A:{n:'AWS', s:'AWS', c:'var(--accent)'},
+  Y:{n:'Partner ops (you)', s:'You', c:'var(--good)'},
+  V:{n:'SaaS vendor', s:'Vendor', c:'var(--bad)'}
+};
+const whoTag = k => `<span class="tag" style="color:${WHO[k].c};background:color-mix(in srgb,${WHO[k].c} 15%,transparent);border-color:transparent">${WHO[k].s}</span>`;
+
+/* Triad: the three (four) parties */
+const TRIAD = [
+  {k:'C', own:['Their data, users and passwords','Their own code and releases','Deciding the business priority (“is this a Sev1 for us?”)','Talking to their own customers','Approving fixes that change production'], not:'They don’t fix AWS hardware or AWS service outages, and they can’t see inside AWS data centers.'},
+  {k:'P', own:['Whatever the SOW or managed-service contract says they run','Releases and configuration they made','24/7 monitoring and first response if they are the MSP','First-line support for accounts they resell','Opening AWS Support cases with evidence and chasing them'], not:'A partner can’t fix an AWS service outage and can’t recover a root user that only the account owner controls.'},
+  {k:'A', own:['Data centers, hardware, network and the AWS services themselves','The AWS Health Dashboard: posting service events','Answering Support cases within the plan’s response time','Service credits when an AWS SLA is missed','Abuse and security reports about AWS resources'], not:'AWS won’t debug the client’s application code, undo a delete the client made, or log into their servers.'},
+  {k:'Y', own:['Who-to-call lists, on-call rota and support-plan inventory','Billing incidents: failed payments, wrong invoices, suspended accounts on resold billing','Credit memos in QuickBooks and non-billable incident hours','Status updates and customer comms drafts','Logging the incident on the CRM account and flagging renewal risk'], not:'You don’t debug servers, but you make sure the right engineer is reached in minutes and the money side is right afterwards.'}
+];
+let triadSel = 0;
+function triadSVG(){ const W=760,H=360,cx=380,cy=180, pos=[[380,52],[140,300],[620,300],[380,330]];
+  let g=`<circle cx="${cx}" cy="${cy}" r="120" fill="none" stroke="var(--line)" stroke-dasharray="3 7"/>`;
+  pos.slice(0,3).forEach((p,i)=>{ const path=`M${cx} ${cy} L${p[0]} ${p[1]}`; g+=`<path d="${path}" stroke="${WHO[TRIAD[i].k].c}" stroke-width="2.5" class="pipe-flow" stroke-dasharray="4 8"/>`;
+    if(!RM) g+=`<circle r="5" fill="${WHO[TRIAD[i].k].c}" opacity="0"><set attributeName="opacity" to="1" begin="${i*0.5}s"/><animateMotion dur="1.8s" begin="${i*0.5}s" repeatCount="indefinite" path="${path}"/></circle>`; });
+  g+=`<g><circle cx="${cx}" cy="${cy}" r="46" fill="color-mix(in srgb,var(--bad) 14%,var(--surface))" stroke="var(--bad)" stroke-width="2">${RM?'':'<animate attributeName="r" values="44;52;44" dur="1.6s" repeatCount="indefinite"/>'}</circle><text x="${cx}" y="${cy-4}" text-anchor="middle" style="font-family:var(--display);font-size:17px;fill:var(--ink)">Incident</text><text x="${cx}" y="${cy+14}" text-anchor="middle" style="fill:var(--muted);font-size:11px">who fixes it?</text></g>`;
+  TRIAD.forEach((t,i)=>{ const [x,y]=pos[i], w=WHO[t.k], small=i===3;
+    g+=`<g data-inc="triad|${i}" role="button" tabindex="0" aria-label="${w.n}" style="cursor:pointer"><rect x="${x-(small?80:95)}" y="${y-24}" width="${small?160:190}" height="48" rx="24" fill="${i===triadSel?`color-mix(in srgb,${w.c} 22%,var(--surface))`:'var(--surface)'}" stroke="${w.c}" stroke-width="${i===triadSel?3.5:2}"/><text x="${x}" y="${y+5}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:13px">${w.n}</text></g>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H+10}" style="min-width:560px" role="img" aria-label="An incident in the middle, linked to the client team, the partner and AWS, with partner ops underneath">${g}</svg></div>`; }
+function showTriad(i){ triadSel=i; const t=TRIAD[i], w=WHO[t.k], box=$('#triadD'); if(!box) return;
+  box.innerHTML=`<h3 style="color:${w.c}">${w.n}</h3><div class="cols"><div><div class="eyebrow">Usually owns in an incident</div><ul class="clean">${t.own.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><div class="eyebrow">What they can’t do</div><p class="small">${t.not}</p></div></div>`;
+  const s=$('#triadSvg'); if(s) s.innerHTML=triadSVG(); }
+
+/* Layer stack: who owns each layer under different setups */
+const LAYERS = [
+  ['Your data','Files, records, customer details',['Data deleted by a script; a bucket accidentally made public'],'Restore from the backups the client switched on. AWS can’t undo a delete made with valid permissions.'],
+  ['Users, identity & access','IAM roles, passwords, MFA, access keys',['Leaked access key; ex-employee still has access; lost root MFA device'],'Disable the key or user, rotate secrets, check CloudTrail for what was done.'],
+  ['Application code','The website, API, mobile backend, AI prompts',['Bug after a release; AI chatbot giving wrong answers'],'Roll back to the last good release, then fix forward.'],
+  ['Configuration & network rules','Security groups, DNS, scaling settings, backups',['Firewall rule blocks customers; auto scaling maxed out; DNS record deleted'],'Revert the change (infrastructure as code makes this one click).'],
+  ['Operating system & patches','Linux / Windows on servers',['Disk full; unpatched OS exploited; server out of memory'],'Free space, patch, replace the instance from a clean image.'],
+  ['Managed platform','Database engine, container platform, function runtime',['Database engine bug; managed service failing over'],'Open a Support case; managed services fail over automatically when set up across AZs.'],
+  ['Virtualization & hardware','Physical servers, disks, Nitro hypervisor',['Underlying host failure; instance “retirement” notice'],'AWS replaces hardware. You restart or move the instance if it isn’t automatic.'],
+  ['Data centers & global network','Buildings, power, cooling, fiber, Regions',['Power or network event in one Availability Zone or Region'],'AWS fixes it. You fail over to another AZ/Region if your design allows.']
+];
+const STACKS = {
+  ec2:{n:'Servers the client runs (EC2)', o:'CCCCCCAA', d:'Classic “rent a server”. AWS runs the hardware; everything from the OS up is the client’s.'},
+  msp:{n:'Partner-managed servers (MSP)', o:'CPPPPPAA', d:'Same servers, but the partner operates them under a managed-services contract. Data stays the client’s responsibility.'},
+  managed:{n:'Managed services (RDS, Lambda, Bedrock)', o:'CCCCAAAA', d:'AWS also runs the OS, patches and platform. The client still owns data, access, code and settings.'},
+  saas:{n:'SaaS bought on Marketplace', o:'CCVVVVAA', d:'The vendor runs the app (often on AWS). The client only owns their data and their users.'}
+};
+let stackSel='ec2', layerSel=2;
+const OWN_N = {C:'Client team', P:'Partner (MSP)', A:'AWS', V:'SaaS vendor'};
+function renderStack(){ const box=$('#stackBox'); if(!box) return; const s=STACKS[stackSel];
+  box.innerHTML = LAYERS.map((l,i)=>{ const o=s.o[i]; return `<button type="button" class="lay" data-lay="${i}" aria-pressed="${i===layerSel}" style="--lc:${WHO[o].c};transition-delay:${i*45}ms"><span class="lname"><b>${l[0]}</b><small>${l[1]}</small></span><span class="lown">${OWN_N[o]}</span></button>`; }).join('');
+  $('#stackNote').textContent = s.d;
+  document.querySelectorAll('[data-stack]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.stack===stackSel));
+  showLayer(layerSel); }
+function showLayer(i){ layerSel=i; const l=LAYERS[i], o=STACKS[stackSel].o[i];
+  document.querySelectorAll('[data-lay]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.lay===i));
+  $('#layD').innerHTML = `<span class="eyebrow">If this layer breaks</span><h3>${l[0]}</h3><p>Who fixes it here: <b style="color:${WHO[o].c}">${OWN_N[o]}</b>${o==='P'?' (the client stays accountable and approves changes)':''}${o==='A'?' (you still check the Health Dashboard and fail over if you can)':''}</p><div class="cols"><div><div class="eyebrow">Typical incidents</div><ul class="clean">${l[2].map(x=>`<li>${x}</li>`).join('')}</ul></div><div><div class="eyebrow">First move</div><p class="small">${l[3]}</p></div></div>`; }
+
+/* Support relationship models */
+const SUPMODELS = [
+  {t:'Client buys AWS directly', d:'The client has its own AWS account and its own AWS Support plan. The partner may help on a retainer.', path:[['C','Client on-call engineer sees the alert','sees the alert'],['C','Client team investigates and fixes their own layers','fixes own layers'],['A','Client opens an AWS Support case (needs a paid plan for technical cases)','opens a case'],['A','AWS support engineer, then the service team if needed','engineers respond'],['P','Partner joins only if on a retainer or SOW','joins if contracted']], contract:'Client ↔ AWS customer agreement; optional partner SOW', pays:'Client pays AWS for support directly'},
+  {t:'Partner resells AWS (Partner-Led Support)', d:'The partner bills the client for AWS usage and is the first line of support for those accounts, backed by AWS.', path:[['C','Client reports the problem to the partner service desk','reports it'],['P','Partner first line triages and fixes what it can','first-line triage'],['P','Partner engineers dig deeper with logs and metrics','engineers dig in'],['A','Partner opens the AWS case on its own support entitlement','case via partner'],['Y','Partner ops tracks billing impact and comms','billing & comms']], contract:'Client ↔ partner reseller agreement; partner ↔ AWS (Solution Provider / distributor)', pays:'Support is part of the partner’s price to the client'},
+  {t:'Partner manages it 24/7 (MSP)', d:'The partner monitors and operates the environment under a managed-services contract with response-time SLAs.', path:[['P','Partner monitoring raises the alarm, often before the client notices','alarm fires'],['P','Partner NOC (L1) follows the runbook','NOC runbook'],['P','Partner L2/L3 specialists restore service','L2/L3 restore'],['A','Partner escalates to AWS Support when an AWS layer is involved','escalates'],['C','Client is updated on the SLA cadence and approves risky changes','updated, approves']], contract:'Managed-services agreement with SLAs and service credits', pays:'Monthly managed-services fee; credits if the partner misses its SLA'},
+  {t:'Partner project in delivery (SOW)', d:'The partner is building or migrating something. Problems during the project and the warranty period are the partner’s to fix.', path:[['C','Client tells the partner project lead','tells project lead'],['P','Project team fixes defects in what they built','fixes defects'],['P','Hypercare / warranty: fixes are non-billable','warranty fixes'],['A','AWS case opened from the client or partner account','case if needed'],['Y','Ops classifies hours: warranty vs billable change request','classifies hours']], contract:'SOW with acceptance criteria, warranty and change-request process', pays:'Warranty fixes are free; new scope is a paid change request'},
+  {t:'Client uses SaaS bought on Marketplace', d:'The client subscribed to software sold through AWS Marketplace. The software vendor supports its product.', path:[['C','Client contacts the SaaS vendor’s support','contacts vendor'],['V','Vendor fixes its application','fixes the app'],['A','Vendor uses its own AWS Support if AWS is involved','vendor’s own case'],['A','AWS Marketplace helps only with subscription and billing questions','billing questions only']], contract:'Client ↔ vendor EULA / private-offer terms', pays:'Included in the subscription'}
+];
+let smSel=1;
+function showSM(i){ smSel=i; const m=SUPMODELS[i]; stopPlay();
+  FLOWS.sm = m.path.map((p,k)=>({t:`${WHO[p[0]].s}: ${p[2]||p[1]}`, d:p[1], cols:[['Who',[WHO[p[0]].n]],['Contract',[m.contract]],['Who pays',[m.pays]]]}));
+  $('#smD').innerHTML = `<div class="card tint"><h3>${m.t}</h3><p class="small">${m.d}</p></div>${flow('sm', FLOWS.sm, {label:'Hop', pipe:true})}`;
+  document.querySelectorAll('[data-sm]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.sm===i)); }
+
+/* Incident lifecycle */
+const INCLIFE = [
+  {t:'Detect', d:'An alarm fires, a customer complains, or AWS posts a Health event. The clock starts.', do:['CloudWatch alarm or monitoring tool pages the on-call','Note the start time: it matters for SLAs later','Check the AWS Health Dashboard first'], check:['Is it real (not a false alarm)?','Who noticed, and when?'], tools:['CloudWatch, AWS Health, PagerDuty / Opsgenie','Owner: whoever runs monitoring (client or MSP)']},
+  {t:'Triage', d:'Decide how bad it is and which layer is broken. Severity decides who gets woken up.', do:['Assign a severity (Sev1–Sev4)','Name an incident commander','Open a war-room call and channel'], check:['How many users or how much revenue is affected?','Security involved? Treat it as Sev1 until proven otherwise'], tools:['Severity matrix, runbooks','Owner: incident commander']},
+  {t:'Engage', d:'Pull in the right owners: client team, partner engineers, AWS Support.', do:['Page the owners for the broken layer','Open an AWS Support case at the right severity with evidence','Tell the account manager on the partner side'], check:['Has everyone who must act acknowledged?','Is the AWS case number in the channel?'], tools:['Contact sheet, escalation ladder','Owner: incident commander, partner ops']},
+  {t:'Mitigate', d:'Stop the bleeding first: restore service even before the root cause is known.', do:['Roll back, fail over, scale up, or block the attack','Keep a timestamped log of every action'], check:['Are customers working again?','Did the fix make anything worse?'], tools:['Rollback pipelines, backups, DR runbook','Owner: engineers of the broken layer']},
+  {t:'Communicate', d:'Regular, honest updates on a fixed cadence, even when there’s nothing new.', do:['First notice within the SLA (often 15–30 min for Sev1)','Updates every 30–60 min for Sev1','Same message to all stakeholders'], check:['Does the client know the next update time?','Are sales and leadership informed?'], tools:['Status page, email templates, Slack','Owner: comms lead (often partner ops)']},
+  {t:'Resolve', d:'Fix the real cause, confirm stability, and close the incident and the AWS case.', do:['Apply the permanent fix','Monitor for a set period','Close the case with a summary'], check:['Stable for the agreed period?','Client confirms resolution?'], tools:['Change process, monitoring','Owner: layer owner, client approves']},
+  {t:'Review', d:'A blameless post-incident review within 5 business days: what happened, why, and what changes.', do:['Write the timeline and root cause (5 whys)','Agree on action items with owners and dates','Share the report with the client'], check:['Is every action owned and dated?','Is the lesson in a runbook now?'], tools:['Postmortem template, ticket tracker','Owner: incident commander']},
+  {t:'Settle', d:'The money and the relationship: credits, invoices, renewals.', do:['Claim AWS service credits if an AWS SLA was missed','Issue partner SLA credits as credit memos','Mark incident hours as warranty or billable'], check:['Is the invoice correct before it goes out?','Is the account health updated in the CRM?'], tools:['AWS Support Center, QuickBooks, CRM','Owner: partner ops (you) and account manager']}
+];
+
+/* Severities */
+const SEVS = [
+  {k:'Sev1', c:'var(--bad)', t:'Critical: business stopped', ex:'Website or app down for everyone; data breach; payments failing', resp:'Respond within 15 min, 24/7', upd:'Every 30 min', page:'Incident commander, all owners, account manager, client leadership', aws:'Critical (business-critical system down)'},
+  {k:'Sev2', c:'var(--warn)', t:'Major: serious impact', ex:'One key feature broken; site very slow; one region of users affected', resp:'Within 1 hour, 24/7', upd:'Every 2 hours', page:'On-call engineers, team lead, account manager', aws:'Urgent (production system down) or High'},
+  {k:'Sev3', c:'var(--signal)', t:'Minor: workaround exists', ex:'Report export fails; a non-production environment is down; bill higher than expected', resp:'Within 1 business day', upd:'Daily', page:'Owning team during business hours', aws:'Normal (system impaired)'},
+  {k:'Sev4', c:'var(--muted)', t:'Low: question or cosmetic', ex:'How-to question; typo on a page; small billing query', resp:'Within 2–3 business days', upd:'On resolution', page:'Ticket queue', aws:'Low (general guidance)'}
+];
+let sevSel=0;
+function showSev(i){ sevSel=i; const s=SEVS[i];
+  $('#sevD').innerHTML = `<div class="card" style="border-left:4px solid ${s.c}"><span class="eyebrow" style="color:${s.c}">${s.k}</span><h3>${s.t}</h3><div class="kv"><span class="muted">Examples</span><span>${s.ex}</span><span class="muted">Response target</span><span>${s.resp}</span><span class="muted">Updates</span><span>${s.upd}</span><span class="muted">Who is paged</span><span>${s.page}</span><span class="muted">AWS case severity</span><span>${s.aws}</span></div></div>`;
+  document.querySelectorAll('[data-sev]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.sev===i)); }
+
+/* AWS Support plans (as published on aws.amazon.com/premiumsupport, 2026) */
+const CASESEV = [['Low','General guidance'],['Normal','System impaired'],['High','Production system impaired'],['Urgent','Production system down'],['Critical','Business-critical system down']];
+const SUPPLANS = [
+  {n:'Basic', p:'Included with every account', r:[null,null,null,null,null], f:['Account and billing cases','Documentation, re:Post, Health Dashboard','Core Trusted Advisor checks','No technical support cases']},
+  {n:'Business Support+', p:'From $29 per month per account', r:['24 h','12 h','4 h','1 h','30 min'], f:['24/7 access to AWS experts','AI-powered help that knows your account context','Full Trusted Advisor checks','Replaces Developer and Business plans']},
+  {n:'Enterprise Support', p:'From $5,000 per month', r:['24 h','12 h','4 h','1 h','15 min'], f:['Designated Technical Account Manager (TAM)','AWS Security Incident Response included','Proactive reviews and guidance','Replaces Enterprise On-Ramp']},
+  {n:'Unified Operations', p:'Premium tier, by agreement', r:['24 h','12 h','4 h','1 h','5 min'], f:['Incident management engineers who know your workloads','Fastest critical response','For the most demanding operations']}
+];
+let csSel=4;
+const minsOf = s => !s ? null : s.endsWith('min') ? parseFloat(s) : parseFloat(s)*60;
+function showPlans(i){ csSel=i;
+  $('#planBox').innerHTML = SUPPLANS.map(p=>{ const r=p.r[i], m=minsOf(r), f=m==null?0:Math.max(.08, 1-Math.log10(m)/Math.log10(2000));
+    return `<div class="card plan"><div style="display:flex;gap:12px;align-items:center">${ring(f,64,7)}<div><b>${p.n}</b>${r?`<div class="out" style="font-size:1.5rem">&lt; ${r}</div>`:'<div class="small muted">No technical cases</div>'}</div></div><span class="small muted">${p.p}</span><ul class="clean small">${p.f.map(x=>`<li>${x}</li>`).join('')}</ul></div>`; }).join('');
+  document.querySelectorAll('[data-cs]').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.cs===i)); }
+
+/* Decision tree: who fixes this? */
+const TREE = [
+  {q:'Any sign of a security problem? Unknown logins, a leaked access key, sudden strange spend, data exposed.', s:'Security signs?', o:{t:'Security incident: contain first', lead:'C', help:['P','A','Y'], steps:['Treat as Sev1. Don’t delete evidence','Disable leaked keys and suspicious users; rotate secrets','Check CloudTrail and GuardDuty for what happened','Partner security team or MSSP helps contain','Open an AWS Support case; AWS Security Incident Response if you have it','Legal/compliance decides on notifications'], ex:'A developer pushed an access key to a public code repository. Within an hour, someone started 40 large servers to mine crypto.'}},
+  {q:'Does the AWS Health Dashboard show an AWS service event in your Region?', s:'AWS service event?', o:{t:'AWS fixes the service. You keep the business running.', lead:'A', help:['C','P','Y'], steps:['AWS works the outage and posts updates on the Health Dashboard','Client/partner fail over to another AZ or Region if the design allows','Send status updates to customers using AWS’s timeline','Afterwards: check the service SLA and claim credits via a Support case'], ex:'A Region has elevated errors in one service. The client’s app was multi-AZ, so it kept running; a single-AZ test environment went down until AWS recovered.'}},
+  {q:'Did the partner change something recently? A release, configuration or migration step.', s:'Partner changed it?', o:{t:'Partner rolls back and fixes it', lead:'P', help:['C','Y'], steps:['Partner rolls back to the last good version','Fix is warranty work if inside the SOW warranty period','Root cause shared in the post-incident review','Ops logs the hours as non-billable warranty'], ex:'The partner migrated the database at 9 p.m.; at 9:20 the checkout page starts failing because a connection string still points to the old server.'}},
+  {q:'Did the client’s own team change something recently?', s:'Client changed it?', o:{t:'Client team rolls back; partner advises', lead:'C', help:['P'], steps:['Client rolls back their change','Partner helps if they have a retainer or support contract','New partner help outside the contract is a billable change request'], ex:'The client’s developer changed a security group to “tidy up” and blocked the load balancer from reaching the servers.'}},
+  {q:'Is it a bill, payment or account-access problem? Failed card, suspended account, wrong invoice, locked root user.', s:'Billing / account?', o:{t:'Billing owner fixes it: partner ops if resold, client finance + AWS if direct', lead:'Y', help:['C','A'], steps:['Resold account: partner ops (you) fix payment or invoice, and escalate to AWS or the distributor','Direct account: client finance opens an Account & Billing case (free on every plan)','Root user locked: only the account owner can recover it with AWS; the partner can’t','Keep a register of who holds root email and MFA for every account'], ex:'A client’s card expired; AWS emails went to a former employee. The account was about to be suspended.'}},
+  {q:'Is it a limit or capacity error? “Quota exceeded”, “insufficient capacity”, throttling.', s:'Quota / capacity?', o:{t:'Request an increase; AWS approves', lead:'P', help:['C','A'], steps:['Request a quota increase in Service Quotas (or a Support case)','Short term: try another instance type or Availability Zone','For launches, request increases weeks ahead','Add quota checks to the go-live checklist'], ex:'On launch day, the app can’t add servers because the account’s vCPU quota is still at the default.'}}
+];
+const TREE_END = {t:'Unknown cause: investigate up the ladder', lead:'P', help:['C','A'], steps:['L1: gather symptoms, times, screenshots, error IDs','L2: partner or client engineers check logs, metrics, recent changes','Open an AWS Support case with evidence if any AWS layer looks involved','Escalate severity if impact grows'], ex:'Pages load slowly for some users and nothing obvious changed. Engineers find a database query getting slower as data grows.'};
+let treeI=0, treeOut=null;
+function treeSVG(){ const n=TREE.length, W=780, rowH=74, H=n*rowH+110, qx=30, qw=300, ox=430, ow=320;
+  let g=`<defs><marker id="tarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs>`;
+  TREE.forEach((t,i)=>{ const y=20+i*rowH, visited=i<treeI || (treeOut!=null && treeOut!=='end' && i<=treeOut) || treeOut==='end', cur=i===treeI && treeOut==null, hit=treeOut===i;
+    const qc = cur ? 'var(--signal)' : visited ? 'var(--accent)' : 'var(--line)';
+    g+=`<path d="M${qx+qw} ${y+22} H${ox}" stroke="${hit?'var(--signal)':'var(--line)'}" stroke-width="${hit?3:1.5}" marker-end="url(#tarr)"/><text x="${(qx+qw+ox)/2}" y="${y+16}" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-family:var(--mono)">YES</text>`;
+    g+=`<path d="M${qx+qw/2} ${y+44} V${y+rowH}" stroke="${visited&&!hit?'var(--accent)':'var(--line)'}" stroke-width="${visited&&!hit?3:1.5}" marker-end="url(#tarr)"/><text x="${qx+qw/2+8}" y="${y+60}" style="fill:var(--muted);font-size:10px;font-family:var(--mono)">NO</text>`;
+    g+=`<g data-inc="treeq|${i}" role="button" tabindex="0" aria-label="${t.s}" style="cursor:pointer"><rect x="${qx}" y="${y}" width="${qw}" height="44" rx="10" fill="var(--surface)" stroke="${qc}" stroke-width="${cur?3:2}">${cur&&!RM?'<animate attributeName="stroke-opacity" values="1;.35;1" dur="1.4s" repeatCount="indefinite"/>':''}</rect><text x="${qx+16}" y="${y+27}" style="fill:var(--ink);font-weight:600;font-size:13px">${i+1}. ${t.s}</text></g>`;
+    const w=WHO[t.o.lead];
+    g+=`<g data-inc="treeo|${i}" role="button" tabindex="0" aria-label="Outcome: ${t.o.t}" style="cursor:pointer"><rect x="${ox}" y="${y}" width="${ow}" height="44" rx="22" fill="${hit?`color-mix(in srgb,${w.c} 22%,var(--surface))`:'var(--surface)'}" stroke="${w.c}" stroke-width="${hit?3:1.5}"/><text x="${ox+18}" y="${y+27}" style="fill:var(--ink);font-size:12px"><tspan style="font-weight:700;fill:${w.c}">${w.s} leads</tspan> · ${t.s.replace('?','')}</text></g>`; });
+  const ye=20+n*rowH, hitE=treeOut==='end';
+  g+=`<g data-inc="treeo|end" role="button" tabindex="0" aria-label="Outcome: investigate" style="cursor:pointer"><rect x="${qx}" y="${ye}" width="${qw}" height="44" rx="22" fill="${hitE?'var(--violet-soft)':'var(--surface)'}" stroke="var(--violet)" stroke-width="${hitE?3:1.5}"/><text x="${qx+18}" y="${ye+27}" style="fill:var(--ink);font-size:12.5px;font-weight:600">None of these → investigate up the ladder</text></g>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H-30}" style="min-width:640px" role="img" aria-label="Decision flowchart: six yes/no questions, each yes leading to who fixes the problem">${g}</svg></div>`; }
+function renderTree(){ const s=$('#treeSvg'), c=$('#treeCard'); if(!s||!c) return; s.innerHTML=treeSVG();
+  if(treeOut==null){ const t=TREE[treeI];
+    c.innerHTML=`<span class="eyebrow">Question ${treeI+1} of ${TREE.length}</span><h3>${t.q}</h3><div class="chips"><button class="btn" type="button" data-treeans="yes">Yes</button><button class="btn ghost" type="button" data-treeans="no">No</button></div>${treeI?'<button class="btn ghost" type="button" data-treeans="reset" style="justify-self:start">Start again</button>':''}`; return; }
+  const o = treeOut==='end' ? TREE_END : TREE[treeOut].o, w=WHO[o.lead];
+  c.innerHTML=`<span class="eyebrow" style="color:${w.c}">Answer</span><h3>${o.t}</h3><div class="tags"><b class="small">Leads:</b> ${whoTag(o.lead)} <b class="small">Helps:</b> ${o.help.map(whoTag).join(' ')}</div><ol class="small" style="margin:0;padding-left:20px;display:grid;gap:4px">${o.steps.map(x=>`<li>${x}</li>`).join('')}</ol><div class="small" style="background:var(--sunk);border-radius:8px;padding:10px 12px"><b>Real example:</b> ${o.ex}</div><button class="btn ghost" type="button" data-treeans="reset" style="justify-self:start">Try another problem</button>`; }
+
+/* Escalation ladder */
+const LADDER = [
+  {t:'Automation & monitoring', d:'Alarms and auto-healing catch many problems before a human does.', do:['Auto Scaling replaces failed servers','Alarms page the on-call engineer'], check:['Did automation already fix it?'], tools:['CloudWatch, AWS Health, auto recovery']},
+  {t:'L1 service desk', d:'First human contact: client helpdesk or the partner’s NOC. Logs the ticket, gathers facts, follows runbooks.', do:['Confirm impact and severity','Run known fixes from the runbook'], check:['Ticket has times, screenshots, error IDs'], tools:['Ticketing tool, runbooks','Partner NOC or client helpdesk']},
+  {t:'L2 engineers', d:'Partner or client engineers who know the environment. Most incidents end here.', do:['Read logs and metrics','Roll back recent changes'], check:['Root cause found or AWS layer suspected?'], tools:['CloudWatch Logs, CloudTrail, X-Ray']},
+  {t:'L3 specialists', d:'Senior architects or specialists (database, network, security) on the partner or client side.', do:['Deep-dive design or data issues','Decide on failover or restore'], check:['Is an AWS service misbehaving?'], tools:['Architecture docs, DR plan']},
+  {t:'AWS Support case', d:'Opened in the AWS Support Center at the right severity, with evidence. Response time depends on the plan.', do:['Pick severity honestly (Critical only for business stopped)','Attach resource IDs, times, error messages','Use chat or phone for Critical'], check:['Case number shared in the war room'], tools:['AWS Support Center, Support API, Slack app']},
+  {t:'TAM & incident teams', d:'On Enterprise-level plans the Technical Account Manager coordinates inside AWS and pulls in incident specialists.', do:['TAM escalates internally','Joins the bridge call for major events'], check:['Is the right AWS team engaged?'], tools:['Enterprise Support / Unified Operations']},
+  {t:'AWS service team', d:'The engineers who build the service fix service-level bugs and outages.', do:['Fix and deploy','Publish a post-event summary for big events'], check:['Health Dashboard updated?'], tools:['Internal to AWS']}
+];
+function ladderSVG(){ const n=LADDER.length, W=620, step=58, H=n*step+40, x1=90, x2=170, top=24, bot=top+(n-1)*step;
+  let g=`<rect x="${x1-4}" y="${top-14}" width="8" height="${bot-top+28}" rx="4" fill="var(--sunk)"/><rect x="${x2-4}" y="${top-14}" width="8" height="${bot-top+28}" rx="4" fill="var(--sunk)"/>`;
+  const cols=['var(--muted)','var(--signal)','var(--violet)','var(--violet)','var(--accent)','var(--accent)','var(--accent)'];
+  LADDER.forEach((l,k)=>{ const i=n-1-k, y=top+i*step;
+    g+=`<g data-pipe="ladder|${k}" class="${k===0?'on':''}" role="button" tabindex="0" aria-label="${l.t}" style="cursor:pointer"><path d="M${x1-20} ${y-26} H${W-10} V${y+26} H${x1-20} Z" fill="transparent"/><rect x="${x1}" y="${y-4}" width="${x2-x1}" height="8" rx="4" fill="${cols[k]}"/><circle cx="${x1-40}" cy="${y}" r="14" fill="var(--surface)" stroke="${cols[k]}" stroke-width="2.5"/><text class="num" x="${x1-40}" y="${y+4}" text-anchor="middle" style="font-weight:700;fill:var(--ink);font-size:11px">${k+1}</text><text x="${x2+22}" y="${y-2}" style="fill:var(--ink);font-weight:700;font-size:13.5px">${l.t}</text><text x="${x2+22}" y="${y+14}" style="fill:var(--muted);font-size:11px">${k<2?'first response':k<4?'partner / client experts':k===4?'AWS Support engineers':'inside AWS'}</text></g>`; });
+  if(!RM) g+=`<circle r="9" fill="var(--signal)" style="filter:drop-shadow(0 0 6px var(--signal))"><animateMotion dur="7s" repeatCount="indefinite" path="M${(x1+x2)/2} ${bot} V${top}"/></circle>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:460px;max-width:640px" role="img" aria-label="Escalation ladder from automation at the bottom to the AWS service team at the top">${g}</svg></div>`; }
+
+/* Scenario war rooms */
+const INCSC = [
+  {t:'Website down after a release', sev:0, area:'App', lead:'P', story:'Friday 6 p.m.: the partner deploys a new checkout page. Ten minutes later, orders drop to zero.', steps:[['C','Client’s monitoring shows orders at zero; on-call calls the partner'],['P','Partner declares Sev1, opens the war room'],['P','Rolls back to the previous release in 4 minutes'],['C','Client confirms orders are flowing'],['Y','You send the “resolved” update and log 3 warranty hours'],['P','Post-incident review: a missing config value; adds an automated check']], pay:'Warranty work: non-billable. No AWS involvement needed.', lesson:'Deploy with a one-click rollback and avoid Friday-evening releases.'},
+  {t:'AWS service event in a Region', sev:0, area:'AWS', lead:'A', story:'Error rates spike for one AWS service in the client’s Region. The Health Dashboard confirms an event.', steps:[['P','MSP alarms fire; engineer checks the Health Dashboard: AWS event confirmed'],['A','AWS posts updates while its teams work the issue'],['P','Partner fails the app over to the second Region using the DR runbook'],['Y','You send updates every 30 minutes using AWS’s timeline'],['A','AWS resolves and later publishes a summary'],['Y','You check the service SLA and help raise a credit claim in a Support case']], pay:'AWS service credits if the SLA was missed; claim by opening a case within the SLA window.', lesson:'Multi-AZ and a tested DR plan turn an AWS outage into a non-event.'},
+  {t:'Leaked key, crypto-mining bill', sev:0, area:'Security', lead:'C', story:'A developer pushed an access key to a public repo. Overnight, 40 GPU servers appear in an unused Region.', steps:[['A','AWS emails a notice about the exposed key; GuardDuty raises findings'],['C','Client security lead declares Sev1'],['P','Partner deactivates the key, terminates rogue servers, keeps evidence'],['C','Client reviews CloudTrail: what else did the key do?'],['A','Support case opened; AWS reviews whether a billing adjustment is possible'],['Y','You flag the bill spike, hold the invoice and brief the account manager']], pay:'The unauthorized usage is billed to the account. AWS may review it after the security steps are done, but it’s not guaranteed.', lesson:'No long-lived keys in code; use IAM roles, Budgets alerts and GuardDuty everywhere.'},
+  {t:'Account suspended: payment failed', sev:1, area:'Billing', lead:'Y', story:'A resold client account gets a “payment overdue” notice. Billing emails went to someone who left.', steps:[['A','AWS sends overdue and suspension warnings to the account email'],['Y','You spot it on the AR report: the distributor invoice wasn’t paid'],['Y','You pay or fix the payment method and confirm with the distributor or AWS'],['C','Client updates the billing contact to a shared mailbox'],['Y','You add the account to the root and billing contacts register']], pay:'No credit: the cause was internal. Prevented next time by a shared billing mailbox.', lesson:'Never use a personal email for root or billing. Review contacts every quarter.'},
+  {t:'Root user locked out', sev:1, area:'Account', lead:'C', story:'The client’s founder lost the phone holding the root MFA. Nobody can change the support plan or close the account.', steps:[['C','Client tries the root email and MFA recovery options'],['P','Partner explains it can’t recover root: only the owner can'],['A','Account owner contacts AWS for identity verification and MFA reset'],['C','Client registers two MFA devices and stores them safely'],['Y','You update the custody register: who holds root, where MFA is kept']], pay:'No cost, just lost time.', lesson:'Root email = a shared mailbox; at least two MFA devices; daily work via IAM Identity Center.'},
+  {t:'Database almost full', sev:1, area:'Infra', lead:'P', story:'Under a managed-services contract, the database storage alarm hits 90% at 2 a.m.', steps:[['P','MSP NOC gets the alarm and follows the runbook'],['P','L2 engineer increases storage and turns on storage autoscaling'],['C','Client approves the change under the standing change policy'],['Y','You note the higher monthly cost for the next invoice'],['P','Review: add a 75% early warning alarm']], pay:'Included in the MSP fee; extra AWS storage is passed through on the bill.', lesson:'Alert early (75%), not at the cliff (95%).'},
+  {t:'Launch day: quota limit', sev:1, area:'Capacity', lead:'P', story:'The client’s big launch: traffic triples and Auto Scaling can’t add servers. “vCPU limit exceeded.”', steps:[['P','Partner sees scaling failures in the logs'],['P','Requests a quota increase and opens an Urgent Support case'],['A','AWS approves the increase'],['P','Meanwhile, shifts to a larger instance type that fits the quota'],['Y','You add “check quotas 3 weeks before go-live” to the launch checklist']], pay:'No credits: quotas are the account’s settings to manage.', lesson:'Quotas are a go-live checklist item, not a launch-day surprise.'},
+  {t:'Bill shock: test servers left on', sev:2, area:'Cost', lead:'C', story:'The monthly AWS bill is 3× normal. A load-test environment ran for 3 weeks.', steps:[['A','Cost Anomaly Detection emails an alert'],['Y','You see the forecast jump and tell the account manager'],['C','Client team shuts down the environment'],['P','Partner adds schedules and tags so test environments turn off at night'],['Y','You explain the bill line by line before the invoice goes out']], pay:'The usage is billable. Prevention: Budgets alerts, schedules and tags.', lesson:'Set Budgets and Cost Anomaly Detection on day one of every account.'},
+  {t:'Marketplace private offer won’t go through', sev:2, area:'Marketplace', lead:'Y', story:'A buyer can’t accept a private offer the day before their quarter ends.', steps:[['C','Buyer’s procurement reports an error accepting the offer'],['Y','Partner alliance ops checks the offer: expired date, wrong account ID'],['Y','You recreate the offer for the correct buyer account'],['A','If still blocked, Marketplace seller operations support is contacted'],['Y','Deal closes; you log the fix in the deal checklist']], pay:'No cost; the risk is a slipped deal.', lesson:'Confirm the buyer’s AWS account ID and offer expiry before sending.'},
+  {t:'AI assistant gives wrong answers', sev:2, area:'AI', lead:'P', story:'A partner-built support chatbot on Amazon Bedrock starts quoting old prices.', steps:[['C','Client’s support team flags wrong answers'],['P','Partner finds the knowledge base wasn’t re-synced after a price update'],['P','Re-syncs the data and adds a guardrail for price questions'],['Y','You update the hypercare log and the client FAQ video'],['P','Adds a weekly evaluation test']], pay:'Warranty if in the SOW hypercare period; otherwise a support retainer.', lesson:'AI apps need data refresh and evaluation runbooks like any other system.'},
+  {t:'Client disputes an invoice after an outage', sev:3, area:'Finance', lead:'Y', story:'After a 2-hour Sev1, the client asks why they’re billed for the incident hours and wants credit.', steps:[['Y','You pull the contract: SLA terms, credit percentage, warranty clause'],['Y','You check the timeline from the post-incident review'],['P','Delivery lead confirms which hours were warranty fixes'],['Y','You issue a QuickBooks credit memo for the SLA credit and remove warranty hours'],['Y','You send a short, clear explanation with the corrected invoice']], pay:'Partner SLA credit per contract, as a credit memo, not a deleted invoice.', lesson:'Tag incident hours as warranty or billable while the incident happens, not weeks later.'},
+  {t:'Phishing on client laptops (not AWS)', sev:1, area:'Out of scope', lead:'C', story:'Staff at the client get phishing emails and one laptop is infected. Nothing on AWS is affected.', steps:[['C','Client IT handles the endpoint and email security'],['P','Partner checks whether any AWS credentials were on the laptop'],['P','Rotates any keys found, confirms no AWS activity in CloudTrail'],['Y','You note that further help is outside the SOW: a possible new service offer']], pay:'Outside the SOW: billable if the client asks for help.', lesson:'Not everything is an AWS problem. Know your scope, and spot the upsell.'}
+];
+function swimSVG(sc){ const lanes=['C','P','A','Y'], used=[...new Set(sc.steps.map(s=>s[0]))], L=lanes.filter(l=>used.includes(l)||l!=='V'), n=sc.steps.length, W=Math.max(560,n*110+130), lh=52, H=L.length*lh+20, x=i=>130+i*((W-170)/Math.max(n-1,1)), y=k=>20+L.indexOf(k)*lh+lh/2;
+  let g=''; L.forEach((k,i)=>{ g+=`<rect x="0" y="${20+i*lh}" width="${W}" height="${lh}" fill="${i%2?'transparent':'var(--sunk)'}" opacity=".6"/><text x="12" y="${20+i*lh+lh/2+4}" style="fill:${WHO[k].c};font-weight:700;font-size:12px">${WHO[k].s}</text>`; });
+  const pts=sc.steps.map((s,i)=>[x(i),y(s[0])]), path=pts.map((p,i)=>(i?'L':'M')+p[0]+' '+p[1]).join(' ');
+  g+=`<path d="${path}" fill="none" stroke="var(--line)" stroke-width="2.5"/><path class="draw" pathLength="1" d="${path}" fill="none" stroke="var(--signal)" stroke-width="2.5" style="animation-duration:2.4s"/>`;
+  sc.steps.forEach((s,i)=>{ g+=`<circle class="gc" style="animation-delay:${i*200}ms" cx="${pts[i][0]}" cy="${pts[i][1]}" r="13" fill="var(--surface)" stroke="${WHO[s[0]].c}" stroke-width="2.5"/><text x="${pts[i][0]}" y="${pts[i][1]+4}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:11px">${i+1}</text>`; });
+  if(!RM) g+=`<circle r="6" fill="var(--signal)"><animateMotion dur="${n*1.1}s" repeatCount="indefinite" path="${path}"/></circle>`;
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:460px" role="img" aria-label="Swimlane timeline of who acts at each step">${g}</svg></div>`; }
+function renderIncSc(){ const box=$('#incGrid'); if(!box) return;
+  box.innerHTML = INCSC.map((s,i)=>{ const sv=SEVS[s.sev], w=WHO[s.lead]; return `<button type="button" class="cocard" data-incsc="${i}" style="animation:rise .4s ${i*40}ms both;--pc:${sv.c}"><span class="tags"><span class="tag" style="color:${sv.c};background:color-mix(in srgb,${sv.c} 15%,transparent);border-color:transparent">${sv.k}</span><span class="tag">${s.area}</span></span><b>${s.t}</b><span class="small muted">${s.story}</span><span class="small">Leads: <b style="color:${w.c}">${w.n}</b></span></button>`; }).join(''); }
+function openIncSc(i){ const s=INCSC[i], sv=SEVS[s.sev], w=WHO[s.lead];
+  openDrawer(`<span class="eyebrow" style="color:${sv.c}">${sv.k} · ${s.area}</span><h2>${s.t}</h2><p>${s.story}</p><div class="tags"><b class="small">Leads:</b> ${whoTag(s.lead)}</div>
+  <h3>War-room timeline</h3>${swimSVG(s)}
+  <ol class="small" style="padding-left:20px;display:grid;gap:6px">${s.steps.map(x=>`<li>${whoTag(x[0])} ${x[1]}</li>`).join('')}</ol>
+  <div class="grid g2"><div class="card warnc"><h4>Money &amp; contract</h4><p class="small">${s.pay}</p></div><div class="card tint"><h4>Lesson</h4><p class="small">${s.lesson}</p></div></div>`); }
+
+/* RACI for incidents */
+const IRACI_COLS = ['C','P','A','Y'];
+const IRACI = [
+  ['Monitor and detect','R','R','I','I'],['Declare severity','A','R','–','I'],['Fix application code','A','R','–','I'],['Fix configuration & OS (managed by partner)','A','R','–','I'],['Fix AWS hardware or services','I','I','R/A','I'],['Open & chase AWS Support case','C','R','R','I'],['Customer and stakeholder updates','A','C','–','R'],['Root-cause review','A','R','C','C'],['Claim AWS service credit','I','C','R','R'],['Partner SLA credit / credit memo','I','C','–','R/A'],['Classify incident hours (warranty vs billable)','I','C','–','R/A'],['Update CRM health & renewal risk','–','C','–','R']
+];
+let iraciCol=-1;
+function renderIRaci(){ const box=$('#iraciBox'); if(!box) return; const cl=v=>v.startsWith('R')?'var(--accent)':v==='A'?'var(--signal)':v==='C'?'var(--violet)':'var(--muted)';
+  box.innerHTML=`<table class="raci"><thead><tr><th>Activity</th>${IRACI_COLS.map((k,i)=>`<th><button type="button" class="chip" data-iraci="${i}" aria-pressed="${i===iraciCol}" style="color:${WHO[k].c}">${WHO[k].s}</button></th>`).join('')}</tr></thead><tbody>${IRACI.map(r=>`<tr><td class="small">${r[0]}</td>${r.slice(1).map((v,i)=>`<td style="text-align:center;${iraciCol>=0&&i!==iraciCol?'opacity:.25;':''}${iraciCol===i?'background:var(--sunk);':''}"><b style="color:${cl(v)}">${v}</b></td>`).join('')}</tr>`).join('')}</tbody></table>`; }
+
+/* Money after an incident */
+const INCMONEY = [
+  {t:'Incident closed', d:'You now have a timeline with start and end times. That’s the evidence for every credit.', do:['Get the final timeline from the incident commander'], check:['Start/end times agreed with the client?'], tools:['Post-incident review']},
+  {t:'Check the SLAs', d:'Two different promises: AWS’s SLA to the account owner, and the partner’s SLA to the client. Also check support response times, which are not uptime SLAs.', do:['AWS: find the service SLA (e.g. monthly uptime %)','Partner: read the MSA/SOW credit table'], check:['Was the missed time actually AWS’s or ours?'], tools:['aws.amazon.com/legal/service-level-agreements','Contract folder']},
+  {t:'Claim AWS credit', d:'AWS credits are not automatic: the account owner opens a Support case with the details within the claim window (often by the end of the second billing cycle after the incident).', do:['Open a case: dates, Regions, resource IDs, logs'], check:['Claim filed before the deadline?'], tools:['AWS Support Center (billing case)']},
+  {t:'Credit lands on the payer', d:'The credit lands on the paying account: the client if direct, the partner if resold.', do:['Watch the next AWS invoice for the credit line'], check:['Credit amount matches the claim?'], tools:['AWS Billing console / distributor statement']},
+  {t:'Pass it through', d:'On resold accounts, pass AWS credits to the client and apply any partner SLA credit as a credit memo.', do:['QuickBooks: create a credit memo linked to the customer','Apply it to the next invoice'], check:['Never edit or delete a sent invoice'], tools:['QuickBooks Online']},
+  {t:'Classify the hours', d:'Incident work is either warranty (free), covered by the managed-service fee, or a billable change request.', do:['Tag time entries with the incident ID','Move warranty hours to non-billable'], check:['Hours match the timeline?'], tools:['Time tracking, QuickBooks']},
+  {t:'Protect the renewal', d:'A well-handled incident can build trust. Record it, and follow up.', do:['Log the incident on the CRM account','Lower the health score temporarily','Schedule a review with the client'], check:['Account manager has the summary?'], tools:['CRM, QBR deck']}
+];
+
+/* War-room simulator */
+const WAR = [
+  {t:'02:14 a.m.', s:'An alarm: the client’s web app returns errors for 60% of users. You’re the partner’s on-call coordinator.', o:[['Wait 30 minutes to see if it clears',0,'Every minute counts in a Sev1. Waiting also burns your SLA response time.'],['Declare Sev1, open the war room, page the on-call engineer',2,'Right. Declare early; you can always downgrade.'],['Email the client’s CEO straight away',1,'Communicate, yes, but first get the response going and know the facts.']]},
+  {t:'02:20', s:'The engineer joins. What should they check first?', o:[['The AWS Health Dashboard and recent changes',2,'The two fastest clues: is AWS having an event, and did anyone change anything?'],['Rewrite the database queries',0,'Too early. Find out what changed before redesigning anything.'],['Restart every server',1,'Sometimes works, but it destroys evidence and may not fix the cause.']]},
+  {t:'02:28', s:'No AWS event. A partner release went out at 01:50. Next step?', o:[['Roll back the release',2,'Mitigate first: restore service, then investigate the bug in daylight.'],['Debug the new code live in production',0,'Risky and slow while customers are down.'],['Open a Critical AWS case',1,'Not yet: the evidence points to our change, not AWS.']]},
+  {t:'02:34', s:'Rollback done. Errors are falling. What about the client?', o:[['Wait until the morning report',0,'The client should hear from you first, not from their customers.'],['Send the status update: impact, action taken, next update time',2,'Clear, calm and with a next-update time. Use the template.'],['Post on social media',0,'Only the client decides public communication about their service.']]},
+  {t:'09:00', s:'Service is stable. What happens to the 3 hours the team spent overnight?', o:[['Bill them as normal support',0,'The failure came from our release under the SOW: that’s warranty work.'],['Log them as non-billable warranty against the incident',2,'Correct: tag hours with the incident ID and mark them non-billable.'],['Ignore the hours',1,'Track them anyway: they show the cost of quality and feed the review.']]},
+  {t:'Day 3', s:'The post-incident review. What makes it useful?', o:[['Name the engineer who made the mistake',0,'Blame makes people hide problems. Keep reviews blameless.'],['A timeline, root cause, and owned action items with dates',2,'Exactly. Plus share it with the client: it builds trust.'],['Skip it, service is back',0,'Without a review, the same incident comes back.']]}
+];
+let warI=0, warScore=0, warDone=false, warImpact=0;
+function renderWar(){ const box=$('#warBox'); if(!box) return;
+  if(warI>=WAR.length){ const max=WAR.length*2; box.innerHTML=`<span class="eyebrow">Incident closed</span><div class="out">${warScore} / ${max}</div><p>${warScore>=10?'Calm, fast and fair: the client will trust you more after this incident.':warScore>=7?'Solid handling. Re-read the lifecycle steps you missed.':'Customers felt that one. Walk through the lifecycle above and try again.'}</p><div class="bar"><i style="width:${Math.min(100,warImpact)}%;background:var(--bad)"></i></div><span class="small muted">Customer impact meter</span><div><button class="btn" type="button" id="warRestart">Run it again</button></div>`; return; }
+  const w=WAR[warI]; warDone=false;
+  box.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span class="eyebrow">Step ${warI+1} of ${WAR.length}</span><span class="eyebrow">Score ${warScore}</span></div>
+  <div style="display:flex;gap:14px;align-items:center"><span class="clockbadge">${w.t}</span><p style="margin:0">${w.s}</p></div>
+  <div><span class="small muted">Customer impact</span><div class="bar"><i style="width:${Math.min(100,warImpact)}%;background:var(--bad)"></i></div></div>
+  <div class="grid" style="gap:8px">${w.o.map((o,i)=>`<button type="button" class="opt" data-war="${i}">${o[0]}</button>`).join('')}</div><div id="warFb"></div>`; }
+
+/* Comms templates */
+const INC_TPL = {
+  'First notice':`Subject: [Sev1] Service disruption – <service> – investigating
+
+Hi <name>,
+
+At <time, timezone> we detected <what users see, e.g. errors on the checkout page>.
+Impact: <who / how many are affected>.
+What we’re doing: our engineers are investigating and have <first action>.
+Next update: by <time> (every 30 minutes until resolved).
+
+Incident lead: <name, phone>
+<partner company> support`,
+  'Update':`Subject: [Sev1] Update <n> – <service>
+
+Status: <investigating / mitigating / monitoring>
+Since the last update: <what changed>.
+Current impact: <better / same / worse>.
+Next step: <action> – owner <team>.
+Next update: by <time>.`,
+  'Resolved':`Subject: [Resolved] <service> disruption – <date>
+
+The issue affecting <service> was resolved at <time>.
+Duration: <start> to <end> (<total>).
+Cause (preliminary): <one sentence>.
+What we did: <rollback / failover / fix>.
+Next: a full post-incident review by <date>, including actions to prevent a repeat.
+
+Thank you for your patience.`,
+  'Post-incident review':`Post-incident review – <incident ID>
+
+1. Summary (3 sentences, plain language)
+2. Impact: users, duration, revenue, SLA breached? (Y/N)
+3. Timeline: detection → mitigation → resolution (with times)
+4. Root cause (5 whys) – blameless
+5. What went well / what didn’t
+6. Action items: owner, due date, ticket link
+7. Credits & billing: AWS credit claimed? partner SLA credit? hours classified?`
+};
+let incTplSel='First notice';
+function renderIncTpl(){ const o=$('#incTplOut'); if(!o) return; o.textContent=INC_TPL[incTplSel]; document.querySelectorAll('[data-inctpl]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.inctpl===incTplSel)); }
+
+/* Prevention loop */
+const PREV = [
+  {t:'Monitor', d:'Alarms on what customers feel (errors, latency), not only CPU.', do:['CloudWatch alarms and dashboards','AWS Health notifications to a shared channel'], check:['Does every production app have an owner and an alarm?'], tools:['CloudWatch, AWS Health, AWS User Notifications']},
+  {t:'Guard', d:'Security and cost guardrails that catch problems early.', do:['GuardDuty and Security Hub on all accounts','AWS Budgets and Cost Anomaly Detection'], check:['Alerts go to a monitored mailbox?'], tools:['GuardDuty, Security Hub, Budgets']},
+  {t:'Design for failure', d:'Multi-AZ by default; DR matched to how much downtime the business can accept.', do:['Set RTO and RPO with the client','Backups with restore tests'], check:['When was the last restore test?'], tools:['AWS Backup, Resilience Hub, Elastic Disaster Recovery']},
+  {t:'Runbooks', d:'Step-by-step guides so the 2 a.m. engineer doesn’t improvise.', do:['A runbook for each top alarm','Contact sheet and escalation ladder'], check:['Can a new engineer follow it?'], tools:['Systems Manager documents, wiki']},
+  {t:'Game days', d:'Practise failures on purpose so the real one feels familiar.', do:['Simulate an AZ failure or a leaked key','Time how long detection and recovery take'], check:['Did the runbook work as written?'], tools:['AWS Fault Injection Service']},
+  {t:'Review & improve', d:'Every incident and game day feeds new alarms, runbooks and design fixes.', do:['Track action items to done','Trusted Advisor checks monthly'], check:['Are repeat incidents going down?'], tools:['Trusted Advisor, Well-Architected reviews']}
+];
+
+/* Your role in incidents */
+const INCROLE = [
+  ['AdminOps','Keep the contact sheet, on-call rota and support-plan inventory current; run the root & MFA custody register; book the post-incident review.'],
+  ['QuickBooks & billing','Hold invoices during disputes; issue SLA credit memos; mark warranty hours non-billable; pass through AWS credits on resold accounts.'],
+  ['RevOps','Log the incident on the CRM account; adjust health score and renewal risk; report incidents per client in the QBR.'],
+  ['SalesOps','Alert the account owner within the hour; pause upsell outreach to that client; add notes to the co-sell opportunity if AWS is involved.'],
+  ['Video & content','Never publish a case study about a client during an incident. Later, turn lessons (with permission) into a “how we handle incidents” trust video.'],
+  ['Comms','Draft updates from templates, keep the cadence, and make sure every update states the next update time.']
+];
+
+V.incidents = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Support & incidents</span><h1>When things go wrong</h1>
+  <p class="lede">Websites crash, keys leak, bills spike, accounts get locked. Who fixes it depends on three things: <b>which layer broke</b>, <b>who has the contract</b>, and <b>how bad it is</b>. This chapter maps all three, then walks through real war rooms step by step.</p></header>
+
+  <section class="section"><header><h2>The four parties in every incident</h2><p class="muted">Click a party to see what it owns, and what it can’t do.</p></header>
+  <div class="card"><div id="triadSvg">${triadSVG()}</div></div><div class="detail" id="triadD"></div></section>
+
+  <section class="section"><header><h2>Which layer broke? The responsibility stack</h2><p class="muted">Switch the setup and watch ownership move. Then click a layer to see who fixes it.</p></header>
+  <div class="chips">${Object.entries(STACKS).map(([k,s])=>`<button class="chip" type="button" data-stack="${k}" aria-pressed="${k===stackSel}">${s.n}</button>`).join('')}</div>
+  <p class="small muted" id="stackNote"></p>
+  <div class="grid g2"><div class="lstack" id="stackBox"></div><div class="detail" id="layD"></div></div>
+  <div class="tags">${['C','P','A','V'].map(k=>`<span class="tag" style="color:${WHO[k].c};background:color-mix(in srgb,${WHO[k].c} 15%,transparent);border-color:transparent">${OWN_N[k]}</span>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Who has the contract? Five support setups</h2><p class="muted">The same broken website gets handled differently depending on how the client buys. Pick a setup and press play.</p></header>
+  <div class="chips">${SUPMODELS.map((m,i)=>`<button class="chip" type="button" data-sm="${i}" aria-pressed="${i===smSel}">${m.t}</button>`).join('')}</div>
+  <div id="smD"></div>
+  <div class="card warnc"><p class="small"><b>Does AWS fix problems without the partner?</b> AWS always fixes AWS’s own layers (hardware, data centers, services) for everyone. It also answers the account owner’s Support cases. But AWS won’t debug a client’s code or operate their servers. That’s the client team’s job, or the partner’s if a contract says so.</p></div></section>
+
+  <section class="section"><header><h2>Flowchart: who fixes this?</h2><p class="muted">Answer up to six questions. The map lights up your path and the answer shows who leads, who helps and the first steps.</p></header>
+  <div class="card" id="treeCard" style="align-content:start"></div><div class="card" id="treeSvg"></div></section>
+
+  <section class="section"><header><h2>The incident lifecycle</h2><p class="muted">Eight stages from the first alarm to the corrected invoice. Press play.</p></header>
+  ${flow('inclife', FLOWS.inclife = INCLIFE, {pipe:true, label:'Stage'})}</section>
+
+  <section class="section"><header><h2>How bad is it? Severity levels</h2><p class="muted">Partners usually use Sev1–Sev4. Each level decides who gets paged, how fast and how often you update.</p></header>
+  <div class="sevrow">${SEVS.map((s,i)=>`<button type="button" class="sevb" data-sev="${i}" aria-pressed="${i===sevSel}" style="--sc:${s.c}"><b>${s.k}</b><span class="small">${s.t}</span></button>`).join('')}</div>
+  <div id="sevD"></div></section>
+
+  <section class="section"><header><h2>AWS Support plans: how fast does AWS answer?</h2><p class="muted">Pick the case severity. The rings show how quickly each plan promises a first response from a human (fuller = faster).</p></header>
+  <div class="chips">${CASESEV.map((c,i)=>`<button class="chip" type="button" data-cs="${i}" aria-pressed="${i===csSel}">${c[0]}: ${c[1]}</button>`).join('')}</div>
+  <div class="grid g4" id="planBox"></div>
+  <p class="small muted">Response time is when AWS first replies, not when the fix happens. Developer, Business and Enterprise On-Ramp plans end on 1 January 2027 (they stay available in AWS GovCloud): Business Support+ replaces Developer and Business, and Enterprise On-Ramp customers move to Enterprise Support. Prices and terms change, so check aws.amazon.com/premiumsupport before quoting a client.</p></section>
+
+  <section class="section"><header><h2>The escalation ladder</h2><p class="muted">Problems climb only as high as they need to. Click a rung.</p></header>
+  <div class="card">${ladderSVG()}</div>
+  ${flow('ladder', FLOWS.ladder = LADDER, {label:'Rung'})}
+  <div class="card tint"><p class="small"><b>The business escalation runs in parallel.</b> If an AWS case is stuck on a major incident, the partner’s account manager can raise it with the AWS account team (Partner Development Manager or Account Manager). Use this for real business impact, not to skip the queue.</p></div></section>
+
+  <section class="section"><header><h2>War-room library: 12 real-world incidents</h2><p class="muted">Open one to see the swimlane timeline of who acts at each step, who pays and the lesson.</p></header>
+  <div class="cogrid" id="incGrid"></div></section>
+
+  <section class="section"><header><h2>Incident RACI</h2><p class="muted">R = does the work, A = accountable, C = consulted, I = informed. Click a column to focus on one party.</p></header>
+  <div class="tablewrap" id="iraciBox"></div></section>
+
+  <section class="section"><header><h2>After the fire: credits, invoices, renewals</h2><p class="muted">The money side of an incident, which is often your part of the job.</p></header>
+  ${flow('incmoney', FLOWS.incmoney = INCMONEY, {pipe:true, label:'Step'})}
+  <div class="grid g3"><div class="card"><h4>SLA</h4><p class="small">A promise of uptime (for example 99.99% per month). If it’s missed, the payer can claim credits.</p></div><div class="card"><h4>Support response time</h4><p class="small">How fast someone first answers a case. It isn’t a promise of when the fix happens.</p></div><div class="card"><h4>Service credit</h4><p class="small">A discount on a future bill, not cash. Usually a percentage of that service’s monthly charge.</p></div></div></section>
+
+  <section class="section"><header><h2>Prevent the next one</h2><p class="muted">A loop, not a project. Click a stage.</p></header>
+  <div class="grid g2"><div class="card">${orbitSVG('prev', PREV.map(p=>p.t), ['Prevent','the next one'])}</div><div>${flow('prev', FLOWS.prev = PREV, {label:'Stage'})}</div></div></section>
+
+  <section class="section"><header><h2>Simulator: the 2 a.m. war room</h2><p class="muted">Six decisions. Each wrong move fills the customer impact meter.</p></header>
+  <div class="card" id="warBox" style="max-width:720px"></div></section>
+
+  <section class="section"><header><h2>Your part when things go wrong</h2><p class="muted">You don’t fix servers, but incidents go smoothly or badly because of the ops work around them.</p></header>
+  <div class="grid g3">${INCROLE.map((r,i)=>`<div class="card" style="animation:rise .45s ${i*70}ms both"><span class="tag s" style="justify-self:start">${r[0]}</span><p class="small">${r[1]}</p></div>`).join('')}</div>
+  <div class="card"><h3>Comms templates</h3><div class="chips">${Object.keys(INC_TPL).map(k=>`<button class="chip" type="button" data-inctpl="${k}" aria-pressed="${k===incTplSel}">${k}</button>`).join('')}</div><pre class="tplout" id="incTplOut"></pre><div><button class="btn" type="button" id="incTplCopy">Copy template</button></div></div></section>
+
+  <p class="small muted">Support plan details are from aws.amazon.com/premiumsupport (2026). Severity levels, RACI and timelines are typical partner practice; each contract defines its own.</p>
+`;
+function initIncidents(){ showTriad(triadSel); renderStack(); showSM(smSel); treeI=0; treeOut=null; renderTree(); showSev(sevSel); showPlans(csSel); renderIncSc(); renderIRaci(); warI=0; warScore=0; warImpact=0; renderWar(); renderIncTpl(); }
+
+document.addEventListener('click', e=>{ const t=e.target; if(!t.closest) return;
+  const inc=t.closest('[data-inc]'); if(inc){ const [k,v]=inc.dataset.inc.split('|');
+    if(k==='triad'){ showTriad(+v); return; }
+    if(k==='treeq'){ const i=+v; if(i<=treeI || treeOut!=null){ treeI=i; treeOut=null; renderTree(); } return; }
+    if(k==='treeo'){ treeOut = v==='end' ? 'end' : +v; if(v!=='end') treeI=+v; renderTree(); return; } }
+  const st=t.closest('[data-stack]'); if(st){ stackSel=st.dataset.stack; renderStack(); return; }
+  const ly=t.closest('[data-lay]'); if(ly){ showLayer(+ly.dataset.lay); return; }
+  const sm=t.closest('[data-sm]'); if(sm){ showSM(+sm.dataset.sm); return; }
+  const ta=t.closest('[data-treeans]'); if(ta){ const a=ta.dataset.treeans;
+    if(a==='reset'){ treeI=0; treeOut=null; }
+    else if(a==='yes'){ treeOut=treeI; }
+    else { if(treeI<TREE.length-1) treeI++; else treeOut='end'; }
+    renderTree(); return; }
+  const sv=t.closest('[data-sev]'); if(sv){ showSev(+sv.dataset.sev); return; }
+  const cs=t.closest('[data-cs]'); if(cs){ showPlans(+cs.dataset.cs); return; }
+  const isc=t.closest('[data-incsc]'); if(isc){ openIncSc(+isc.dataset.incsc); return; }
+  const ir=t.closest('[data-iraci]'); if(ir){ const i=+ir.dataset.iraci; iraciCol = iraciCol===i ? -1 : i; renderIRaci(); return; }
+  const wr=t.closest('[data-war]'); if(wr && !warDone){ warDone=true; const w=WAR[warI], o=w.o[+wr.dataset.war], best=w.o.findIndex(x=>x[1]===2);
+    warScore+=o[1]; warImpact+= o[1]===2?3:o[1]===1?12:22;
+    document.querySelectorAll('[data-war]').forEach((b,i)=>{ b.disabled=true; if(i===best) b.classList.add('right'); else if(b===wr) b.classList.add('wrong'); });
+    $('#warFb').innerHTML=`<p class="small" style="margin:8px 0">${o[1]===2?'<b style="color:var(--good)">Good call.</b>':o[1]===1?'<b style="color:var(--warn)">Partly.</b>':'<b style="color:var(--bad)">Not quite.</b>'} ${o[2]}</p><button class="btn" type="button" id="warNext">${warI<WAR.length-1?'Next →':'See result'}</button>`; return; }
+  if(t.id==='warNext'){ warI++; renderWar(); return; }
+  if(t.id==='warRestart'){ warI=0; warScore=0; warImpact=0; renderWar(); return; }
+  const it=t.closest('[data-inctpl]'); if(it){ incTplSel=it.dataset.inctpl; renderIncTpl(); return; }
+  if(t.id==='incTplCopy'){ const el=$('#incTplOut'); try{ navigator.clipboard.writeText(el.textContent).then(()=>{ t.textContent='Copied'; setTimeout(()=>t.textContent='Copy template',1500); }, ()=>getSelection().selectAllChildren(el)); }catch(err){ getSelection().selectAllChildren(el); } return; }
+});
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -5469,6 +5878,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='incidents') initIncidents();
   if(id==='whouses'){ showPipeSel(pipeSel); renderCos(); gameI=0; gameScore=0; renderGame(); }
   if(id==='cloudfin') calcMF();
   if(id==='hypergtm'){ showMat(matSel); renderLS(); showMot(motSel); showPsvc(psvcSel); showGcase(gcase); renderSelf(); calcPSQ(); }
@@ -5664,7 +6074,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb], svg [data-mot], svg [data-co]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb], svg [data-mot], svg [data-co], svg [data-inc]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
