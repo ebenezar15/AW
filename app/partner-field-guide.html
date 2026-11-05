@@ -387,7 +387,27 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .confetti{position:fixed;width:8px;height:12px;border-radius:2px;z-index:97;pointer-events:none;animation:conf 1.1s cubic-bezier(.2,.7,.3,1) forwards}
 @keyframes conf{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}
+/* drawer & company cards */
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(600px,100%);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow);z-index:92;overflow-y:auto;padding-block:calc(22px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px));padding-left:24px;padding-right:max(24px,env(safe-area-inset-right,0px));transform:translateX(102%);transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;gap:14px}
+.drawer.open{transform:none}
+.drawer .x{position:sticky;top:0;align-self:flex-end;border:1px solid var(--line);background:var(--sunk);border-radius:99px;width:36px;height:36px;font-size:1.1rem;flex:none;z-index:2}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:91;opacity:0;pointer-events:none;transition:opacity .3s}
+.scrim.open{opacity:1;pointer-events:auto}
+.cogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.cocard{display:grid;gap:6px;align-content:start;text-align:left;border:1px solid var(--line);border-radius:16px;padding:16px;background:linear-gradient(160deg,color-mix(in srgb,var(--pc) 10%,transparent),transparent 55%),var(--surface);color:var(--ink);font:inherit;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}
+.cocard:hover{transform:translateY(-3px);border-color:var(--pc);box-shadow:0 14px 30px -18px var(--pc)}
+.cocard b{font-size:1.02rem;line-height:1.25}
+.mono-badge{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--pc,var(--accent)),color-mix(in srgb,var(--pc,var(--accent)) 50%,var(--violet)));color:var(--bg);font-family:var(--mono);font-weight:600;font-size:.85rem}
+.mono-badge.big{width:64px;height:64px;font-size:1.2rem;flex:none}
+.lvlbar{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.lvlbar i{display:block;height:100%;border-radius:99px}
+.codecard{padding:0;overflow:hidden}
+.code{margin:0;padding:16px 0;font-family:var(--mono);font-size:12.5px;line-height:1.75;overflow-x:auto;background:var(--bg)}
+.code .ln{display:block;padding:0 16px;cursor:pointer;border-left:3px solid transparent;white-space:pre}
+.code .ln:hover{background:var(--sunk)}
+.code .ln.on{background:var(--signal-soft);border-left-color:var(--signal)}
 /* storefront race, ecosystem */
+.pipehead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}
 .faq details{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px}
 .faq summary{cursor:pointer;font-weight:600}
 .faq details[open] summary{color:var(--signal)}
@@ -422,6 +442,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </div>
 <div class="cmd" id="cmd" hidden><div class="cmd-box" role="dialog" aria-modal="true" aria-label="Search"><input id="cmdQ" type="search" placeholder="Search chapters, glossary terms…" autocomplete="off" aria-label="Search"><div id="cmdRes" class="cmd-res"></div><div class="small muted cmd-hint">Enter to open · Esc to close</div></div></div>
 <div class="toast" id="toast" role="status"></div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Details"><button class="x" id="drawerX" type="button" aria-label="Close">×</button><div id="drawerBody" style="display:grid;gap:14px"></div></aside>
 
 <script>
 /* ---------- helpers ---------- */
@@ -445,6 +467,7 @@ const CHAPTERS = [
   {id:'cloudfin', t:'Cloud financials', g:'Learn AWS'},
   {id:'ai', t:'AI on AWS', g:'Learn AWS'},
   {id:'industries', t:'How businesses use AWS', g:'Learn AWS'},
+  {id:'whouses', t:'Who runs on AWS', g:'Learn AWS'},
   {id:'ccp', t:'Cloud Practitioner prep', g:'Learn AWS'},
   {id:'business', t:'How the business runs', g:'Partner business'},
   {id:'catalog', t:'Partner services catalog', g:'Partner business'},
@@ -927,6 +950,13 @@ const RACI = [
 ];
 
 const GLOSSARY = [
+  ['All-in','Running essentially all of a company’s workloads on one cloud provider.'],
+  ['Hybrid cloud','Combining a company’s own data centers with public cloud services.'],
+  ['Multi-cloud','Using more than one cloud provider, choosing each for specific strengths.'],
+  ['Cloud repatriation','Moving workloads from public cloud back to owned or colocated hardware.'],
+  ['SDK','Software development kit: a library that lets code call AWS services (e.g. boto3 for Python).'],
+  ['AWS Outposts','AWS-managed hardware installed in a customer’s own data center.'],
+  ['Project Rainier','A large AWS cluster of Trainium2 chips used by Anthropic to train and run Claude models.'],
   ['Marketplace Storefront','A vendor’s branded buying experience inside AWS Marketplace (opened June 16, 2026), where buyers pick offerings and use private offers on their existing AWS account.'],
   ['3PI partner','Third-party infrastructure partner: tooling for listings, private offers and co-sell automation.'],
   ['Starter bundle','A packaged 4-week engagement that makes an ISV Marketplace- and co-sell-ready by running strategy and technical setup in parallel.'],
@@ -1156,6 +1186,8 @@ const GLOSSARY = [
 ];
 
 const QUIZ = [
+  ['Do Facebook and Instagram mainly run on AWS?',['Yes, entirely','No, mainly in Meta’s own data centers; AWS is used for selected workloads','Only Instagram','Only in Europe'],1,'Instagram started on AWS but moved to Facebook’s data centers in 2014.'],
+  ['An app running on another cloud needs AI summaries. What’s the lightest way to use AWS?',['Migrate the whole app','Call Amazon Bedrock from its code via the SDK','Buy a data center','Use Outposts'],1,'Apps can add AWS capabilities through APIs without moving.'],
   ['What does a Marketplace Storefront let a buyer do?',['Avoid AWS entirely','Buy a vendor’s offerings through their existing AWS account and committed spend, often via a private offer','Get free software','Skip security forever'],1,'Storefronts turn months of procurement into days by using the buyer’s existing AWS relationship.'],
   ['Roughly what share of Amazon’s 2024 operating income came from AWS?',['About 10%','About 25%','About 58%','About 90%'],2,'AWS made $39.8B of Amazon’s $68.6B operating income in 2024.'],
   ['Which cloud provider has the largest market share?',['Google Cloud','Microsoft Azure','AWS','Oracle'],2,'AWS holds about 30%, Microsoft about 20%, Google about 13%.'],
@@ -4504,6 +4536,7 @@ const PRACTICE = {
   recognition:{t:['Add 3 entries to the work log this week','Mark the things you own and their health','Calculate one impact in money with the calculators'], ex:'Every Friday you log 2 wins in 2 minutes. At review time, the exported summary shows 26 wins with numbers.'},
   hypergtm:{t:['Count your co-sell submissions in the last 90 days (target: 3+)','Ask your alliance lead whether PRM attribution is live and validated','Score one live opportunity with the PSQL scorer before it goes into ACE'], ex:'A software partner had a live listing and zero pipeline for six months. After briefing two PDMs, submitting four qualified co-sell opportunities and running two field enablement sessions, the first AWS seller introduction arrived in week seven.'},
   cloudfin:{t:['Read the AWS segment in Amazon’s latest quarterly results (revenue, operating income, backlog)','Run the money-flow calculator with a real (anonymized) customer’s numbers','Explain to a colleague why AWS funds partner projects'], ex:'A sales colleague asks why AWS gave $60K of migration funding. You show the money-flow calculator: $600K/year of new usage for several years makes the funding a small investment for AWS.'},
+  whouses:{t:['Open three companies in your customers’ industries and note which AWS services they use','Ask your sales team which pattern (all-in, hybrid, multi-cloud, specific workloads) fits your top 5 customers','Find one customer whose app could “add AWS through code” (e.g. Bedrock or S3) without migrating'], ex:'A manufacturing prospect says “we’ll never move to the cloud”. You show the Volkswagen pattern: keep factories and core systems, put the factory data platform on AWS. The conversation moves from “migration” to “one high-value workload”.'},
   playbook:{t:['Pick your role in the day planner and follow it for one week','Try 5 scenarios','Use the invoice builder before sending your next invoice'], ex:'After one week following the planner, invoices go out the same day as sign-offs and nothing slips past a deadline.'}
 };
 function practicePanel(id){ const p=PRACTICE[id]; if(!p) return '';
@@ -5104,6 +5137,7 @@ function renderCmd(q){ q=q.toLowerCase().trim();
 function pickCmd(i){ const it=cmdItems[i]; if(!it) return; closeCmd(); if(it.term){ store.set('glq', it.term); } location.hash = it.href.slice(1); if(location.hash===it.href) route(); }
 document.addEventListener('keydown', e=>{
   if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); $('#cmd').hidden?openCmd():closeCmd(); return; }
+  if(e.key==='Escape' && $('#drawer')?.classList.contains('open')){ closeDrawer(); return; }
   if($('#cmd') && !$('#cmd').hidden){
     if(e.key==='Escape'){ closeCmd(); return; }
     if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); cmdSel=Math.max(0,Math.min(cmdItems.length-1,cmdSel+(e.key==='ArrowDown'?1:-1))); document.querySelectorAll('#cmdRes a').forEach((a,i)=>a.classList.toggle('sel',i===cmdSel)); document.querySelector('#cmdRes a.sel')?.scrollIntoView({block:'nearest'}); }
@@ -5232,6 +5266,181 @@ function raceSVG2(){
   if(!RM) g+=`<circle r="9" fill="var(--bad)"><animateMotion dur="12s" repeatCount="indefinite" path="${pa}"/></circle><circle r="9" fill="var(--accent)" style="filter:drop-shadow(0 0 6px var(--accent))"><animateMotion dur="12s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.22;1" calcMode="linear" path="${pb}"/></circle>`;
   return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:600px" role="img" aria-label="Race: traditional procurement takes about a quarter, a storefront private offer takes days">${g}</svg></div>`; }
 
+function openDrawer(html){ $('#drawerBody').innerHTML=html; $('#drawer').classList.add('open'); $('#scrim').classList.add('open'); $('#drawer').scrollTop=0; setTimeout(()=>$('#drawerX').focus(),60); }
+function closeDrawer(){ $('#drawer').classList.remove('open'); $('#scrim').classList.remove('open'); }
+/* ================= WHO RUNS ON AWS ================= */
+const PATTERNS = {
+  allin:{n:'All-in on AWS', c:'var(--accent)', d:'The whole product (compute, data, network) lives in AWS accounts. Often they closed their own data centers.'},
+  hybrid:{n:'Hybrid', c:'var(--signal)', d:'Own data centers for the core product, AWS for specific workloads, overflow capacity, R&D or edge.'},
+  multi:{n:'Multi-cloud', c:'var(--violet)', d:'Uses AWS heavily alongside other clouds, choosing each for what it does best (chips, price, capacity).'},
+  plug:{n:'Specific workloads', c:'#3b9fd8', d:'Core business isn’t software, but key workloads (analytics, ML, simulation, data platforms) run on AWS.'},
+  left:{n:'Moved off (mostly)', c:'var(--bad)', d:'Started on AWS, then moved most workloads to their own hardware, usually for cost or control at huge scale.'}
+};
+const LEVELS_AWS = ['','Minimal','Small part','Specific workloads','Large share','Most / all'];
+const COMPANIES = [
+  {n:'Anthropic', ind:'AI', p:'multi', lvl:4, what:'Builds the Claude family of AI models.', how:['AWS is Anthropic’s primary cloud and training partner; Amazon has invested $8B in the company.','Project Rainier: an AWS cluster of hundreds of thousands of Trainium2 chips used to train and run Claude, activated in 2025.','Claude is offered to AWS customers through Amazon Bedrock, so companies use it with their existing AWS account.','Also uses Google Cloud TPUs, expanded in 2025, so it is multi-cloud.'], svc:['EC2 Trainium (Trn2)','S3','Amazon Bedrock','Nitro'], lanes:[{n:'Data',items:[['Training data','Stored at scale','Massive datasets in cloud storage.']]},{n:'Train',items:[['Trainium clusters','Project Rainier','Custom AWS AI chips train new models.']]},{n:'Serve',items:[['Inference fleet','Run the models','Answer requests from users and apps.']]},{n:'Deliver',items:[['Amazon Bedrock','API for AWS customers','Enterprises call Claude inside their AWS account.'],['Claude apps & API','Direct','Claude.ai and the Anthropic API.']]}], whole:'Not only AWS: trains and serves on AWS and Google Cloud chips, and delivers through its own apps plus Bedrock.', yr:[['2023','Amazon announces investment; AWS becomes primary cloud provider'],['2024','Investment expanded to $8B total'],['2025','Project Rainier Trainium2 cluster comes online']]},
+  {n:'Meta (Facebook & Instagram)', ind:'Social media', p:'hybrid', lvl:2, what:'Runs Facebook, Instagram, WhatsApp and Messenger for billions of people.', how:['The apps run in Meta’s own giant data centers on hardware it designs itself.','In 2021 Meta named AWS a long-term strategic cloud provider for R&D, third-party collaborations and acquired companies.','Meta and AWS collaborate on running PyTorch (Meta’s AI framework) well on AWS for customers.','Instagram started on AWS (EC2) in 2010 and moved into Facebook’s data centers in 2014 after the acquisition.'], svc:['EC2 (selected workloads)','PyTorch on AWS'], lanes:[{n:'Users',items:[['Billions of users','Apps','Facebook, Instagram, WhatsApp.']]},{n:'Core',items:[['Meta data centers','Own hardware','The apps themselves run here.']]},{n:'AWS',items:[['R&D & partners','Selected workloads','Third-party collaborations, acquisitions, research.']]}], whole:'No. The main apps run in Meta’s own data centers; AWS is used for selected workloads.', yr:[['2010','Instagram launches, hosted on AWS'],['2014','Instagram moves to Facebook data centers'],['2021','Meta selects AWS as a long-term strategic cloud provider']]},
+  {n:'Netflix', ind:'Streaming media', p:'allin', lvl:5, what:'Streams films and series to hundreds of millions of members.', how:['Moved from its own data centers to AWS between 2008 and 2016; the back end (accounts, recommendations, billing, encoding) runs on AWS.','Thousands of microservices on EC2; huge data and analytics on S3.','Video itself reaches you from Netflix’s own Open Connect boxes placed inside internet providers, not from AWS.'], svc:['EC2','S3','DynamoDB','Kinesis'], lanes:[{n:'You',items:[['TV, phone, laptop','Apps','Browse and press play.']]},{n:'Control plane (AWS)',items:[['Microservices on EC2','Accounts, search, recommendations','Everything before the video starts.'],['Encoding on AWS','Prepare video files','Many formats and bitrates.']]},{n:'Delivery (own CDN)',items:[['Open Connect','Boxes in ISPs','Streams the bytes close to you.']]}], whole:'Almost: the whole back end is on AWS, but video delivery uses Netflix’s own CDN.', yr:[['2008','Database corruption prompts move to cloud'],['2016','Last data center workloads moved to AWS']]},
+  {n:'Airbnb', ind:'Travel', p:'allin', lvl:5, what:'Marketplace for stays and experiences.', how:['Built on AWS from its early days.','Web and mobile apps on EC2, data in S3 and RDS, large-scale analytics and ML for pricing and search.'], svc:['EC2','S3','RDS','EMR'], lanes:[{n:'Guests & hosts',items:[['Web & app','Search and book','Global users.']]},{n:'App',items:[['Services on EC2','Search, booking, payments','Core platform.']]},{n:'Data',items:[['S3 + RDS','Listings, bookings','Storage and databases.'],['Analytics & ML','Pricing, ranking','Data platform.']]}], whole:'Yes, largely built and run on AWS.', yr:[['2009','Moves hosting to AWS early in its growth']]},
+  {n:'Capital One', ind:'Banking', p:'allin', lvl:5, what:'Major US bank and credit card issuer.', how:['Announced it was going all-in on AWS and closed its last owned data centers in 2020.','Rebuilt applications as cloud-native services; heavy use of data and ML for fraud and customer experience.'], svc:['EC2','Lambda','S3','DynamoDB','SageMaker AI'], lanes:[{n:'Customers',items:[['Apps & cards','Banking','Mobile, web, card transactions.']]},{n:'AWS',items:[['Cloud-native apps','Microservices','Rebuilt for the cloud.'],['Data & ML','Fraud, personalization','Real-time decisions.']]}], whole:'Yes: one of the first big banks to move everything to public cloud.', yr:[['2015','Announces AWS as predominant cloud'],['2020','Closes last data centers']]},
+  {n:'Nasdaq', ind:'Financial markets', p:'hybrid', lvl:3, what:'Runs stock exchanges and market technology.', how:['In 2021 announced a partnership to move its markets to AWS over time.','Uses AWS Outposts (AWS hardware inside Nasdaq’s own data center) for ultra-low-latency trading, plus AWS Regions for data and analytics.'], svc:['AWS Outposts','S3','Redshift'], lanes:[{n:'Traders',items:[['Orders','Microseconds matter','Low latency is critical.']]},{n:'Edge',items:[['AWS Outposts','In Nasdaq’s data center','AWS hardware on premises.']]},{n:'Region',items:[['Data lake & analytics','Market data','S3, Redshift.']]}], whole:'Hybrid: AWS hardware inside its own facility plus AWS Regions.', yr:[['2021','Multi-year partnership to move markets to AWS']]},
+  {n:'Moderna', ind:'Pharma & biotech', p:'plug', lvl:4, what:'Develops mRNA medicines and vaccines.', how:['Built its digital research platform on AWS: designing mRNA sequences, running experiments and analyzing data.','AWS supports research, manufacturing data and analytics workloads.'], svc:['EC2','S3','Analytics & ML services'], lanes:[{n:'Science',items:[['Research teams','Design molecules','Scientists and algorithms.']]},{n:'AWS',items:[['Compute & data','Sequence design, analysis','Fast iteration.']]},{n:'Output',items:[['Manufacturing','Quality data','Digital records.']]}], whole:'Core digital research runs on AWS; labs and factories are physical.', yr:[['2020','Speed of digital platform cited in vaccine development']]},
+  {n:'Formula 1', ind:'Sport', p:'plug', lvl:3, what:'Global motorsport championship.', how:['“F1 Insights powered by AWS” turns live car sensor data into on-screen graphics, such as predicted pit-stop outcomes.','Used AWS high-performance computing to simulate aerodynamics while designing the 2022 car rules.'], svc:['SageMaker AI','Kinesis','HPC on EC2'], lanes:[{n:'Cars',items:[['Sensors','Hundreds per car','Telemetry every second.']]},{n:'AWS',items:[['Streaming & ML','Real-time models','Predictions during the race.']]},{n:'Fans',items:[['TV graphics','Insights on screen','Battle forecasts, tyre performance.']]}], whole:'No: specific analytics and simulation workloads run on AWS.', yr:[['2018','AWS becomes official cloud and ML provider']]},
+  {n:'NFL', ind:'Sport', p:'plug', lvl:3, what:'American football league.', how:['Next Gen Stats: chips in players’ shoulder pads track position and speed; the data is processed on AWS.','Machine learning produces stats like catch probability shown in broadcasts.'], svc:['SageMaker AI','Kinesis','S3'], lanes:[{n:'Field',items:[['Player tracking chips','Location data','Many updates per second.']]},{n:'AWS',items:[['Process & model','Next Gen Stats','Real-time and post-game.']]},{n:'Fans',items:[['Broadcasts & apps','Stats','Shown on TV and apps.']]}], whole:'No: a specific data and ML platform runs on AWS.', yr:[['2017','Next Gen Stats partnership with AWS']]},
+  {n:'Volkswagen', ind:'Automotive', p:'plug', lvl:3, what:'One of the world’s largest carmakers.', how:['Built the Volkswagen Industrial Cloud with AWS to connect data from its factories worldwide.','Goal: optimize production and supply chains across plants.'], svc:['AWS IoT','S3','Analytics'], lanes:[{n:'Factories',items:[['Machines & sensors','Production data','Across many plants.']]},{n:'AWS',items:[['Industrial cloud','Collect & analyze','One platform.']]},{n:'Outcome',items:[['Optimization','Efficiency','Fewer stoppages, better planning.']]}], whole:'No: a manufacturing data platform on AWS; cars and factories are physical.', yr:[['2019','Industrial Cloud partnership announced']]},
+  {n:'Zoom', ind:'SaaS', p:'hybrid', lvl:3, what:'Video meetings and communications.', how:['Runs its own data centers and also uses AWS heavily; named AWS its preferred cloud provider in 2020 as usage surged.','Cloud capacity let it scale quickly during the pandemic; it also uses other clouds.'], svc:['EC2','Global network'], lanes:[{n:'Users',items:[['Meetings','Video & audio','Millions at once.']]},{n:'Capacity',items:[['Own data centers','Core','Owned capacity.'],['AWS','Scale & regions','Burst and expansion.']]}], whole:'Hybrid and multi-cloud.', yr:[['2020','AWS named preferred cloud provider during demand surge']]},
+  {n:'Slack', ind:'SaaS', p:'allin', lvl:5, what:'Workplace messaging (part of Salesforce).', how:['Runs on AWS and signed a multi-year agreement in 2020.','Integrates with AWS services and Amazon Chime capabilities.'], svc:['EC2','S3','RDS'], lanes:[{n:'Teams',items:[['Workspaces','Messages, files','Businesses worldwide.']]},{n:'AWS',items:[['Slack platform','Services and data','Hosted on AWS.']]}], whole:'Yes, built on AWS.', yr:[['2020','Multi-year AWS agreement']]},
+  {n:'OpenAI', ind:'AI', p:'multi', lvl:2, what:'Builds ChatGPT and GPT models.', how:['Microsoft Azure has been its main cloud.','In November 2025 announced a multi-year, $38B agreement to use AWS infrastructure (NVIDIA GPU capacity on EC2) as well.'], svc:['EC2 UltraServers (NVIDIA GPUs)'], lanes:[{n:'Models',items:[['Training & inference','Huge GPU demand','Needs capacity from several providers.']]},{n:'Clouds',items:[['Microsoft Azure','Primary','Long-standing partner.'],['AWS','Added 2025','GPU capacity agreement.']]}], whole:'Multi-cloud: AWS is one of several providers.', yr:[['2025','$38B multi-year AWS agreement announced']]},
+  {n:'Dropbox', ind:'SaaS', p:'left', lvl:1, what:'File storage and sharing.', how:['Stored users’ files on Amazon S3 in its early years.','Around 2016 moved most file storage to its own system (“Magic Pocket”) to control cost at huge scale.','Still uses AWS for some workloads and regions.'], svc:['S3 (historically)'], lanes:[{n:'Before',items:[['Files on S3','Early years','Fast to start.']]},{n:'After',items:[['Own storage','Magic Pocket','Custom hardware at scale.'],['AWS','Selected regions','Some workloads remain.']]}], whole:'Started on AWS, moved most storage off at scale.', yr:[['2016','Moves most storage to its own infrastructure']]},
+  {n:'37signals (Basecamp, HEY)', ind:'SaaS', p:'left', lvl:1, what:'Makes the Basecamp and HEY apps.', how:['Publicly left AWS compute in 2022–2023, buying its own servers and citing large savings for a stable, predictable workload.','A well-known example of “cloud repatriation”.'], svc:['(left EC2/S3)'], lanes:[{n:'Before',items:[['AWS','Rented','Flexible but costly at steady scale.']]},{n:'After',items:[['Own servers','Colocation','Lower cost for predictable load.']]}], whole:'Left AWS for owned hardware.', yr:[['2023','Completes move off cloud compute']]},
+  {n:'US intelligence community', ind:'Public sector', p:'plug', lvl:4, what:'Government agencies with classified workloads.', how:['In 2013 the CIA awarded AWS a contract to build a private cloud region for classified work.','A landmark for public-sector cloud adoption; later contracts went multi-cloud.'], svc:['Dedicated secure regions'], lanes:[{n:'Agencies',items:[['Analysts','Classified data','Strict security.']]},{n:'AWS',items:[['Isolated region','Built for secrecy','Not connected to public AWS.']]}], whole:'Dedicated AWS regions for specific secure workloads.', yr:[['2013','CIA cloud contract awarded to AWS']]},
+  {n:'Ryanair', ind:'Airline', p:'plug', lvl:4, what:'European low-cost airline.', how:['Named AWS its preferred cloud provider in 2019.','Uses AWS for its booking platform, data and machine learning to personalize offers.'], svc:['EC2','S3','ML services'], lanes:[{n:'Travellers',items:[['App & website','Booking','Millions of passengers.']]},{n:'AWS',items:[['Booking platform','Digital systems','Data & ML.']]}], whole:'Digital platforms largely on AWS; aircraft and airports are physical.', yr:[['2019','AWS named preferred cloud provider']]},
+  {n:'Your local bakery chain', ind:'Small business', p:'plug', lvl:3, what:'A typical small business (illustrative).', how:['Website on a simple hosting plan (e.g. Lightsail or Amplify).','Online ordering, payments, email and point-of-sale are SaaS products, many of which themselves run on AWS.','It may never log in to AWS directly but still depends on it.'], svc:['Lightsail / Amplify','SaaS built on AWS'], lanes:[{n:'Customers',items:[['Website & ordering','Orders','Phones and laptops.']]},{n:'SaaS',items:[['POS, payments, email','Bought as services','Often hosted on AWS.']]},{n:'AWS',items:[['Website hosting','Simple plan','Low monthly cost.']]}], whole:'Mostly “invisible AWS” through the software it buys.', yr:[['Today','Typical setup for small businesses']]}
+];
+const INTEG = [
+  {t:'Build & host on AWS', d:'The app’s servers, databases and storage all live in the company’s AWS accounts.', ex:'Netflix back end, Airbnb, Capital One, Slack', how:['Code deployed to EC2, containers or Lambda','Data in RDS, DynamoDB, S3','Users connect to AWS endpoints'], c:'var(--accent)'},
+  {t:'Call AWS from code (API / SDK)', d:'The app runs anywhere (own servers, another cloud, a laptop) and calls AWS services over the internet with an SDK and credentials.', ex:'An app on another cloud storing files in S3 or calling Claude through Bedrock', how:['Install the AWS SDK (e.g. boto3 for Python)','Give the app limited IAM credentials','Pay per request or per GB'], c:'var(--signal)'},
+  {t:'Hybrid connection', d:'Own data centers linked privately to AWS, or AWS hardware placed on premises.', ex:'Nasdaq with Outposts; banks with Direct Connect', how:['Direct Connect or VPN','AWS Outposts on site','Workloads split by latency, cost, rules'], c:'var(--violet)'},
+  {t:'Buy software that runs on AWS', d:'The company never touches AWS; it buys SaaS that is built on AWS, often via AWS Marketplace.', ex:'Any company using Slack, or buying a SaaS tool through Marketplace', how:['Subscribe to SaaS','Optionally buy via Marketplace on the AWS bill','Vendor runs the infrastructure'], c:'#3b9fd8'}
+];
+let coFilter='all', coInd='All', gameI=0, gameScore=0, gameDone=false;
+V.whouses = () => `
+  <header class="section"><span class="eyebrow">Chapter 00 · Case studies</span><h1>Who runs on AWS</h1>
+  <p class="lede">From AI labs to sports leagues and banks: what real organizations run on AWS, how much of their product lives there, and whether they build the whole app on AWS or just plug AWS services in through code. Based on public announcements and reports; companies change their setups over time.</p></header>
+
+  <section class="section"><header><h2>The spectrum: how much runs on AWS?</h2><p class="muted">Each dot is an organization, placed by how much of its product runs on AWS. Hover or click a dot.</p></header>
+  <div class="card">${spectrumSVG()}</div>
+  <div class="grid g4">${Object.entries(PATTERNS).map(([k,p])=>`<div class="card" style="border-top:3px solid ${p.c}"><h4>${p.n}</h4><p class="small muted">${p.d}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Company explorer</h2><p class="muted">Filter by pattern or industry, then open a company to see what it runs, how, and whether the whole app is on AWS.</p></header>
+  <div class="chips">${[['all','All patterns'],...Object.entries(PATTERNS).map(([k,p])=>[k,p.n])].map(x=>`<button class="chip" type="button" data-copat="${x[0]}" aria-pressed="${x[0]===coFilter}">${x[1]}</button>`).join('')}</div>
+  <div class="chips">${['All',...new Set(COMPANIES.map(c=>c.ind))].map(i=>`<button class="chip" type="button" data-coind="${i}" aria-pressed="${i===coInd}">${i}</button>`).join('')}</div>
+  <div class="cogrid" id="coGrid"></div></section>
+
+  <section class="section"><header><h2>Pipeline explorer: business front vs architecture</h2><p class="muted">Pick an organization to see how its business creates value, and the AWS services that power each layer. Press play on either pipeline.</p></header>
+  <div class="chips">${COMPANIES.map(c=>`<button class="chip" type="button" data-pipesel="${c.n}" aria-pressed="${c.n===pipeSel}">${c.n}</button>`).join('')}</div>
+  <div id="pipeD" class="section"></div></section>
+
+  <section class="section"><header><h2>Do they build the whole app on AWS, or add it through code?</h2><p class="muted">Both. There are four ways an organization “uses AWS”. Press play to see each.</p></header>
+  ${flow('integ', FLOWS.integ = INTEG.map(m=>({t:m.t, d:m.d, cols:[['How it works',m.how],['Examples',[m.ex]]]})), {label:'Mode', pipe:true})}
+  <div class="card">${integSVG()}</div></section>
+
+  <section class="section"><header><h2>What “adding AWS through code” looks like</h2><p class="muted">An app running anywhere can use AWS with a few lines. Click a line to see what it does.</p></header>
+  <div class="grid g2">
+    <div class="card codecard"><pre class="code" id="codeBox">${CODE.map((l,i)=>`<span class="ln" data-code="${i}">${esc(l[0])||' '}</span>`).join('\n')}</pre></div>
+    <div class="detail" id="codeD"><p class="muted small">Click a line of code.</p></div>
+  </div>
+  <p class="small muted">Illustrative Python using the AWS SDK (boto3). Real code also handles errors; credentials come from IAM, never written in the code.</p></section>
+
+  <section class="section"><header><h2>Non-tech industries on AWS</h2><p class="muted">You don’t have to be a tech company. These run specific, high-value workloads on AWS.</p></header>
+  <div class="grid g3">${[['Sport','Formula 1 race predictions; NFL Next Gen Stats from player-tracking chips.','sensor data → ML → TV graphics'],['Pharma','Moderna’s digital research platform for designing mRNA medicines.','research data → compute → faster science'],['Automotive','Volkswagen’s Industrial Cloud connecting factory data across plants.','factory sensors → analytics → efficiency'],['Banking','Capital One went all-in and closed its data centers.','apps + data + ML on AWS'],['Stock markets','Nasdaq runs AWS hardware inside its own data center for low latency.','Outposts + Regions'],['Airlines','Ryanair runs booking and personalization on AWS.','digital platform on AWS']].map((x,i)=>`<div class="card" style="animation:rise .45s ${i*80}ms both"><span class="tag a" style="justify-self:start">${x[0]}</span><p class="small">${x[1]}</p><p class="small mono muted">${x[2]}</p></div>`).join('')}</div></section>
+
+  <section class="section"><header><h2>Why some companies go all-in, and some leave</h2></header>
+  <div class="grid g2">
+    <div class="card tint"><h4>Reasons to go all-in</h4><ul class="clean small"><li>Speed: new products and regions in days</li><li>No data centers to run</li><li>Elastic capacity for spikes (launches, pandemics, sale days)</li><li>Managed services for data, AI and security</li><li>Access to specialized chips (GPUs, Trainium)</li></ul></div>
+    <div class="card warnc"><h4>Reasons to stay hybrid or leave</h4><ul class="clean small"><li>Very large, steady workloads can be cheaper on owned hardware</li><li>Extreme latency needs (trading)</li><li>Control over custom hardware (Meta designs its own)</li><li>Regulation or data sovereignty</li><li>Avoiding dependence on one provider</li></ul></div>
+  </div></section>
+
+  <section class="section"><header><h2>What should a company do?</h2><p class="muted">A quick decision helper. Press play or click through.</p></header>
+  ${flow('wdecide', FLOWS.wdecide = [
+    {t:'Starting a new product?', d:'Most startups build directly on a cloud to move fast and pay as they go.', cols:[['Usually',['Build & host on AWS (or another cloud)','Use managed services and credits']]]},
+    {t:'Already have data centers?', d:'Keep what works, move what benefits most (new apps, analytics, AI, DR) and connect privately.', cols:[['Usually',['Hybrid with Direct Connect','Migrate in waves (MAP)']]]},
+    {t:'Just need one capability?', d:'Add an AWS service from your existing app through the SDK: storage, AI, email, translation.', cols:[['Usually',['Call AWS APIs from code','Limit IAM permissions']]]},
+    {t:'Huge, steady workload?', d:'Compare cloud cost with owned hardware; some move parts back on premises.', cols:[['Usually',['Committed-use discounts first','Consider hybrid or repatriation']]]},
+    {t:'Need special chips or capacity?', d:'AI companies often use several clouds to secure GPUs and custom chips.', cols:[['Usually',['Multi-cloud','Long-term capacity agreements']]]}
+  ], {label:'Question', pipe:true})}</section>
+
+  <section class="section"><header><h2>Game: guess the cloud setup</h2><p class="muted">For each organization, guess how much runs on AWS.</p></header>
+  <div class="card" id="gameBox" style="max-width:700px"></div></section>
+
+  <p class="small muted">Sources: public announcements, press releases, conference talks and reporting by the companies and AWS up to 2025. Setups change; treat levels as a guide, not disclosed figures.</p>
+`;
+const CODE = [
+  ['import boto3','Loads the AWS SDK for Python. Each language has one (JavaScript, Java, Go…).'],
+  ['',''],
+  ['s3 = boto3.client("s3")','Creates a client for Amazon S3. Credentials come from the environment (an IAM role), not from the code.'],
+  ['s3.upload_file("invoice.pdf", "acme-docs", "2026/inv-1043.pdf")','Uploads a file into an S3 bucket. The app could be running on a laptop, another cloud or a server in an office.'],
+  ['',''],
+  ['ai = boto3.client("bedrock-runtime")','Creates a client for Amazon Bedrock, AWS’s service for foundation models like Claude.'],
+  ['reply = ai.converse(modelId=MODEL_ID,','Sends a prompt to a chosen model. You pay per token used; no servers to manage.'],
+  ['    messages=[{"role": "user", "content": [{"text": "Summarize this invoice"}]}])','The message to the model. The answer comes back in a moment.'],
+  ['print(reply["output"]["message"]["content"][0]["text"])','Shows the model’s answer. Your app adds AI without building or hosting any AI itself.']
+];
+function spectrumSVG(){
+  const W=900,H=230, x=l=>60+(l-1)*(W-120)/4;
+  let g=`<defs><linearGradient id="specg" x1="0" x2="1"><stop offset="0" stop-color="var(--bad)"/><stop offset=".5" stop-color="var(--signal)"/><stop offset="1" stop-color="var(--accent)"/></linearGradient></defs><rect x="60" y="112" width="${W-120}" height="8" rx="4" fill="url(#specg)" opacity=".55"/>`;
+  [1,2,3,4,5].forEach(l=>g+=`<text x="${x(l)}" y="${H-12}" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-family:var(--mono)">${LEVELS_AWS[l].toUpperCase()}</text>`);
+  const by={}; COMPANIES.forEach((c,i)=>{ (by[c.lvl]=by[c.lvl]||[]).push(i); });
+  Object.entries(by).forEach(([l,arr])=>arr.forEach((i,k)=>{ const c=COMPANIES[i], cx=x(+l)+((k%2)?1:-1)*Math.ceil(k/2)*30, cy=116+((k%2)?-1:1)*(28+ (k%3)*14), col=PATTERNS[c.p].c;
+    g+=`<g data-co="${i}" role="button" tabindex="0" aria-label="${c.n}" style="cursor:pointer"><title>${c.n}: ${LEVELS_AWS[c.lvl]}</title><line x1="${cx}" y1="${cy}" x2="${cx}" y2="116" stroke="${col}" stroke-opacity=".4"/><circle class="gc" style="animation-delay:${i*60}ms" cx="${cx}" cy="${cy}" r="11" fill="${col}"/><text x="${cx}" y="${cy+4}" text-anchor="middle" style="fill:var(--surface);font-size:9px;font-weight:800;pointer-events:none">${initials(c.n)}</text></g>`; }));
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H}" style="min-width:680px" role="img" aria-label="Organizations placed from minimal to all-in AWS usage">${g}</svg></div>`;
+}
+const initials = n => n.replace(/\(.*\)/,'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+function renderCos(){ const box=$('#coGrid'); if(!box) return;
+  const list=COMPANIES.map((c,i)=>[c,i]).filter(([c])=>(coFilter==='all'||c.p===coFilter)&&(coInd==='All'||c.ind===coInd));
+  box.innerHTML = list.length ? list.map(([c,i],k)=>{ const p=PATTERNS[c.p]; return `<button type="button" class="cocard" data-co="${i}" style="animation:rise .4s ${k*45}ms both;--pc:${p.c}"><span class="mono-badge">${initials(c.n)}</span><b>${c.n}</b><span class="small muted">${c.ind}</span><span class="tag" style="justify-self:start;color:${p.c};border-color:transparent;background:color-mix(in srgb,${p.c} 15%,transparent)">${p.n}</span><span class="lvlbar"><i style="width:${c.lvl*20}%;background:${p.c}"></i></span><span class="small muted">${LEVELS_AWS[c.lvl]} on AWS</span></button>`; }).join('') : '<p class="muted">No organizations match these filters.</p>';
+  document.querySelectorAll('[data-copat]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.copat===coFilter));
+  document.querySelectorAll('[data-coind]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.coind===coInd)); }
+function gauge(l, col){ const r=70, c=Math.PI*r, f=l/5;
+  return `<svg width="180" height="104" viewBox="0 0 180 104" aria-hidden="true"><path d="M20 94 A70 70 0 0 1 160 94" fill="none" stroke="var(--sunk)" stroke-width="14" stroke-linecap="round"/><path d="M20 94 A70 70 0 0 1 160 94" fill="none" stroke="${col}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c}"><animate attributeName="stroke-dashoffset" from="${c}" to="${c*(1-f)}" dur="1s" fill="freeze"/></path><text x="90" y="88" text-anchor="middle" style="font-family:var(--display);font-size:20px;fill:var(--ink)">${LEVELS_AWS[l]}</text></svg>`; }
+function openCo(i){ const c=COMPANIES[i], p=PATTERNS[c.p];
+  openDrawer(`<span class="eyebrow" style="color:${p.c}">${c.ind} · ${p.n}</span><h2>${c.n}</h2><p>${c.what}</p>
+  <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">${gauge(c.lvl,p.c)}<div class="small"><b>Whole app on AWS?</b><br>${c.whole}</div></div>
+  <h4>How they use AWS</h4><ul class="clean small">${c.how.map(h=>`<li>${h}</li>`).join('')}</ul>
+  <div class="tags">${c.svc.map(s=>`<span class="tag a">${s}</span>`).join('')}</div>
+  <h3>Structured pipelines</h3>${coPipelines(c.n,'dw')}
+  <details class="faq"><summary>Architecture at a glance (lanes)</summary><div style="margin-top:10px">${arch('coarch', c.lanes)}</div></details>
+  <h4>Timeline</h4><div class="hist">${c.yr.map(y=>`<div class="hi"><span class="y">${y[0]}</span><span class="small">${y[1]}</span></div>`).join('')}</div>
+  <p class="small muted">From public announcements and reporting; details change over time.</p>`); }
+function integSVG(){ const W=860,H=280, cx=430, cy=150;
+  let g=`<rect x="${cx-90}" y="${cy-48}" width="180" height="96" rx="20" fill="var(--accent)"/><text x="${cx}" y="${cy-6}" text-anchor="middle" style="fill:var(--accent-ink);font-family:var(--display);font-size:20px">AWS</text><text x="${cx}" y="${cy+16}" text-anchor="middle" style="fill:var(--accent-ink);font-size:11px">services &amp; regions</text>`;
+  const nodes=[[110,60,'Build & host','apps live inside AWS',INTEG[0].c],[750,60,'Call from code','SDK / API from anywhere',INTEG[1].c],[110,240,'Hybrid link','own DC + Direct Connect / Outposts',INTEG[2].c],[750,240,'Buy SaaS','software built on AWS',INTEG[3].c]];
+  nodes.forEach((n,i)=>{ const path=`M${n[0]} ${n[1]} C ${(n[0]+cx)/2} ${n[1]}, ${(n[0]+cx)/2} ${cy}, ${n[0]<cx?cx-90:cx+90} ${cy}`;
+    g+=`<path d="${path}" fill="none" stroke="${n[4]}" stroke-width="2.5" class="pipe-flow" stroke-dasharray="4 8"/>`;
+    if(!RM) g+=`<circle r="6" fill="${n[4]}" opacity="0"><set attributeName="opacity" to="1" begin="${i*0.6}s"/><animateMotion dur="2.6s" begin="${i*0.6}s" repeatCount="indefinite" path="${path}"/></circle>`;
+    g+=`<g data-pipe="integ|${i}" role="button" tabindex="0" style="cursor:pointer"><rect x="${n[0]-95}" y="${n[1]-26}" width="190" height="52" rx="14" fill="var(--surface)" stroke="${n[4]}" stroke-width="2"/><text x="${n[0]}" y="${n[1]-3}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:13px">${n[2]}</text><text x="${n[0]}" y="${n[1]+14}" text-anchor="middle" style="fill:var(--muted);font-size:10.5px">${n[3]}</text></g>`; });
+  return `<div class="pipe"><svg viewBox="0 0 ${W} ${H+20}" style="min-width:640px" role="img" aria-label="Four ways organizations use AWS">${g}</svg></div>`; }
+const GAME = [[0,'multi'],[1,'hybrid'],[2,'allin'],[4,'allin'],[13,'left'],[7,'plug'],[12,'multi'],[5,'hybrid'],[14,'left'],[11,'allin']];
+function renderGame(){ const box=$('#gameBox'); if(!box) return;
+  if(gameI>=GAME.length){ box.innerHTML=`<span class="eyebrow">Result</span><div class="out">${gameScore} / ${GAME.length}</div><p>${gameScore>=8?'Cloud detective! You know who runs where.':gameScore>=5?'Good instincts. Open a few companies above to learn the rest.':'Explore the company cards above, then try again.'}</p><div><button class="btn" type="button" id="gameRestart">Play again</button></div>`; return; }
+  const [ci,ans]=GAME[gameI], c=COMPANIES[ci]; gameDone=false;
+  box.innerHTML = `<div style="display:flex;justify-content:space-between"><span class="eyebrow">Round ${gameI+1} of ${GAME.length}</span><span class="eyebrow">Score ${gameScore}</span></div><div class="bar"><i style="width:${gameI/GAME.length*100}%"></i></div>
+  <div style="display:flex;gap:14px;align-items:center"><span class="mono-badge big">${initials(c.n)}</span><div><h3>${c.n}</h3><p class="small muted">${c.what}</p></div></div>
+  <div class="chips">${Object.entries(PATTERNS).map(([k,p])=>`<button class="chip" type="button" data-guess="${k}">${p.n}</button>`).join('')}</div><div id="gameFb"></div>`; }
+
+/* Business-front and architecture pipelines per company (architecture = illustrative pattern from public talks; internal designs aren't fully public) */
+const CO_PIPES = {
+  'Anthropic':{biz:[['Research','Safety and capability research defines the next model'],['Train','Models trained on large accelerator clusters'],['Productize','Claude apps, API and enterprise features'],['Distribute','Direct API, Claude apps and Amazon Bedrock for AWS customers'],['Revenue','Usage-based API and Bedrock consumption, subscriptions']], arch:[['S3','Stores training data and model artifacts'],['EC2 Trainium (Trn2 UltraServers)','Trains and serves models at scale (Project Rainier)'],['Networking (EFA / Nitro)','Fast links between thousands of chips; secure virtualization'],['Inference fleet','Serves model requests with low latency'],['Amazon Bedrock','Managed, private access to Claude for AWS customers'],['CloudWatch & IAM','Monitoring, access control, governance']]},
+  'Meta (Facebook & Instagram)':{biz:[['Users post & browse','Billions of daily users'],['Engagement','Feeds, Reels, messaging'],['Ads platform','Advertisers target audiences'],['Revenue','Advertising'],['R&D & partners','New research and collaborations']], arch:[['Meta data centers','Core apps on Meta-designed hardware (not AWS)'],['PyTorch','Meta’s open-source AI framework, also optimized on AWS'],['AWS (EC2, storage)','Selected workloads: R&D, acquisitions, third-party collaborations'],['Private connectivity','Linking Meta systems and AWS where needed']]},
+  'Netflix':{biz:[['Licensing & originals','Acquire and produce content'],['Encode','Prepare every title in many formats'],['Recommend','Personalized rows for each member'],['Stream','Play with minimal buffering'],['Subscriptions','Monthly membership revenue']], arch:[['S3','Master files, encoded assets, data lake'],['EC2 encoding fleet','Transcodes titles into many bitrates and codecs'],['Microservices on EC2','Accounts, search, playback control, billing'],['Data & ML (Spark, Kinesis)','Viewing events feed recommendations'],['Multi-region AWS','Resilience across Regions'],['Open Connect (own CDN)','Delivers video bytes from boxes inside ISPs']]},
+  'Airbnb':{biz:[['Hosts list','Homes and experiences'],['Guests search','Search and ranking'],['Book & pay','Secure payments'],['Stay & review','Trust and reviews'],['Fees','Service fees on bookings']], arch:[['CloudFront & load balancers','Fast, global entry point'],['Services on EC2 / containers','Search, booking, messaging'],['RDS / Aurora','Listings and bookings data'],['S3','Photos and data lake'],['EMR & ML','Pricing suggestions, ranking, fraud'],['CloudWatch','Monitoring and alerts']]},
+  'Capital One':{biz:[['Customer applies','Cards, accounts, loans'],['Decision','Real-time credit and fraud checks'],['Transact','Card swipes and transfers'],['Serve','App, alerts, support'],['Revenue','Interest and fees']], arch:[['API Gateway & services','Mobile and web apps'],['Lambda / containers','Cloud-native microservices'],['DynamoDB / Aurora','Accounts and transactions'],['Kinesis','Streaming transaction events'],['SageMaker AI','Fraud and decision models'],['Security Hub, KMS','Encryption and controls for a regulated bank']]},
+  'Nasdaq':{biz:[['Listings','Companies list on the exchange'],['Orders arrive','Brokers send orders'],['Match','Buy and sell orders matched'],['Data products','Market data sold to clients'],['Fees','Trading, listing and data fees']], arch:[['AWS Outposts','AWS hardware in Nasdaq’s data center for ultra-low latency'],['Matching engines','Run on the local Outposts capacity'],['Direct Connect','Private link to AWS Regions'],['S3 data lake','Historical market data'],['Redshift & analytics','Data products and surveillance']]},
+  'Moderna':{biz:[['Target','Choose a disease target'],['Design','Design the mRNA sequence digitally'],['Test','Lab experiments and trials'],['Manufacture','Produce at scale'],['Deliver','Medicines to patients']], arch:[['S3','Research and experiment data'],['EC2 compute','Sequence design and analysis'],['Analytics & ML','Learn from experiment results'],['Data platform','Connect research to manufacturing records'],['IAM & compliance controls','Regulated, auditable data']]},
+  'Formula 1':{biz:[['Race','Cars generate live data'],['Analyze','Turn data into insights'],['Broadcast','Graphics for TV viewers'],['Engage fans','Apps and digital content'],['Revenue','Media rights and sponsorship']], arch:[['Car sensors → trackside','Telemetry captured live'],['Kinesis','Streams data to the cloud'],['SageMaker AI','Models predict pit stops and battles'],['Graphics output','Insights sent to broadcast'],['HPC on EC2','Aerodynamic simulations for car design rules']]},
+  'NFL':{biz:[['Game','Players tracked on the field'],['Stats','Speed, distance, probabilities'],['Broadcast','On-screen insights'],['Teams & fans','Analysis and apps'],['Revenue','Media and fan engagement']], arch:[['Tracking chips','Location many times per second'],['Kinesis','Real-time data ingestion'],['S3','Historical tracking data'],['SageMaker AI','Models like catch probability'],['APIs to broadcast','Next Gen Stats delivered live']]},
+  'Volkswagen':{biz:[['Plan production','Across many plants'],['Build cars','Machines and lines'],['Monitor','Quality and uptime'],['Optimize','Fewer stoppages, less waste'],['Sell & deliver','Cars to customers']], arch:[['IoT devices in plants','Machine and sensor data'],['AWS IoT services','Collect data from factories'],['S3 data lake','Central industrial data'],['Analytics & ML','Predictive maintenance, quality'],['Apps for plants','Shared tools across factories']]},
+  'Zoom':{biz:[['Sign up','Free and paid plans'],['Meet','Video, audio, chat'],['Scale','Millions join at once'],['Collaborate','Phone, webinars, rooms'],['Revenue','Subscriptions']], arch:[['Own data centers','Core meeting capacity'],['EC2 (AWS)','Extra capacity and regions during surges'],['Global network','Low-latency media routing'],['Storage','Recordings'],['Multiple clouds','Spread across providers']]},
+  'Slack':{biz:[['Workspace','Teams sign up'],['Message','Channels and DMs'],['Integrate','Apps and workflows'],['Grow','More users and teams'],['Revenue','Per-seat subscriptions']], arch:[['Load balancers & edge','Global entry'],['Services on EC2','Messaging back end'],['Databases (RDS/MySQL)','Messages and metadata'],['S3','Files and attachments'],['Real-time messaging layer','Delivers messages instantly']]},
+  'OpenAI':{biz:[['Research','Build frontier models'],['Train','Huge GPU clusters'],['Products','ChatGPT and API'],['Distribute','Apps, API, partners'],['Revenue','Subscriptions and API usage']], arch:[['Microsoft Azure','Primary cloud'],['EC2 UltraServers (NVIDIA GPUs)','Added AWS capacity from 2025'],['Fast networking','Clusters of GPUs'],['Storage','Data and model checkpoints']]},
+  'Dropbox':{biz:[['Sign up','Free and paid plans'],['Sync files','Across devices'],['Share & collaborate','Teams'],['Store at scale','Exabytes of data'],['Revenue','Subscriptions']], arch:[['Amazon S3 (early years)','Stored file blocks'],['Magic Pocket (own storage)','Most storage moved here ~2016'],['AWS (selected)','Some regions and workloads'],['Metadata services','Track files and versions']]},
+  '37signals (Basecamp, HEY)':{biz:[['Sign up','Project tool and email'],['Use daily','Projects, messages, email'],['Retain','Steady, predictable usage'],['Revenue','Subscriptions'],['Cost focus','Predictable load favors owned servers']], arch:[['AWS EC2 & S3 (before)','Rented compute and storage'],['Own servers (after)','Bought hardware in colocation'],['Deployment tooling','Their own tools to manage servers']]},
+  'US intelligence community':{biz:[['Collect','Intelligence data'],['Analyze','Analysts and tools'],['Share','Across agencies securely'],['Decide','Inform policy'],['Mission','National security']], arch:[['Isolated AWS region','Built for classified work'],['Compute & storage','Analytics at scale'],['Strict IAM & encryption','Need-to-know access'],['Accredited operations','Cleared staff and controls']]},
+  'Ryanair':{biz:[['Search flights','App and website'],['Book & pay','Fares and extras'],['Personalize','Offers like seats, bags, hotels'],['Fly','Operations'],['Revenue','Fares and ancillaries']], arch:[['CloudFront','Fast website and app'],['Booking services on EC2','Search and booking'],['Databases','Bookings and customers'],['S3 data lake','Travel and sales data'],['ML services','Personalized offers']]},
+  'Your local bakery chain':{biz:[['Find us','Website, maps, social'],['Order','Online or in store'],['Pay','Card and mobile'],['Bake & serve','Daily operations'],['Repeat','Loyalty and email']], arch:[['Lightsail or Amplify','Hosts the website'],['Route 53','Domain name'],['SaaS POS & payments','Bought software (often on AWS)'],['SaaS email & loyalty','Bought software'],['AWS Backup / S3','Optional backups of files']]}
+};
+let pipeSel = 'Netflix';
+function coPipelines(name, idp){ const c=CO_PIPES[name]; if(!c) return '';
+  FLOWS[idp+'b'] = c.biz.map(x=>({t:x[0], d:x[1], do:[], check:[], tools:[]}));
+  FLOWS[idp+'a'] = c.arch.map(x=>({t:x[0], d:x[1], do:[], check:[], tools:[]}));
+  return `<div class="pipehead"><span class="tag s">Business front</span><span class="small muted">how value reaches customers and turns into revenue</span></div>${flow(idp+'b', FLOWS[idp+'b'], {label:'Stage', pipe:true})}
+  <div class="pipehead"><span class="tag a">Architecture on AWS</span><span class="small muted">services in order, and what each does for them</span></div>${flow(idp+'a', FLOWS[idp+'a'], {label:'Layer', pipe:true})}
+  <div class="tablewrap"><table><thead><tr><th>Service / layer</th><th>What it does for ${esc(name.replace(/ \(.*\)/,''))}</th></tr></thead><tbody>${c.arch.map(a=>`<tr><td><b>${a[0]}</b></td><td class="small">${a[1]}</td></tr>`).join('')}</tbody></table></div>
+  <p class="small muted">Architecture is an illustrative pattern drawn from public talks and announcements; exact internal designs aren’t public.</p>`; }
+function showPipeSel(name){ pipeSel=name; stopPlay(); const c=COMPANIES.find(x=>x.n===name), p=PATTERNS[c.p];
+  $('#pipeD').innerHTML = `<div class="card tint" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span class="mono-badge big" style="--pc:${p.c}">${initials(name)}</span><div><h3>${name}</h3><p class="small muted">${c.what} · <span style="color:${p.c}">${p.n}</span></p></div></div>${coPipelines(name,'pp')}`;
+  document.querySelectorAll('[data-pipesel]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.pipesel===name)); }
+
 /* ================= ROUTER & EVENTS ================= */
 function route(){
   let id = (location.hash||'').slice(1);
@@ -5260,6 +5469,7 @@ function route(){
   if(id==='grow') renderUC();
   if(id==='economics') calcTCO();
   if(id==='value') renderVal();
+  if(id==='whouses'){ showPipeSel(pipeSel); renderCos(); gameI=0; gameScore=0; renderGame(); }
   if(id==='cloudfin') calcMF();
   if(id==='hypergtm'){ showMat(matSel); renderLS(); showMot(motSel); showPsvc(psvcSel); showGcase(gcase); renderSelf(); calcPSQ(); }
   if(id==='playbook'){ renderDay(); scI=0; scScore=0; renderSC(); calcInvoice(); calcFD(); calcVB(); renderACE(false); showWK(wkSel); renderSnip(); }
@@ -5380,6 +5590,17 @@ document.addEventListener('click', e => {
   const my = t.closest('[data-myth]'); if(my){ const i=+my.dataset.myth, b=$('#mythB'+i), flipped=my.classList.toggle('tint'); b.textContent = flipped ? MYTHS[i][1] : 'Click to see the reality.'; b.classList.toggle('muted', !flipped); my.querySelector('.eyebrow').textContent = flipped ? `Reality ${i+1}` : `Myth ${i+1} · click to flip`; if(!RM) my.animate([{transform:'rotateY(90deg)'},{transform:'none'}],{duration:350}); return; }
   const mt = t.closest('[data-mat]'); if(mt) return showMat(mt.dataset.mat);
   const ul = t.closest('[data-unlock]'); if(ul){ const i=+ul.dataset.unlock, el=$('#unl'+i), on=ul.classList.toggle('tint'); el.innerHTML = on ? `<b>Unlocks:</b> ${BUNDLE_UNLOCKS[i][2]}` : BUNDLE_UNLOCKS[i][1]; el.classList.toggle('muted', !on); if(!RM) ul.animate([{transform:'rotateY(90deg)'},{transform:'none'}],{duration:350}); return; }
+  if(t.id==='drawerX' || t.id==='scrim'){ closeDrawer(); return; }
+  const psl = t.closest('[data-pipesel]'); if(psl) return showPipeSel(psl.dataset.pipesel);
+  const cp = t.closest('[data-copat]'); if(cp){ coFilter=cp.dataset.copat; return renderCos(); }
+  const ci = t.closest('[data-coind]'); if(ci){ coInd=ci.dataset.coind; return renderCos(); }
+  const co = t.closest('[data-co]'); if(co) return openCo(+co.dataset.co);
+  const cl = t.closest('[data-code]'); if(cl){ const i=+cl.dataset.code; if(!CODE[i][1]) return; document.querySelectorAll('.code .ln').forEach(x=>x.classList.toggle('on', x===cl)); $('#codeD').innerHTML=`<span class="eyebrow">Line ${i+1}</span><p class="mono small" style="word-break:break-all">${esc(CODE[i][0])}</p><p>${CODE[i][1]}</p>`; return; }
+  const gs = t.closest('[data-guess]'); if(gs && !gameDone){ gameDone=true; const [cix,ans]=GAME[gameI], ok=gs.dataset.guess===ans; if(ok) gameScore++;
+    document.querySelectorAll('[data-guess]').forEach(b=>{ if(b.dataset.guess===ans) b.style.cssText='background:var(--accent-soft);border-color:var(--accent);color:var(--ink)'; else if(b===gs) b.style.cssText='background:var(--bad-soft);border-color:var(--bad)'; });
+    $('#gameFb').innerHTML=`<p class="small" style="margin-top:8px">${ok?'<b style="color:var(--good)">Correct.</b>':'<b style="color:var(--bad)">Not quite.</b>'} ${COMPANIES[cix].whole}</p><div style="margin-top:8px"><button class="btn" type="button" id="gameNext">${gameI===GAME.length-1?'See result':'Next'}</button></div>`; return; }
+  if(t.id==='gameNext'){ gameI++; return renderGame(); }
+  if(t.id==='gameRestart'){ gameI=0; gameScore=0; return renderGame(); }
   if(t.id==='fcFlip'){ cardFlip=!cardFlip; return renderFC(); }
   if(t.id==='fcNext'){ cardI=(cardI+1)%CARDS.length; cardFlip=false; return renderFC(); }
   if(t.id==='fcPrev'){ cardI=(cardI-1+CARDS.length)%CARDS.length; cardFlip=false; return renderFC(); }
@@ -5443,7 +5664,7 @@ document.addEventListener('input', e => {
   if(e.target.dataset.kf) kpiField(e.target, false);
 });
 document.addEventListener('change', e => { if(e.target.dataset.kf) kpiField(e.target, true); if(e.target.dataset.vf){ const l=valLoad(); delete l[+e.target.dataset.vi].ex; store.set('value', l); renderVal(); } });
-document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb], svg [data-mot]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
+document.addEventListener('keydown', e => { const sv = e.target.closest && e.target.closest('svg [data-pipe], svg [data-portal], svg [data-rr], svg [data-otree], svg [data-seq], svg [data-biz], svg [data-req], svg [data-dayb], svg [data-mot], svg [data-co]'); if(sv && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); sv.dispatchEvent(new MouseEvent('click',{bubbles:true})); return; }
   const a = e.target.closest && e.target.closest('[data-ai]'); if(a && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); showAI(+a.dataset.ai); } });
 function kpiField(el, rerender){ const l = kpiLoad(), i = +el.dataset.ki; if(!l[i]) return; l[i][el.dataset.kf] = el.value; delete l[i].ex; kpiSave(l);
   if(rerender || el.dataset.kf!=='n'){ const row = el.closest('.kpirow'), s = kpiStatus(l[i]); row.querySelector('.pill').textContent = s[0]; row.querySelector('.pill').style.color = s[1]; const bar = row.querySelector('.kbar i'); bar.style.width = (s[2]/1.2*100)+'%'; bar.style.background = s[1]; const tg = row.querySelector('.tag'); if(tg) tg.remove(); } }
